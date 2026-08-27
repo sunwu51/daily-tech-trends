@@ -1,0 +1,8 @@
+outputs/__pycache__/
+*.py[cod]
+.env
+.env.*
+work/
+outputs/tech-trend-candidates.json
+outputs/tech-trend-history.sqlite3
+outputs/tech-trends-raw.html
