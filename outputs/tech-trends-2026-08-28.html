@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日科技趋势报告 | 2026-08-28</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f5f6;color:#17212b;font:15px/1.72 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:38px 22px 72px}header{border-bottom:2px solid #18645d;padding-bottom:20px}h1{font-size:30px;line-height:1.25;margin:0 0 5px;letter-spacing:0}h2{font-size:21px;margin:36px 0 14px;letter-spacing:0}h3{font-size:18px;line-height:1.42;margin:0 0 10px;letter-spacing:0}p{margin:0 0 10px}.muted{color:#64717d}.overview{margin-top:20px;padding:17px 19px;background:#e7f2ef;border-left:4px solid #258276}.status{margin-top:12px;padding:10px 13px;background:#fff5dc;color:#6d5310}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}.card{background:#fff;border:1px solid #d9e0e3;border-radius:7px;padding:19px}.tag{display:inline-block;margin-bottom:9px;padding:2px 8px;background:#e8f2f1;color:#17675e;font-size:12px;font-weight:700}.metric{color:#526474;font-size:13px}.evidence{border-top:1px solid #e1e7e9;padding-top:10px;color:#425261;font-size:14px}.risk{padding:9px 11px;background:#fff4dd;color:#6f5513;font-size:14px}.links{font-size:13px;color:#5d6c78}a{color:#075f91;text-decoration:none}a:hover{text-decoration:underline}code{background:#edf1f2;padding:1px 4px;border-radius:3px}footer{margin-top:36px;padding-top:17px;border-top:1px solid #d5dddf;color:#64717d;font-size:13px}@media(max-width:560px){main{padding:27px 14px}h1{font-size:25px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>每日科技趋势报告</h1>
+    <p class="muted">2026-08-28 · 过去 24 小时（2026-08-27 20:56 至 2026-08-28 20:56，中国标准时间）</p>
+  </header>
+
+  <section class="overview"><strong>编辑判断：</strong>今天的共同主题是“把 Agent 变成可约束、可复现的工程系统”。一端是无沙箱 MCP 进程可能继承整个用户权限的安全提醒，另一端是 Hermes、Praxist、ECC 和 n8n 将记忆、证据、测试、审批与集成做成运行时组件。与此同时，Firecrawl 充当网页数据层，Code-as-World 把视频抽象成可执行世界模型，RK3588 项目则把感知链路落到边缘硬件。GitHub 增量只证明过去一天的关注变化，不代表质量或安全性。</section>
+  <p class="status"><strong>来源状态：</strong>采集器成功完成，共处理 159 条原始记录并生成 45 条候选，未报告连接故障；本期没有 arXiv 或官方 RSS 候选。正式条目均已打开并读取主页面或仓库 README；项目新建与既有项目增长已分开标注。</p>
+
+  <h2>今日重点</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Agent 安全 / 实践讨论</span>
+      <h3><a href="https://infernalcode.com/posts/your-ai-agent-has-root/">无沙箱 MCP 服务器实际上拥有用户的全部权限</a></h3>
+      <p><strong>发生了什么：</strong>作者检查自己运行的 shell MCP 服务器后发现它以同一 UID 工作，因此可以读写用户文件、访问 SSH/AWS 凭据、运行本地二进制并向外发起网络请求。</p>
+      <p><strong>技术核心：</strong>风险来自 POSIX 权限继承，而非特殊漏洞；当文件中的提示注入诱导 Agent 调用工具时，服务器能执行的动作就是用户能执行的动作。文章提出以只读 rootfs、<code>--cap-drop=ALL</code>、默认断网和显式 bind mount 组成默认拒绝的容器边界。</p>
+      <p class="evidence"><strong>为什么重要：</strong>它把“我信任这个 MCP”转换成可检查的进程、UID、网络和文件系统边界，直接影响编码 Agent 与本地工具的部署方式。<br><strong>成熟度/风险：</strong>这是单篇实践文章和作者工具 mcp-box 的设计主张，不是独立审计；容器仍需按宿主内核、挂载和凭据暴露面复核。</p>
+      <p class="links">来源：<a href="https://infernalcode.com/posts/your-ai-agent-has-root/">原文</a> · <a href="https://github.com/lowcache/mcp-box">mcp-box</a> · <a href="https://news.ycombinator.com/item?id=49477311">HN 讨论</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 运行时 / 已验证增长</span>
+      <h3><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent 把长期记忆、技能和多渠道网关合进一个运行时</a></h3>
+      <p><strong>发生了什么：</strong>Hermes README 描述了可自我改进的学习闭环：从经历创建技能、在使用中改进技能、用 FTS5 检索历史会话，并通过单一网关接入 Telegram、Discord、Slack、WhatsApp、Signal 和 CLI。</p>
+      <p><strong>技术核心：</strong>项目提供本地、Docker、SSH、Singularity、Modal、Daytona、Vercel Sandbox 等终端后端，另有定时任务、语音转写、并行子 Agent 和可插拔模型提供商。它把会话持久化与执行环境选择放在同一控制面。</p>
+      <p class="metric">快照证据：237,576 Stars / 48,196 Forks；本轮 +405 / +177。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目的实测增长，不是新发布。README 的“可运行在 $5 VPS”等描述未替代容量和安全评估；本地后端仍继承宿主权限，MCP、技能和代码执行应配合 OS 级隔离。</p>
+      <p class="links">来源：<a href="https://github.com/NousResearch/hermes-agent">仓库与 README</a> · <a href="https://github.com/NousResearch/hermes-agent/blob/main/SECURITY.md">安全文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">科研 Agent / 新项目</span>
+      <h3><a href="https://github.com/sapientinc/PRAXIST">Praxist 将科研迭代定义成有证据协议的持久过程</a></h3>
+      <p><strong>发生了什么：</strong>新仓库把研究目标、可执行评估和多轮生成组织成一个系统，协调并行 research peers、任务所有的 evaluation、持久证据和代际综合。</p>
+      <p><strong>技术核心：</strong>平台负责编排、生命周期、证据通道、回放和资源调度；具体研究项目仍拥有目标、代码、评估器、指标、基线和领域约束。README 还提供 Codex-native 模式，可用已保存的 Codex 登录而不收集 API key。</p>
+      <p class="metric">类型：<strong>project_new</strong>，仓库创建于 24 小时内；当前 1,289 Stars / 130 Forks，无历史增量可宣称。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>新仓库已有可读的安装、任务接管和证据契约，但持续运行需要可测项目、评估器和计算资源。Fair Source 许可、运行时配置及模型提供商选择也需在组织部署前审查。</p>
+      <p class="links">来源：<a href="https://github.com/sapientinc/PRAXIST">仓库 README</a> · <a href="https://arxiv.org/abs/2608.25955">技术论文</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">网页数据基础设施 / 已验证增长</span>
+      <h3><a href="https://github.com/firecrawl/firecrawl">Firecrawl 将搜索、抓取和页面交互封装为 Agent 数据层</a></h3>
+      <p><strong>发生了什么：</strong>Firecrawl 的 README 将 Search、Scrape、Interact、Crawl、Map、Batch Scrape 和 Agent 统一在同一 API；输出可为 Markdown、结构化 JSON、HTML 或截图。</p>
+      <p><strong>技术核心：</strong>项目把 JavaScript 渲染、代理轮换、限流、内容清洗和点击/滚动/输入等操作封装在服务层，并提供 CLI、Skills 与 MCP 接入方式，让上层 Agent 直接消费网页上下文。</p>
+      <p class="metric">快照证据：173,445 Stars / 9,555 Forks；本轮 +388 / +13。README 另自报覆盖 96% 网页、P95 3.4 秒，均属项目方基准。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>自托管代码为 AGPL-3.0；抓取目标站的条款、隐私、robots、代理成本与反爬策略需要单独治理。项目方性能数字不应直接外推到自己的数据集。</p>
+      <p class="links">来源：<a href="https://github.com/firecrawl/firecrawl">仓库 README</a> · <a href="https://docs.firecrawl.dev/">官方文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 工程化 / 已验证增长</span>
+      <h3><a href="https://github.com/affaan-m/ECC">ECC 把“计划—测试—复盘—记忆”做成跨宿主工具箱</a></h3>
+      <p><strong>发生了什么：</strong>ECC README 将产品定位为 Agent harness 的工程系统：先规划，再测试、实现、审查、验证、记忆和改进；同一仓库为 Claude Code、Codex、Cursor、OpenCode、Gemini、Zed 等提供适配层。</p>
+      <p><strong>技术核心：</strong>当前公开清单包含 68 个专用 Agent、286 个 Skills、94 个命令 shim，以及 hooks、规则、记忆和 AgentShield 安全扫描。它强调把流程约束持久化到宿主，而不是在每次提示中重建。</p>
+      <p class="metric">快照证据：243,870 Stars / 36,882 Forks；本轮 +463 / +65。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目增长；README 明确不同宿主存在能力差异，且官方要求只从仓库、npm、插件和项目站点安装。大量 hooks、MCP 配置和权限规则会扩大供应链审计面。</p>
+      <p class="links">来源：<a href="https://github.com/affaan-m/ECC">仓库 README</a> · <a href="https://github.com/affaan-m/ECC/blob/main/SECURITY.md">安全说明</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">工作流自动化 / 已验证增长</span>
+      <h3><a href="https://github.com/n8n-io/n8n">n8n 把 AI Agent 的工具调用接入可观测的业务工作流</a></h3>
+      <p><strong>发生了什么：</strong>n8n 将可视化画布、JavaScript/Python 自定义代码、AI 工作流和 1,500+ 集成组合在一个可自托管或云端部署的平台中。</p>
+      <p><strong>技术核心：</strong>README 强调多步 Agent、逻辑分支、工具使用、人审和可观测性，并允许在 OpenAI、Anthropic、Google 与开源模型之间切换；9,000+ 模板把模型动作接到既有 SaaS 和内部系统。</p>
+      <p class="metric">快照证据：202,673 Stars / 60,433 Forks；本轮 +86 / +15。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>项目采用 Sustainable Use License 与企业许可，而非宽松开源许可；自托管的凭据、审计、节点代码和模型输出仍需按组织合规要求配置。</p>
+      <p class="links">来源：<a href="https://github.com/n8n-io/n8n">仓库 README</a> · <a href="https://docs.n8n.io/advanced-ai/">AI 文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">物理推理 / 新项目</span>
+      <h3><a href="https://github.com/MirroS-Lab/Code-as-World">Code-as-World 用可执行代码表达视频中的物理世界</a></h3>
+      <p><strong>发生了什么：</strong>新项目发布技术报告、Code-as-World-VL-4B/9B 推理权重与 QuantiPhy 评估脚本，并提供从视频抽象出状态、动力学和机制的示例。</p>
+      <p><strong>技术核心：</strong>项目将像素视为证据而非本体，通过迭代模拟与验证生成可执行世界表示；推理结果可以交给 MuJoCo 模拟，并通过 vLLM 暴露 OpenAI 兼容服务。</p>
+      <p class="metric">类型：<strong>project_new</strong>，24 小时内创建；当前 105 Stars / 1 Fork，README 显示最新提交已加入独立推理与模拟发布。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>README 的 TODO 仍包含完整推理配方和报告完善项；需要 CUDA、Python 3.10/3.11 和额外数据集。所谓 state-of-the-art 需以 QuantiPhy 的独立评估复现，不能由仓库热度推断。</p>
+      <p class="links">来源：<a href="https://github.com/MirroS-Lab/Code-as-World">仓库 README</a> · <a href="https://mirros-lab.github.io/code-as-world/">项目页</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">边缘视觉 / 新项目</span>
+      <h3><a href="https://github.com/MUJI0807/RK3588-Dual-Camera-AI-Perception-System">RK3588 双摄链路把去畸变、NPU 推理与编码串成低延迟管线</a></h3>
+      <p><strong>发生了什么：</strong>新仓库展示 MIPI + USB 双摄采集、YOLOv5s 车辆检测、UNet 车道线分割、OpenCL 镜头去畸变以及 RTMP 推流的完整 C/C++ 管线。</p>
+      <p><strong>技术核心：</strong>实现使用 V4L2 MMAP、DMA-BUF 零拷贝、Mali-G610 OpenCL 预处理、三核 NPU 并行、RGA 色彩转换和 MPP H.265 编码；README 给出 1280×720 去畸变 5–10ms、端到端约 70ms 的目标分解。</p>
+      <p class="metric">类型：<strong>project_new</strong>，24 小时内创建；当前 52 Stars / 2 Forks。项目方示例还报告约 29fps RTMP 输出。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>校准参数目前是演示用模拟值，DMA-BUF 与双摄同步仍列在未来增强项；性能和稳定性需在具体 Rockchip SDK、摄像头与网络条件下复测。</p>
+      <p class="links">来源：<a href="https://github.com/MUJI0807/RK3588-Dual-Camera-AI-Perception-System">仓库 README</a> · <a href="https://github.com/MUJI0807/RK3588-Dual-Camera-AI-Perception-System/blob/main/%E5%8F%8C%E6%91%84%E6%94%B9%E9%80%A0%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3.md">双摄技术文档</a></p>
+    </article>
+  </div>
+
+  <h2>值得继续观察</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">权限内核 / 早期信号</span>
+      <h3><a href="https://talos-agent.ch/">Talos 尝试让每次 Agent 工具调用都经过确定性授权</a></h3>
+      <p>产品页展示 0.15.1-alpha：每次工具调用在执行前经过确定性安全内核，绑定精确参数、单次有效期和 30 秒生命周期；页面标出 2,063 个单元测试、179 个对抗测试和 4 个聊天渠道。</p>
+      <p class="risk"><strong>观察点：</strong>这是 alpha 阶段的项目页数据，测试数字和“可验证”承诺尚无独立复核。值得继续看其策略语言、拒绝路径和真实 shell 隔离是否能在不牺牲可用性的情况下公开复现。</p>
+      <p class="links">来源：<a href="https://talos-agent.ch/">项目页与文档入口</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">语言学习应用 / 早期信号</span>
+      <h3><a href="https://subsmith.app">SubSmith 把本地音视频、词典和 Anki 导出合成桌面学习流</a></h3>
+      <p>产品页支持 MKV、MP4、MP3 文件的字幕同步、悬停释义、时间戳与转录编辑，并可一键导出音频片段、截图和定义到 Anki；同时提供 Windows 下载、7 天试用与一次性授权。</p>
+      <p class="risk"><strong>观察点：</strong>页面没有公开转录模型、离线/联网边界、准确率测量或安全审计；价格与“99+ 语言”属于产品方陈述。后续应关注本地处理是否真实、更新服务如何维持，以及长视频性能。</p>
+      <p class="links">来源：<a href="https://subsmith.app">产品主页、FAQ 与定价</a> · <a href="https://news.ycombinator.com/item?id=49476894">HN 讨论</a></p>
+    </article>
+  </div>
+
+  <footer>共 10 条：8 条重点、2 条早期观察。候选分数只用于发现线索；本报告逐条读取了入选项的原始页面，并分别标注项目方自报指标、GitHub 本地增量、项目新建状态和讨论量。原始采集预览不是最终报告。</footer>
+</main>
+</body>
+</html>
