@@ -231,35 +231,6 @@ def hacker_news_items() -> list[Item]:
     return items
 
 
-def arxiv_items() -> list[Item]:
-    # Broad categories deliberately include systems, security and hardware-adjacent
-    # research, rather than limiting the report to AI.
-    query = "cat:cs.* OR cat:math.OC OR cat:physics.comp-ph"
-    url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode({
-        "search_query": query, "start": 0, "max_results": 60,
-        "sortBy": "submittedDate", "sortOrder": "descending",
-    })
-    try:
-        root = ET.fromstring(fetch_text(url))
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ET.ParseError) as exc:
-        print(f"arXiv skipped: {exc}", file=sys.stderr)
-        return []
-    atom = "{http://www.w3.org/2005/Atom}"
-    items: list[Item] = []
-    for entry in root.findall(f"{atom}entry"):
-        published = parse_date(entry.findtext(f"{atom}published"))
-        if not published or published < WINDOW_START:
-            continue
-        categories = [node.attrib.get("term", "") for node in entry.findall(f"{atom}category")]
-        items.append(Item(
-            source="arXiv", title=clean_text(entry.findtext(f"{atom}title") or "Untitled"),
-            url=entry.findtext(f"{atom}id") or "https://arxiv.org",
-            published=published, summary=clean_text(entry.findtext(f"{atom}summary") or ""),
-            kind="research", metadata={"categories": categories},
-        ))
-    return items
-
-
 def rss_items() -> list[Item]:
     items: list[Item] = []
     for source, feed_url in RSS_FEEDS.items():
@@ -356,7 +327,7 @@ def render(items: list[Item], output: Path, failures: list[str]) -> None:
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Daily Technology Trends</title><style>
 *{{box-sizing:border-box}} body{{margin:0;background:#f6f7f9;color:#18212f;font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}} main{{max-width:1280px;margin:auto;padding:34px 24px 70px}} header{{border-bottom:1px solid #d8dce3;padding-bottom:20px}} h1{{font-size:30px;margin:0}} header p{{margin:8px 0 0;color:#586274}} h2{{font-size:20px;margin:38px 0 14px}} .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}} .card{{background:white;border:1px solid #dfe3e8;border-radius:7px;padding:17px;display:flex;flex-direction:column;gap:10px}} .top{{display:flex;justify-content:space-between;align-items:center}} .top strong{{background:#152f4f;color:white;padding:2px 9px;border-radius:999px}} .source{{font-size:12px;color:#48647e;font-weight:700;text-transform:uppercase}} h3{{font-size:17px;line-height:1.3;margin:0}} a{{color:#0b5cab;text-decoration:none}} a:hover{{text-decoration:underline}} p{{margin:0;color:#445163}} .meta{{display:flex;gap:6px;flex-wrap:wrap}} .meta span{{font-size:12px;background:#edf2f6;color:#42566d;padding:2px 7px;border-radius:3px}} .evidence{{border-top:1px solid #e7e9ed;padding-top:10px;font-size:13px;color:#576273}} .notice{{background:#fff4d8;padding:9px 12px;border-left:3px solid #d49100}} footer{{margin-top:36px;color:#6c7481;font-size:13px}} @media(max-width:560px){{main{{padding:24px 14px}}h1{{font-size:25px}}}}</style></head>
-<body><main><header><h1>Daily Technology Trends</h1><p>Past 24 hours, generated {html.escape(generated)}. Scores combine source-normalized engagement, freshness, cross-source evidence, and primary-source weight.</p></header>{failed}{''.join(parts)}<footer>Data: GitHub Search API, Hacker News API, arXiv API, and selected official RSS feeds. A score ranks attention signals, not technical correctness or production readiness.</footer></main></body></html>'''
+<body><main><header><h1>Daily Technology Trends</h1><p>Past 24 hours, generated {html.escape(generated)}. Scores combine source-normalized engagement, freshness, cross-source evidence, and primary-source weight.</p></header>{failed}{''.join(parts)}<footer>Data: GitHub Search API, Hacker News API, and selected official RSS feeds. A score ranks attention signals, not technical correctness or production readiness.</footer></main></body></html>'''
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(page, encoding="utf-8")
 
@@ -386,7 +357,7 @@ def main() -> int:
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY,
                         help="SQLite location for GitHub growth snapshots.")
     args = parser.parse_args()
-    collectors = [("GitHub", github_items), ("Hacker News", hacker_news_items), ("arXiv", arxiv_items), ("RSS feeds", rss_items)]
+    collectors = [("GitHub", github_items), ("Hacker News", hacker_news_items), ("RSS feeds", rss_items)]
     collected: list[Item] = []
     failures: list[str] = []
     for name, collector in collectors:

@@ -4,7 +4,7 @@
 
 ## 项目结构
 
-- `outputs/tech_trend_report.py`：采集 GitHub、Hacker News、arXiv 和官方 RSS。
+- `outputs/tech_trend_report.py`：采集 GitHub、Hacker News 和官方 RSS。
 - `outputs/build_index.py`：扫描所有日期报告并更新根目录 `index.html`。
 - `outputs/tech-trend-candidates.json`：供 Codex 筛选的候选证据，不是最终报告。
 - `outputs/tech-trend-history.sqlite3`：GitHub Stars/Forks 历史基线，请持续保留。
