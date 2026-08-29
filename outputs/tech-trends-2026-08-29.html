@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日科技趋势报告 | 2026-08-29</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f5f6;color:#17212b;font:15px/1.72 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:38px 22px 72px}header{border-bottom:2px solid #18645d;padding-bottom:20px}h1{font-size:30px;line-height:1.25;margin:0 0 5px;letter-spacing:0}h2{font-size:21px;margin:36px 0 14px;letter-spacing:0}h3{font-size:18px;line-height:1.42;margin:0 0 10px;letter-spacing:0}p{margin:0 0 10px}.muted{color:#64717d}.overview{margin-top:20px;padding:17px 19px;background:#e7f2ef;border-left:4px solid #258276}.status{margin-top:12px;padding:10px 13px;background:#fff5dc;color:#6d5310}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}.card{background:#fff;border:1px solid #d9e0e3;border-radius:7px;padding:19px}.tag{display:inline-block;margin-bottom:9px;padding:2px 8px;background:#e8f2f1;color:#17675e;font-size:12px;font-weight:700}.metric{color:#526474;font-size:13px}.evidence{border-top:1px solid #e1e7e9;padding-top:10px;color:#425261;font-size:14px}.risk{padding:9px 11px;background:#fff4dd;color:#6f5513;font-size:14px}.links{font-size:13px;color:#5d6c78}a{color:#075f91;text-decoration:none}a:hover{text-decoration:underline}code{background:#edf1f2;padding:1px 4px;border-radius:3px}footer{margin-top:36px;padding-top:17px;border-top:1px solid #d5dddf;color:#64717d;font-size:13px}@media(max-width:560px){main{padding:27px 14px}h1{font-size:25px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>每日科技趋势报告</h1>
+    <p class="muted">2026-08-29 · 过去 24 小时（2026-08-28 08:01 至 2026-08-29 08:01，中国标准时间）</p>
+  </header>
+
+  <section class="overview"><strong>编辑判断：</strong>过去一天的可读信号集中在“让 AI 能力进入可控的工程边界”：Hermes 和 ECC 将记忆、技能、测试与复盘放进 Agent 运行时，Spec Kit 把规格变成可执行流程，n8n 与 Firecrawl 则把工具调用连接到业务和网页数据。另一条线是基础设施下沉：AWS 在巴黎区域扩展高带宽 Graviton4 实例，Clash Verge 将 TUN、配置同步和跨平台代理做成桌面产品。AI 识别仿冒化妆品的实验提醒我们，多模态模型已经能提供有用线索，但仍会把反光误判成印刷错误。GitHub 数字只表示本窗口内的关注变化，不等于质量或安全认证。</section>
+  <p class="status"><strong>来源状态：</strong>采集器成功完成并生成 105 条候选；未报告来源连接故障，arXiv 与官方 RSS 本窗口未形成候选。正式条目均已打开并读取主页面或仓库 README；原始预览和候选 JSON 仅作证据，未作为报告发布。</p>
+
+  <h2>今日重点</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Agent 运行时 / 已验证增长</span>
+      <h3><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent 把长期记忆、技能和多渠道网关合进一个运行时</a></h3>
+      <p><strong>发生了什么：</strong>Hermes README 描述了一个可自我改进的学习闭环：从经历创建技能、在使用中改进技能、用 FTS5 检索历史会话，并通过单一网关接入 Telegram、Discord、Slack、WhatsApp、Signal 和 CLI。</p>
+      <p><strong>技术核心：</strong>项目提供本地、Docker、SSH、Singularity、Modal、Daytona 和 Vercel Sandbox 等终端后端，另有定时任务、语音转写、并行子 Agent 与可插拔模型提供商，把会话持久化与执行环境选择放进同一控制面。</p>
+      <p class="metric">快照证据：237,740 Stars / 48,286 Forks；本轮 +164 / +90。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目的实测增长，不是新发布。README 的低成本部署描述未替代容量和安全评估；本地后端仍继承宿主权限，MCP、技能和代码执行应配合 OS 级隔离。</p>
+      <p class="links">来源：<a href="https://github.com/NousResearch/hermes-agent">仓库与 README</a> · <a href="https://github.com/NousResearch/hermes-agent/blob/main/SECURITY.md">安全文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 工程化 / 已验证增长</span>
+      <h3><a href="https://github.com/affaan-m/ECC">ECC 把“计划—测试—复盘—记忆”做成跨宿主工具箱</a></h3>
+      <p><strong>发生了什么：</strong>ECC README 将产品定位为 Agent harness 的工程系统：先规划，再测试、实现、审查、验证、记忆和改进；同一仓库为 Claude Code、Codex、Cursor、OpenCode、Gemini、Zed 等提供适配层。</p>
+      <p><strong>技术核心：</strong>公开清单包含专用 Agent、Skills、命令 shim、hooks、规则、记忆和 AgentShield 安全扫描，试图把流程约束持久化到宿主，而不是在每次提示中重建。</p>
+      <p class="metric">快照证据：243,963 Stars / 36,901 Forks；本轮 +93 / +19。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目增长；README 明确不同宿主存在能力差异，并要求只从仓库、npm、插件和项目站点安装。大量 hooks、MCP 配置和权限规则会扩大供应链审计面。</p>
+      <p class="links">来源：<a href="https://github.com/affaan-m/ECC">仓库 README</a> · <a href="https://github.com/affaan-m/ECC/blob/main/SECURITY.md">安全说明</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">规范驱动开发 / 已验证增长</span>
+      <h3><a href="https://github.com/github/spec-kit">Spec Kit 让规格成为可执行的软件交付流程</a></h3>
+      <p><strong>发生了什么：</strong>GitHub 的 Spec Kit README 介绍了跨 AI 编程 Agent 的开源工具包，并在一周年后发布 1.0.0。其主流程依次建立原则、编写规格、制定计划、拆分任务、实现，再用 converge 反复校验。</p>
+      <p><strong>技术核心：</strong>规格不再只是代码前的文档，而是可生成实现的中间产物；扩展、预设和 bundle 允许组织叠加领域命令、合规格式和角色化工作流，且安装可离线使用本地或固定版本源。</p>
+      <p class="metric">快照证据：132,049 Stars / 11,870 Forks；本轮 +238 / +28。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目的实测增长。1.0.0 的含义偏向“形状稳定且可用”，并不承诺规范格式不会变化；生成质量仍取决于 Agent、项目原则和评估，扩展与 bundle 也需审查来源。</p>
+      <p class="links">来源：<a href="https://github.com/github/spec-kit">仓库 README</a> · <a href="https://github.github.io/spec-kit/">官方文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">工作流自动化 / 已验证增长</span>
+      <h3><a href="https://github.com/n8n-io/n8n">n8n 把 AI Agent 的工具调用接入可观测业务工作流</a></h3>
+      <p><strong>发生了什么：</strong>n8n 将可视化画布、JavaScript/Python 自定义代码、AI 工作流和 1,500+ 集成组合在一个可自托管或云端部署的平台中。</p>
+      <p><strong>技术核心：</strong>README 强调多步 Agent、逻辑分支、工具使用、人审和可观测性，并允许在 OpenAI、Anthropic、Google 与开源模型间切换；9,000+ 模板把模型动作接到既有 SaaS 和内部系统。</p>
+      <p class="metric">快照证据：202,720 Stars / 60,442 Forks；本轮 +47 / +9。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>项目采用 Sustainable Use License 与企业许可，而非宽松开源许可；自托管的凭据、审计、节点代码和模型输出仍需按组织合规要求配置。</p>
+      <p class="links">来源：<a href="https://github.com/n8n-io/n8n">仓库 README</a> · <a href="https://docs.n8n.io/advanced-ai/">AI 文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">网页数据基础设施 / 已验证增长</span>
+      <h3><a href="https://github.com/firecrawl/firecrawl">Firecrawl 将搜索、抓取和页面交互封装为 Agent 数据层</a></h3>
+      <p><strong>发生了什么：</strong>Firecrawl README 将 Search、Scrape、Interact、Crawl、Map、Batch Scrape 和 Agent 统一在同一 API；输出可为 Markdown、结构化 JSON、HTML 或截图。</p>
+      <p><strong>技术核心：</strong>服务层处理 JavaScript 渲染、代理轮换、限流、内容清洗和点击/滚动/输入等操作，并提供 CLI、Skills 与 MCP 接入，让上层 Agent 直接消费网页上下文。</p>
+      <p class="metric">快照证据：173,646 Stars / 9,559 Forks；本轮 +201 / +4。README 自报覆盖 96% 网页、P95 3.4 秒，属于项目方基准。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>自托管代码为 AGPL-3.0；抓取目标站的条款、隐私、robots、代理成本和反爬策略需要单独治理。项目方性能数字不应直接外推到自己的数据集。</p>
+      <p class="links">来源：<a href="https://github.com/firecrawl/firecrawl">仓库 README</a> · <a href="https://docs.firecrawl.dev/">官方文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">桌面网络 / 已验证增长</span>
+      <h3><a href="https://github.com/clash-verge-rev/clash-verge-rev">Clash Verge Rev 把 TUN、规则编辑和配置同步做成跨平台桌面层</a></h3>
+      <p><strong>发生了什么：</strong>项目 README 介绍了基于 Rust 和 Tauri 2 的 Windows、macOS、Linux GUI，内置 Clash.Meta（mihomo）内核，并支持配置文件管理、节点和规则编辑。</p>
+      <p><strong>技术核心：</strong>桌面层提供系统代理与 TUN 虚拟网卡、Merge/Script 配置增强、语法提示、托盘与主题定制，以及通过 WebDAV 备份和同步配置，解决跨平台代理客户端的控制面问题。</p>
+      <p class="metric">快照证据：140,782 Stars / 10,131 Forks；本轮 +77 / +3。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目的实测增长。TUN、脚本和 CSS 注入都扩大了本机攻击面；配置同步涉及凭据与节点隐私，使用前应审查订阅源、脚本和 WebDAV 权限。</p>
+      <p class="links">来源：<a href="https://github.com/clash-verge-rev/clash-verge-rev">仓库 README</a> · <a href="https://github.com/clash-verge-rev/clash-verge-rev/wiki">项目 Wiki</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">多模态可靠性 / 实验研究</span>
+      <h3><a href="https://groverlab.org/hnbfpr/2026-08-26-ai-counterfeit-cosmetics.html">多模态模型能从包装照片找出仿妆线索，但会被反光误导</a></h3>
+      <p><strong>发生了什么：</strong>Grover 实验室让 Gemini 3.6 Flash Thinking 分析三套 Rhode Peptide Lip Tint 的六张照片，并将模型判断与研究者对真伪、拼写、批号和包装信息的逐项核对进行比较。</p>
+      <p><strong>技术核心：</strong>模型能跨照片比对责任人信息、识别批号 112505、发现 D01/DО1 邮编字符混淆等细节；但也把管身反光当成 SOLOTIONS 拼写错误，说明图像伪影会污染证据链。</p>
+      <p class="evidence"><strong>为什么重要：</strong>这是一种低成本的视觉取证辅助流程，价值在于扩大初筛覆盖，而不是替代品牌、实验室或监管鉴定。实验者还指出，包装版本变化会让“正确文字”本身过时。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>单篇、三件样品的实验，没有公开准确率或盲测；照片质量、提示词和模型版本都会改变结果。涉及健康风险的商品不应依据模型单独下结论。</p>
+      <p class="links">来源：<a href="https://groverlab.org/hnbfpr/2026-08-26-ai-counterfeit-cosmetics.html">实验原文</a> · <a href="https://news.ycombinator.com/item?id=49484925">HN 讨论</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">云基础设施 / 官方发布</span>
+      <h3><a href="https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-ec2-c8gn-europe-paris/">AWS 将 Graviton4 C8gn 扩展到巴黎区域，面向网络密集型负载</a></h3>
+      <p><strong>发生了什么：</strong>AWS 官方公告称，EC2 C8gn 实例现已在 Europe (Paris) 区域可用，采用 Graviton4 和第六代 Nitro Cards。</p>
+      <p><strong>技术核心：</strong>公告给出相对 Graviton3 C7gn 最多 30% 的计算性能提升，以及最高 600 Gbps 网络带宽，定位网络虚拟设备、数据分析等吞吐敏感工作负载。</p>
+      <p class="evidence"><strong>为什么重要：</strong>新增区域降低了欧洲部署的网络距离和数据驻留切换成本，也让高带宽实例在多区域架构中更易做故障转移。性能收益仍取决于实例规格、软件栈和实际流量模式。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是官方区域可用性公告，不是独立基准；价格、配额、可用区覆盖和 Graviton 兼容性仍需在目标账户和工作负载上核验。</p>
+      <p class="links">来源：<a href="https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-ec2-c8gn-europe-paris/">AWS What's New</a> · <a href="https://aws.amazon.com/ec2/instance-types/c8g/">C8g 实例说明</a></p>
+    </article>
+  </div>
+
+  <h2>值得继续观察</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">分布式运行时 / 早期信号</span>
+      <h3><a href="https://tochemey.github.io/nodeakt/">NodeAkt 用零依赖 TypeScript Actor 模型覆盖多核、远程和集群</a></h3>
+      <p>项目文档描述了单消息处理的 mailbox、类型化消息、监督策略、stash、跨 isolate 多核运行，以及带 TLS 的 TCP remoting、成员发现、gossip 故障检测、quorum 和 actor relocation。</p>
+      <p class="risk"><strong>观察点：</strong>文档完整但 HN 讨论只有 2 points、0 comments，尚无独立吞吐、故障恢复或生态采用证据。后续应看协议兼容性、集群测试和实际生产案例。</p>
+      <p class="links">来源：<a href="https://tochemey.github.io/nodeakt/">项目文档</a> · <a href="https://news.ycombinator.com/item?id=49485541">HN 讨论</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">本地推理硬件 / 早期信号</span>
+      <h3><a href="https://mateusznowak.dev/articles/running-qwen38-legacy-hardware/">Qwen3.8-27B 在老旧 Pentium 主机配 Radeon R9700 上跑出可用速度</a></h3>
+      <p>作者用 32 GB VRAM 的 Radeon R9700、13 年前的 Pentium G3420 和 llama.cpp Vulkan/ROCm 测试 Qwen3.8-27B；Q4_K_M 在 MTP 下记录约 39 tokens/s（Vulkan）和 36 tokens/s（ROCm），并比较不同量化和显存占用。</p>
+      <p class="risk"><strong>观察点：</strong>这是单机、个人博客的实测，且老 CPU 的 AVX 限制导致部分后端不可用；模型回答质量、温度、驱动和供电条件尚未独立复现。值得继续看廉价 GPU 与旧主机组合是否形成稳定的本地推理路径。</p>
+      <p class="links">来源：<a href="https://mateusznowak.dev/articles/running-qwen38-legacy-hardware/">实验原文</a> · <a href="https://news.ycombinator.com/item?id=49484731">HN 讨论</a></p>
+    </article>
+  </div>
+
+  <footer>共 10 条：8 条重点、2 条早期观察。候选分数只用于发现线索；本报告逐条读取入选项的原始页面，并分别标注项目方自报指标、GitHub 本地增量、项目新建状态和讨论量。原始采集预览不是最终报告。</footer>
+</main>
+</body>
+</html>
