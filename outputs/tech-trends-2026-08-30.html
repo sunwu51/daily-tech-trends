@@ -31,6 +31,46 @@
     </article>
 
     <article class="card">
+      <span class="tag">开发者资源 / 已验证增长</span>
+      <h3><a href="https://github.com/ripienaar/free-for-dev">free-for-dev 汇总面向开发者的免费服务额度</a></h3>
+      <p><strong>发生了什么：</strong>项目维护一份按类别整理的免费开发者服务清单，覆盖云计算、数据库、监控、邮件、身份和测试工具。</p>
+      <p><strong>技术核心：</strong>价值在于把免费额度、限制和注册入口集中为可检索目录，降低原型阶段的基础设施选择成本。</p>
+      <p class="metric">候选类型：<code>project_rising</code>；本轮观察到实际 Stars/Forks 增长。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>免费计划和服务条款变化频繁；目录收录不代表 SLA、隐私或长期可用性，生产接入仍需逐项核验。</p>
+      <p class="links">来源：<a href="https://github.com/ripienaar/free-for-dev">仓库 README</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">AI 风险 / 真实事故</span>
+      <h3><a href="https://www.abc.net.au/news/2026-08-29/fair-work-commission-condemns-ai-legal-advice/107089766">澳大利亚劳资机构警告 AI 法律建议可能“完全错误”</a></h3>
+      <p><strong>发生了什么：</strong>Fair Work Commission 公开批评一份由 AI 生成的法律材料，指出其中包含错误引用和不可靠结论。</p>
+      <p><strong>技术核心：</strong>法律文本生成的风险不只在模型幻觉，还在于错误引用会被包装成正式程序材料，进入真实决策链。</p>
+      <p class="evidence"><strong>意义：</strong>高风险领域需要来源核验、责任人复核和可追溯证据链，不能把流畅文本当作法律事实。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是单一事件报道，不是总体错误率研究；但足以作为企业部署法律 Agent 的审计用例。</p>
+      <p class="links">来源：<a href="https://www.abc.net.au/news/2026-08-29/fair-work-commission-condemns-ai-legal-advice/107089766">原始报道</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">AI 基础设施 / 产业链</span>
+      <h3><a href="https://techcrunch.com/2026/08/29/nvidias-ai-advantage-is-moving-beyond-the-gpu/">NVIDIA 的 AI 优势正在延伸到 GPU 之外</a></h3>
+      <p><strong>发生了什么：</strong>报道聚焦 NVIDIA 在网络、软件栈、系统集成和开发者生态上的组合优势，而不是单一芯片性能。</p>
+      <p><strong>技术核心：</strong>训练和推理集群的瓶颈涉及互联、编译器、算子库、调度和整机交付，硬件加速器只是整体性能的一环。</p>
+      <p class="evidence"><strong>意义：</strong>评估 AI 基础设施时，应把 TCO、软件迁移成本和集群运维能力纳入，而不是只比较 TOPS。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>文章包含产业分析和公司立场，部分判断不是独立基准测试；采购决策需要结合自身工作负载验证。</p>
+      <p class="links">来源：<a href="https://techcrunch.com/2026/08/29/nvidias-ai-advantage-is-moving-beyond-the-gpu/">原始报道</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">本地工具 / 项目新建</span>
+      <h3><a href="https://github.com/aimen08/noty">noty 用本地优先方式记录桌面通知</a></h3>
+      <p><strong>发生了什么：</strong>新项目尝试捕获和整理桌面通知，让用户在错过通知后仍能搜索和回顾上下文。</p>
+      <p><strong>技术核心：</strong>核心是本地事件存储、全文检索和通知来源分类；数据不必上传云端即可支持历史查询。</p>
+      <p class="metric">候选类型：<code>project_new</code>；创建于本窗口内，不代表长期增长。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>桌面通知可能包含敏感信息；需要重点检查默认存储位置、访问控制、清理策略和跨平台支持。</p>
+      <p class="links">来源：<a href="https://github.com/aimen08/noty">仓库 README</a></p>
+    </article>
+
+    <article class="card">
       <span class="tag">视觉生成基础设施 / 已验证增长</span>
       <h3><a href="https://github.com/Comfy-Org/ComfyUI">ComfyUI 将图像、视频、音频和 3D 模型组织成可复用节点图</a></h3>
       <p><strong>发生了什么：</strong>项目 README 将 ComfyUI 定位为面向视觉专业人士的模块化 AI 引擎，支持本地桌面、Windows portable、云端和 API。</p>
@@ -80,7 +120,7 @@
     </article>
   </div>
 
-  <footer>共 6 条：4 条重点、2 条早期观察。已按过去 7 期报告去重；候选分数只用于发现线索。本报告逐条读取入选项的原始页面，并分别标注项目方自报指标、GitHub 本地增量、项目新建状态和讨论量。原始采集预览不是最终报告。</footer>
+  <footer>共 10 条：8 条重点、2 条早期观察。已按过去 7 期报告去重；候选分数只用于发现线索。本报告逐条读取入选项的原始页面，并分别标注项目方自报指标、GitHub 本地增量、项目新建状态和讨论量。原始采集预览不是最终报告。</footer>
 </main>
 </body>
 </html>
