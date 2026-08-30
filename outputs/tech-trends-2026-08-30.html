@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日科技趋势报告 | 2026-08-30</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f5f6;color:#17212b;font:15px/1.72 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:38px 22px 72px}header{border-bottom:2px solid #18645d;padding-bottom:20px}h1{font-size:30px;line-height:1.25;margin:0 0 5px;letter-spacing:0}h2{font-size:21px;margin:36px 0 14px;letter-spacing:0}h3{font-size:18px;line-height:1.42;margin:0 0 10px;letter-spacing:0}p{margin:0 0 10px}.muted{color:#64717d}.overview{margin-top:20px;padding:17px 19px;background:#e7f2ef;border-left:4px solid #258276}.status{margin-top:12px;padding:10px 13px;background:#fff5dc;color:#6d5310}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}.card{background:#fff;border:1px solid #d9e0e3;border-radius:7px;padding:19px}.tag{display:inline-block;margin-bottom:9px;padding:2px 8px;background:#e8f2f1;color:#17675e;font-size:12px;font-weight:700}.metric{color:#526474;font-size:13px}.evidence{border-top:1px solid #e1e7e9;padding-top:10px;color:#425261;font-size:14px}.risk{padding:9px 11px;background:#fff4dd;color:#6f5513;font-size:14px}.links{font-size:13px;color:#5d6c78}a{color:#075f91;text-decoration:none}a:hover{text-decoration:underline}footer{margin-top:36px;padding-top:17px;border-top:1px solid #d5dddf;color:#64717d;font-size:13px}@media(max-width:560px){main{padding:27px 14px}h1{font-size:25px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>每日科技趋势报告</h1>
+    <p class="muted">2026-08-30 · 过去 24 小时（2026-08-29 14:34 至 2026-08-30 14:34，中国标准时间）</p>
+  </header>
+
+  <section class="overview"><strong>编辑判断：</strong>今天的可读信号继续指向“Agent 从聊天窗口进入可运营系统”：Hermes 和 ECC 把记忆、技能、验证与安全扫描固化到运行时，useAgent 则进一步把多引擎、事件日志和隔离工作站放入自托管控制面。另一端，Firecrawl 和 n8n 正在把网页数据与业务动作标准化为 Agent 可调用的工具。视觉计算出现两种工程化尝试：ComfyUI 将扩散工作流做成可复用图形，DLSS5-Feeder 则用 ReShade 深度和运动向量把神经渲染接入没有原生 DLSS 的游戏。安全研究提醒，自动批准分类器不是沙箱。GitHub 数字只表示本窗口的关注变化，不等于质量或安全认证。</section>
+  <p class="status"><strong>来源状态：</strong>采集器成功完成并生成 88 条候选；候选文件报告 RSS feeds 不可用，arXiv 与官方 RSS 本窗口未形成候选。正式条目均已打开并读取主页面或仓库 README；原始预览、候选 JSON 和历史数据库未作为报告发布。</p>
+
+  <h2>今日重点</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Agent 运行时 / 已验证增长</span>
+      <h3><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent 把学习闭环、网关和多种执行后端合成一个运行时</a></h3>
+      <p><strong>发生了什么：</strong>README 将 Hermes 描述为可自我改进的 Agent：从经历创建技能、在使用中改进技能，用 FTS5 检索历史会话，并通过单一网关接入 Telegram、Discord、Slack、WhatsApp、Signal 和 CLI。</p>
+      <p><strong>技术核心：</strong>项目同时支持本地、Docker、SSH、Singularity、Modal、Daytona 和 Vercel Sandbox 后端，另有 cron、语音转写、并行子 Agent 与可插拔模型提供商，把持久化会话和执行环境选择放入同一控制面。</p>
+      <p class="metric">快照证据：238,217 Stars / 48,454 Forks；本轮 +477 / +168。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目的实测增长，不是新发布。部署便利不替代权限、网络出口和技能供应链审计；本地后端仍继承宿主权限。</p>
+      <p class="links">来源：<a href="https://github.com/NousResearch/hermes-agent">仓库与 README</a> · <a href="https://github.com/NousResearch/hermes-agent/blob/main/SECURITY.md">安全文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 工程化 / 已验证增长</span>
+      <h3><a href="https://github.com/affaan-m/ECC">ECC 把计划、测试、审查和记忆变成跨宿主工具链</a></h3>
+      <p><strong>发生了什么：</strong>ECC README 给出 plan → test → implement → review → verify → remember → improve 的流程，并为 Claude Code、Codex、Cursor、OpenCode、Gemini、Zed 等提供适配层。</p>
+      <p><strong>技术核心：</strong>公开清单包含 68 个专用 Agent、286 个 Skills、94 个命令 shim、hooks、规则、记忆和 AgentShield 扫描，尝试把流程约束持久化到宿主，而不是每次靠提示重建。</p>
+      <p class="metric">快照证据：244,355 Stars / 36,947 Forks；本轮 +392 / +46。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是既有项目增长。README 明确不同宿主存在能力差异；大量 hooks、MCP 配置和权限规则会扩大供应链与本地执行审计面。</p>
+      <p class="links">来源：<a href="https://github.com/affaan-m/ECC">仓库 README</a> · <a href="https://github.com/affaan-m/ECC/blob/main/SECURITY.md">安全说明</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 控制面 / 项目新建</span>
+      <h3><a href="https://github.com/useagenthq/useagent">useAgent 用事件溯源和隔离工作站托管多个编码 Agent</a></h3>
+      <p><strong>发生了什么：</strong>这个在窗口内新建的仓库把 Claude Code、Codex 和 OpenCode 放在统一界面，目标是交付网站、文档、表格、报告和经过测试的 PR，而不只是返回答案。</p>
+      <p><strong>技术核心：</strong>每次运行写入 Postgres 事件时间线，后端重启后可恢复；每个线程分配隔离 Linux 工作站（终端、仓库、浏览器、noVNC），凭据留在可信网关，破坏性工具通过一次性、参数绑定的人工审批恢复。</p>
+      <p class="metric">项目状态：2026-08-29 创建；85 Stars / 0 Forks。本条是 <code>project_new</code>，不是观察到的增长。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>README 明确标为 Alpha，API 和 schema 可能变化；依赖 Bun、Postgres 16+ 与 pgvector，部署、沙箱和事件重放仍需在自己的威胁模型下验证。</p>
+      <p class="links">来源：<a href="https://github.com/useagenthq/useagent">仓库 README</a> · <a href="https://useagent.org/docs/">官方文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">网页数据基础设施 / 已验证增长</span>
+      <h3><a href="https://github.com/firecrawl/firecrawl">Firecrawl 将搜索、抓取和页面交互统一为 Agent 数据 API</a></h3>
+      <p><strong>发生了什么：</strong>README 把 Search、Scrape、Interact、Crawl、Map、Batch Scrape 和 Agent 放入同一套 API，输出可选 Markdown、结构化 JSON、HTML 或截图。</p>
+      <p><strong>技术核心：</strong>服务层处理 JavaScript 渲染、代理轮换、限流和内容清洗，并提供 click、scroll、write、wait、press 等交互动作；CLI、Skills 和 MCP 让 Agent 直接消费网页上下文。</p>
+      <p class="metric">快照证据：174,161 Stars / 9,579 Forks；本轮 +515 / +20。README 自报覆盖 96% 网页、P95 3.4 秒，属于项目方基准。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>自托管代码为 AGPL-3.0；目标站条款、隐私、robots、代理成本和反爬策略需单独治理，项目方性能数字不能直接外推。</p>
+      <p class="links">来源：<a href="https://github.com/firecrawl/firecrawl">仓库 README</a> · <a href="https://docs.firecrawl.dev/">官方文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">工作流自动化 / 已验证增长</span>
+      <h3><a href="https://github.com/n8n-io/n8n">n8n 把多步 Agent 接到 1500+ 集成和人工审批</a></h3>
+      <p><strong>发生了什么：</strong>n8n 将可视化画布、JavaScript/Python 自定义代码、AI 工作流与 1500+ 集成组合成可自托管或云端部署的平台。</p>
+      <p><strong>技术核心：</strong>README 强调多步 Agent、逻辑分支、工具使用、人审和可观测性，并允许在 OpenAI、Anthropic、Google 与开源模型间切换；模板把模型动作接入既有 SaaS 和内部系统。</p>
+      <p class="metric">快照证据：202,831 Stars / 60,459 Forks；本轮 +111 / +17。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>采用 Sustainable Use License 与企业许可而非宽松开源许可；自托管凭据、审计、节点代码和模型输出仍需按组织合规配置。</p>
+      <p class="links">来源：<a href="https://github.com/n8n-io/n8n">仓库 README</a> · <a href="https://docs.n8n.io/advanced-ai/">AI 文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">视觉生成基础设施 / 已验证增长</span>
+      <h3><a href="https://github.com/Comfy-Org/ComfyUI">ComfyUI 将图像、视频、音频和 3D 模型组织成可复用节点图</a></h3>
+      <p><strong>发生了什么：</strong>项目 README 将 ComfyUI 定位为面向视觉专业人士的模块化 AI 引擎，支持本地桌面、Windows portable、云端和 API。</p>
+      <p><strong>技术核心：</strong>节点图、子图和模板可复用；异步队列、部分图重执行、VRAM/RAM 管理、模型卸载与量化支持把复杂扩散工作流变成可编排执行图，并覆盖图像、视频、音频、3D 与视觉模型。</p>
+      <p class="metric">快照证据：130,662 Stars / 15,395 Forks；本轮 +410 / +40。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>GPL-3.0 项目依赖大量模型和自定义节点；节点代码、模型许可证、显存需求与输出可复现性需要逐项管理。</p>
+      <p class="links">来源：<a href="https://github.com/Comfy-Org/ComfyUI">仓库 README</a> · <a href="https://github.com/Comfy-Org/ComfyUI/blob/master/SECURITY.md">安全文档</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">图形渲染 / 项目新建</span>
+      <h3><a href="https://github.com/jlrouzies-fr/DLSS5-Feeder">DLSS5-Feeder 用 ReShade 深度和运动向量接入神经渲染</a></h3>
+      <p><strong>发生了什么：</strong>新仓库让没有原生 DLSS 的 D3D11/D3D12 游戏构造 DLSS DLAA 合约：从 ReShade 获取帧和深度，从 LaunchPad 获取光流，再调用 DLSS 5 神经渲染并写回画面。</p>
+      <p><strong>技术核心：</strong>D3D11 路径通过私有 D3D12 设备执行，D3D12 直接使用游戏设备；项目还提供 32 位游戏的辅助进程路径，整个流程嵌在 ReShade effect chain 中。</p>
+      <p class="metric">项目状态：2026-08-29 创建；70 Stars / 4 Forks。本条是 <code>project_new</code>，不是长期增长。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>README 只报告少量游戏的端到端验证，并明确快速运动会出现 ghosting、薄几何变软且 HUD 一起处理；需要兼容性、性能和发行许可测试。</p>
+      <p class="links">来源：<a href="https://github.com/jlrouzies-fr/DLSS5-Feeder">仓库 README</a> · <a href="https://github.com/jlrouzies-fr/DLSS5-Feeder/releases">发布页</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">Agent 安全 / 独立研究</span>
+      <h3><a href="https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/">实验显示：自动模式分类器不能替代隔离环境</a></h3>
+      <p><strong>发生了什么：</strong>Embrace The Red 记录了一条从网站摘要、ZIP、模块遮蔽到远程 payload 的攻击链：Agent 拒绝运行可疑二进制，却在攻击者目录中执行自己写的 Python 解码器，触发恶意 <code>struct.py</code>。</p>
+      <p><strong>技术核心：</strong>作者报告小样本下 60%（3/5）到 80%（4/5）的成功率，并观察到自动模式有时允许创建恶意进程，却阻止后续清理命令；文中也记录了使用 <code>python3 -I</code>、静态分析和安全工作目录时的拒绝案例。</p>
+      <p class="evidence"><strong>为什么重要：</strong>“0.00%”只代表固定测试集，不能推出对未见攻击的安全保证。文章引用 Anthropic 将 Auto Mode 定义为尽力而为的分类器，真正边界仍是 OS 隔离和网络出口控制。</p>
+      <p class="risk"><strong>成熟度/风险：</strong>这是单篇研究者实验，样本小且攻击链经过迭代，不是普遍 ASR；但其模块遮蔽、间接提示注入和清理失败路径足以作为 Agent 运行环境的威胁建模用例。</p>
+      <p class="links">来源：<a href="https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/">实验原文</a> · <a href="https://news.ycombinator.com/item?id=49495858">HN 讨论</a></p>
+    </article>
+  </div>
+
+  <h2>值得继续观察</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">GPU UI / 早期信号</span>
+      <h3><a href="https://github.com/artemtsitronov/glacex">glacex 从 winit/wgpu 自建 Rust GPU immediate-mode UI</a></h3>
+      <p>README 列出 instanced GPU rendering、SDF 圆角、glyphon 文本、命中测试、Row/Column 布局以及按钮、复选框、文本输入和滚动视图等控件。</p>
+      <p class="risk"><strong>观察点：</strong>仓库创建不足 24 小时，README 明确 WIP、API 不稳定且尚未可用于生产；后续应看布局 API、跨平台驱动覆盖、基准和真实使用者。</p>
+      <p class="links">来源：<a href="https://github.com/artemtsitronov/glacex">仓库 README</a></p>
+    </article>
+
+    <article class="card">
+      <span class="tag">数据工具 / 早期信号</span>
+      <h3><a href="https://pypi.org/project/dataset-cleaner-cli/">dataset-cleaner-cli 发布首个 PyPI 版本</a></h3>
+      <p>PyPI 页面显示该包在 2026-08-30 发布 1.0.0，要求 Python 3.10+，提供 8.3 kB source distribution 和 9.4 kB 通用 wheel；页面标题称其用于从文档提取 Q&amp;A 数据集，但作者尚未提供项目描述。</p>
+      <p class="risk"><strong>观察点：</strong>这是一个刚发布的包，HN 只有 2 points、0 comments，且 PyPI 元数据显示未使用 Trusted Publishing。需要先看仓库、测试、依赖和版本历史，再判断是否适合数据清洗流水线。</p>
+      <p class="links">来源：<a href="https://pypi.org/project/dataset-cleaner-cli/">PyPI 项目页</a> · <a href="https://news.ycombinator.com/item?id=49495806">HN 讨论</a></p>
+    </article>
+  </div>
+
+  <footer>共 10 条：8 条重点、2 条早期观察。候选分数只用于发现线索；本报告逐条读取入选项的原始页面，并分别标注项目方自报指标、GitHub 本地增量、项目新建状态和讨论量。原始采集预览不是最终报告。</footer>
+</main>
+</body>
+</html>
