@@ -1,13 +1,12 @@
 # Daily Tech Trends
 
-每天采集过去 24 小时的技术动态，再由 Codex 阅读原始来源，生成中文 AI 策展报告。报告按日期归档，GitHub 既有项目只有在本地快照观察到实际增长后，才会被标记为上升趋势。
+每天采集过去 24 小时的技术动态，再由 Codex 阅读原始来源，生成中文 AI 策展报告。当天报告会将 GitHub Trending Daily 的全语言与中文榜各前 10 项作为候选池；报告按日期归档。
 
 ## 项目结构
 
 - `outputs/tech_trend_report.py`：采集 GitHub、Hacker News 和官方 RSS。
 - `outputs/build_index.py`：扫描所有日期报告并更新根目录 `index.html`。
 - `outputs/tech-trend-candidates.json`：供 Codex 筛选的候选证据，不是最终报告。
-- `outputs/tech-trend-history.sqlite3`：GitHub Stars/Forks 历史基线，请持续保留。
 - `outputs/tech-trends-raw.html`：脚本生成的原始预览。
 - `outputs/tech-trends-YYYY-MM-DD.html`：Codex 整理后的每日中文报告。
 - `outputs/tech-trends.html`：跳转到最新一期报告的固定入口。
@@ -56,4 +55,4 @@ GitHub 未认证搜索存在较低的速率限制。需要提高采集覆盖率�
 
 ## 评分边界
 
-候选分数由来源内归一化热度、时效性、跨来源信号和官方/研究来源权重组成，只用于排序。新建仓库标记为 `project_new`；既有仓库必须由 SQLite 历史快照观察到至少 `+3 Stars` 或 `+1 Fork`，才标记为 `project_rising`。分数和 Stars 均不代表技术正确性、生产成熟度或独立背书。
+候选分数由来源内归一化热度、时效性、跨来源信号和官方/研究来源权重组成，只用于排序。GitHub Trending Daily 的 “stars today” 是当前榜单的热度信号，不代表技术正确性、生产成熟度或独立背书。GitHub 没有可按历史日期查询的 Trending 档案，因此补跑过去日期时不会混入当前 Trending 结果。

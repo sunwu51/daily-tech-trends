@@ -9,7 +9,6 @@ scheduled-task script for a daily 08:00 report.
 from __future__ import annotations
 
 import argparse
-import base64
 import collections
 import concurrent.futures
 import datetime as dt
@@ -17,13 +16,9 @@ import email.utils
 import html
 import json
 import math
-import os
 import re
-import sqlite3
 import sys
-import time
 import urllib.error
-import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -39,7 +34,6 @@ USER_AGENT = "daily-tech-trend-report/1.0 (personal research tool)"
 # preview separate so a manual collection run cannot replace that work.
 DEFAULT_OUTPUT = Path(__file__).with_name("tech-trends-raw.html")
 DEFAULT_CANDIDATES = Path(__file__).with_name("tech-trend-candidates.json")
-DEFAULT_HISTORY = Path(__file__).with_name("tech-trend-history.sqlite3")
 
 RSS_FEEDS = {
     "Cloudflare Blog": "https://blog.cloudflare.com/rss/",
@@ -75,10 +69,8 @@ class Item:
     reasons: list[str] = field(default_factory=list)
 
 
-def fetch_json(url: str, headers: dict[str, str] | None = None) -> Any:
-    request_headers = {"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}
-    request_headers.update(headers or {})
-    request = urllib.request.Request(url, headers=request_headers)
+def fetch_json(url: str) -> Any:
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=12) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -119,84 +111,46 @@ def is_technical_title(title: str) -> bool:
     return bool(words & TECHNICAL_TITLE_TERMS) or title.lower().startswith("show hn:")
 
 
-def github_items() -> list[Item]:
-    since = WINDOW_START.date().isoformat()
-    token = os.environ.get("GITHUB_TOKEN")
-    headers = {"Authorization": f"Bearer {token}"} if token else {}
+def github_trending_items() -> list[Item]:
+    """Collect the first ten repositories from both current GitHub Daily views."""
     found: dict[str, Item] = {}
-    # GitHub has no historical star-growth endpoint. The active-project query
-    # populates a local baseline; a project is only called "rising" after a
-    # later collection observes a real change in that baseline.
-    queries = (f"created:>={since}", f"pushed:>={since}")
-    for query in queries:
-        url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
-            {"q": query, "sort": "stars", "order": "desc", "per_page": 35}
-        )
+    views = (
+        ("GitHub Trending Daily", "https://github.com/trending?since=daily"),
+        ("GitHub Trending Daily (Chinese)", "https://github.com/trending?since=daily&spoken_language_code=zh"),
+    )
+    for source, url in views:
         try:
-            payload = fetch_json(url, headers)
+            document = fetch_text(url)
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
             print(f"GitHub skipped: {exc}", file=sys.stderr)
             continue
-        for repo in payload.get("items", []):
-            pushed = parse_date(repo.get("pushed_at")) or NOW
-            created = parse_date(repo.get("created_at", ""))
-            if not is_within_window(pushed) and (not created or not is_within_window(created)):
+        articles = re.findall(r'<article class="Box-row">(.*?)</article>', document, re.DOTALL)
+        for article in articles[:10]:
+            repository = re.search(r'<h2[^>]*>.*?href="/([^"/]+/[^"/]+)"[^>]*>(.*?)</a>', article, re.DOTALL)
+            if not repository:
                 continue
-            name = repo["full_name"]
+            name = clean_text(repository.group(2)).replace(" / ", "/")
+            if not name or name in found:
+                continue
+            description = re.search(r'<p class="col-9[^>]*>(.*?)</p>', article, re.DOTALL)
+            language = re.search(r'itemprop="programmingLanguage">(.*?)</span>', article, re.DOTALL)
+            today = re.search(r'([\d,]+)\s+stars today', article)
+            today_stars = int(today.group(1).replace(",", "")) if today else 0
             found[name] = Item(
-                source="GitHub",
+                source=source,
                 title=name,
-                url=repo["html_url"],
-                published=pushed,
-                summary=repo.get("description") or "No repository description provided.",
-                engagement=float(repo.get("stargazers_count", 0) + repo.get("forks_count", 0) * 2),
-                kind="project",
+                url=f"https://github.com/{repository.group(1)}",
+                published=NOW,
+                summary=clean_text(description.group(1)) if description else "No repository description provided.",
+                engagement=float(today_stars),
+                kind="project_trending",
                 metadata={
-                    "stars": repo.get("stargazers_count", 0),
-                    "forks": repo.get("forks_count", 0),
-                    "language": repo.get("language") or "Unspecified",
-                    "topics": repo.get("topics", []),
-                    "created_at": repo.get("created_at", ""),
+                    "language": clean_text(language.group(1)) if language else "Unspecified",
+                    "stars_today": today_stars,
+                    "trending_view": source,
                 },
             )
-        time.sleep(0.2)
     return list(found.values())
-
-
-def classify_github_trends(items: list[Item], database: Path) -> list[Item]:
-    """Keep only truly new repositories or repositories rising since our last run."""
-    database.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(database) as connection:
-        connection.execute("""CREATE TABLE IF NOT EXISTS github_snapshots (
-            repository TEXT PRIMARY KEY, stars INTEGER NOT NULL, forks INTEGER NOT NULL,
-            observed_at TEXT NOT NULL)""")
-        previous = {
-            row[0]: {"stars": row[1], "forks": row[2]}
-            for row in connection.execute("SELECT repository, stars, forks FROM github_snapshots")
-        }
-        selected: list[Item] = []
-        for item in items:
-            created = parse_date(item.metadata.get("created_at"))
-            old = previous.get(item.title)
-            star_delta = item.metadata["stars"] - old["stars"] if old else None
-            fork_delta = item.metadata["forks"] - old["forks"] if old else None
-            item.metadata["stars_delta"] = star_delta
-            item.metadata["forks_delta"] = fork_delta
-            if created and is_within_window(created):
-                item.kind = "project_new"
-                item.reasons.append("repository created within the last 24 hours")
-                selected.append(item)
-            elif old and (star_delta >= 3 or fork_delta >= 1):
-                item.kind = "project_rising"
-                item.engagement = max(0, star_delta) + max(0, fork_delta) * 2
-                item.reasons.append(f"observed growth since last snapshot: +{star_delta} stars, +{fork_delta} forks")
-                selected.append(item)
-            connection.execute("""INSERT INTO github_snapshots(repository, stars, forks, observed_at)
-                VALUES (?, ?, ?, ?)
-                ON CONFLICT(repository) DO UPDATE SET stars=excluded.stars, forks=excluded.forks, observed_at=excluded.observed_at""",
-                (item.title, item.metadata["stars"], item.metadata["forks"], NOW.isoformat()))
-        connection.commit()
-    return selected
 
 
 def hacker_news_items() -> list[Item]:
@@ -291,8 +245,8 @@ def score_and_cluster(items: list[Item]) -> list[Item]:
             item.reasons.append("cross-source signal: " + ", ".join(sorted(independent_sources)))
         if official:
             item.reasons.append("official engineering release or announcement")
-        if item.kind in {"project_new", "project_rising"}:
-            item.reasons.append(f"{item.metadata['stars']} stars, {item.metadata['forks']} forks; {item.metadata['language']}")
+        if item.kind == "project_trending":
+            item.reasons.append(f"GitHub Trending Daily: {item.metadata['stars_today']} stars today; {item.metadata['language']}")
     return sorted(items, key=lambda item: (item.score, item.published), reverse=True)
 
 
@@ -303,7 +257,7 @@ def short(value: str, limit: int = 300) -> str:
 
 def render(items: list[Item], output: Path, failures: list[str]) -> None:
     grouped: dict[str, list[Item]] = collections.OrderedDict()
-    names = {"project_new": "New open source projects", "project_rising": "Open source projects with observed growth",
+    names = {"project_trending": "GitHub Trending Daily projects",
              "discussion": "Engineering discussions",
              "research": "Research and methods", "official": "Official releases and infrastructure"}
     for item in items:
@@ -313,11 +267,9 @@ def render(items: list[Item], output: Path, failures: list[str]) -> None:
         cards = []
         for item in group_items[:12]:
             metadata = ""
-            if item.kind in {"project_new", "project_rising"}:
-                growth = ""
-                if item.kind == "project_rising":
-                    growth = f"<span>+{item.metadata['stars_delta']} stars since last snapshot</span>"
-                metadata = f"<span>{html.escape(item.metadata['language'])}</span><span>{item.metadata['stars']} stars</span><span>{item.metadata['forks']} forks</span>{growth}"
+            if item.kind == "project_trending":
+                metadata = (f"<span>{html.escape(item.metadata['language'])}</span>"
+                            f"<span>{item.metadata['stars_today']} stars today</span>")
             elif item.kind == "research":
                 metadata = "".join(f"<span>{html.escape(cat)}</span>" for cat in item.metadata.get("categories", [])[:4])
             evidence = "<br>".join(html.escape(reason) for reason in item.reasons) or "Recent publication within the report window."
@@ -358,10 +310,10 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--candidates-output", type=Path, default=DEFAULT_CANDIDATES,
                         help="Structured source data for the Codex Chinese curation pass.")
-    parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY,
-                        help="SQLite location for GitHub growth snapshots.")
     parser.add_argument("--window-end", type=str,
                         help="ISO 8601 timestamp for the exclusive end of the 24-hour collection window.")
+    parser.add_argument("--include-github-trending", action="store_true",
+                        help="Include the current GitHub Trending Daily and Chinese views.")
     args = parser.parse_args()
     if args.window_end:
         window_end = parse_date(args.window_end)
@@ -370,7 +322,9 @@ def main() -> int:
         global NOW, WINDOW_START
         NOW = window_end
         WINDOW_START = NOW - dt.timedelta(hours=24)
-    collectors = [("GitHub", github_items), ("Hacker News", hacker_news_items), ("RSS feeds", rss_items)]
+    collectors = [("Hacker News", hacker_news_items), ("RSS feeds", rss_items)]
+    if args.include_github_trending:
+        collectors.insert(0, ("GitHub Trending", github_trending_items))
     collected: list[Item] = []
     failures: list[str] = []
     for name, collector in collectors:
@@ -382,8 +336,7 @@ def main() -> int:
         except Exception as exc:  # Report generation should survive a source outage.
             print(f"{name} failed: {exc}", file=sys.stderr)
             failures.append(name)
-    github, other = [item for item in collected if item.source == "GitHub"], [item for item in collected if item.source != "GitHub"]
-    candidates = score_and_cluster(classify_github_trends(github, args.history.resolve()) + other)
+    candidates = score_and_cluster(collected)
     write_candidates(candidates, args.candidates_output.resolve(), failures)
     render(candidates, args.output.resolve(), failures)
     print(f"Wrote collector preview {args.output.resolve()} and {args.candidates_output.resolve()} with {len(candidates)} candidates.")

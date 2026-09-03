@@ -42,8 +42,14 @@ jobs:
         run: |
           report_date="${REQUESTED_REPORT_DATE:-$(TZ=Asia/Shanghai date +%F)}"
           test "$(date --date="$report_date" +%F)" = "$report_date"
+          today="$(TZ=Asia/Shanghai date +%F)"
           echo "REPORT_DATE=$report_date" >> "$GITHUB_ENV"
           echo "REPORT_WINDOW_END=${report_date}T07:00:00+08:00" >> "$GITHUB_ENV"
+          if [ "$report_date" = "$today" ]; then
+            echo "GITHUB_TRENDING_ARG=--include-github-trending" >> "$GITHUB_ENV"
+          else
+            echo "GITHUB_TRENDING_ARG=" >> "$GITHUB_ENV"
+          fi
 
       - name: Generate and publish the report with Codex
         uses: openai/codex-action@v1
