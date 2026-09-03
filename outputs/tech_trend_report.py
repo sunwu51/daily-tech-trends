@@ -41,7 +41,20 @@ RSS_FEEDS = {
     "AWS News": "https://aws.amazon.com/about-aws/whats-new/recent/feed/",
     "Kubernetes Blog": "https://kubernetes.io/feed.xml",
     "Rust Blog": "https://blog.rust-lang.org/feed.xml",
+    "GitHub Blog": "https://github.blog/feed/",
+    "Google Security Blog": "https://security.googleblog.com/feeds/posts/default",
+    "Microsoft Engineering": "https://devblogs.microsoft.com/engineering-at-microsoft/feed/",
+    "Netflix TechBlog": "https://netflixtechblog.com/feed",
+    "Meta Engineering": "https://engineering.fb.com/feed/",
+    "Mozilla Hacks": "https://hacks.mozilla.org/feed/",
+    "Python Insider": "https://blog.python.org/feeds/posts/default",
+    "Go Blog": "https://go.dev/blog/feed.atom",
+    "LLVM Releases": "https://github.com/llvm/llvm-project/releases.atom",
+    "Docker Blog": "https://www.docker.com/blog/feed/",
+    "Grafana Labs": "https://grafana.com/blog/index.xml",
+    "OpenAI News": "https://openai.com/news/rss.xml",
 }
+RSS_CANDIDATE_LIMIT = 5
 
 STOP_WORDS = frozenset(
     "the a an and or for with from into your our how why what new introducing "
@@ -190,6 +203,7 @@ def hacker_news_items() -> list[Item]:
 def rss_items() -> list[Item]:
     items: list[Item] = []
     for source, feed_url in RSS_FEEDS.items():
+        source_items: list[Item] = []
         try:
             root = ET.fromstring(fetch_text(feed_url))
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ET.ParseError) as exc:
@@ -199,7 +213,7 @@ def rss_items() -> list[Item]:
             published = parse_date(node.findtext("pubDate"))
             if not published:
                 continue
-            items.append(Item(source, clean_text(node.findtext("title") or "Untitled"),
+            source_items.append(Item(source, clean_text(node.findtext("title") or "Untitled"),
                 node.findtext("link") or feed_url, published,
                 clean_text(node.findtext("description") or ""), kind="official"))
         ns = "{http://www.w3.org/2005/Atom}"
@@ -209,8 +223,10 @@ def rss_items() -> list[Item]:
                 continue
             link = next((x.attrib.get("href") for x in node.findall(f"{ns}link") if x.attrib.get("href")), feed_url)
             summary = node.findtext(f"{ns}summary") or node.findtext(f"{ns}content") or ""
-            items.append(Item(source, clean_text(node.findtext(f"{ns}title") or "Untitled"), link,
+            source_items.append(Item(source, clean_text(node.findtext(f"{ns}title") or "Untitled"), link,
                 published, clean_text(summary), kind="official"))
+        source_items.sort(key=lambda item: item.published, reverse=True)
+        items.extend(source_items[:RSS_CANDIDATE_LIMIT])
     return items
 
 
@@ -288,6 +304,14 @@ def render(items: list[Item], output: Path, failures: list[str]) -> None:
 
 def write_candidates(items: list[Item], output: Path, failures: list[str]) -> None:
     """Write bounded, source-attributed input for the Codex curation pass."""
+    source_counts: collections.Counter[str] = collections.Counter()
+    selected: list[Item] = []
+    for item in items:
+        limit = 10 if item.source.startswith("GitHub Trending") else RSS_CANDIDATE_LIMIT
+        if source_counts[item.source] >= limit:
+            continue
+        source_counts[item.source] += 1
+        selected.append(item)
     data = {
         "generated_at": NOW.isoformat(),
         "window_start": WINDOW_START.isoformat(),
@@ -297,7 +321,7 @@ def write_candidates(items: list[Item], output: Path, failures: list[str]) -> No
             "source": item.source, "type": item.kind, "title": item.title, "url": item.url,
             "published_at": item.published.isoformat(), "raw_summary": short(item.summary, 700),
             "score": item.score, "reasons": item.reasons, "metadata": item.metadata,
-        } for item in items[:45]],
+        } for item in selected],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

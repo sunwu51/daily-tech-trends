@@ -21,6 +21,8 @@ python .\outputs\tech_trend_report.py --output .\outputs\tech-trends-raw.html --
 
 脚本只负责收集与评分。最终中文报告必须由 Codex 阅读入选条目的原始来源后编写，不能直接发布原始预览。
 
+官方来源包括 Cloudflare、Google Developers、AWS、Kubernetes、Rust、GitHub Blog、Google Security、Microsoft Engineering、Netflix TechBlog、Meta Engineering、Mozilla Hacks、Python Insider、Go Blog、LLVM Releases、Docker、Grafana Labs 和 OpenAI News。每个来源最多进入 5 条候选，最终报告中同一机构最多 2 条。Anthropic 当前没有提供带可靠发布日期的官方 RSS，因此未使用第三方 Feed 或 sitemap 猜测发布时间。
+
 ## 每日 GitHub Action
 
 `.github/workflows/daily-tech-trends.yml` 会在每天 **07:00 Asia/Shanghai** 自动运行（GitHub Actions 使用 UTC，因此 cron 为前一天 `23:00 UTC`），也可从 Actions 页面手动触发。手动运行时可填写 `report_date`（`YYYY-MM-DD`）；例如 `2026-09-03` 会以中国时间 `2026-09-02 07:00` 至 `2026-09-03 07:00` 为主要观察窗口，但允许当前 GitHub Trending、Hacker News 和近期高价值公告作为补充信号。它使用官方 `openai/codex-action` 运行 `.github/prompts/daily-tech-trends.md`，由 Codex 采集、阅读来源、编写报告并提交到 `main`；随后的 Pages 工作流会发布页面。
