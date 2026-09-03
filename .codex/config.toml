@@ -1,0 +1,5 @@
+# Read public source pages through the remote fetch MCP instead of ad-hoc curl.
+[mcp_servers.orz_fetch]
+url = "https://orz-mcp.netlify.app/mcp"
+startup_timeout_sec = 15
+tool_timeout_sec = 30

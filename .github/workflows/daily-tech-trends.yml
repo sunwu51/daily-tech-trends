@@ -61,6 +61,7 @@ jobs:
           openai-api-key: ${{ secrets.CODEX_API_KEY }}
           # Select the model from repository configuration, without editing this workflow.
           model: ${{ vars.CODEX_MODEL }}
+          codex-home: .codex
           prompt-file: .github/prompts/daily-tech-trends.md
           # Codex must be able to read the primary public sources it curates.
           # The prompt and checkout are trusted because this runs only from main.

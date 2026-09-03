@@ -27,6 +27,8 @@ python .\outputs\tech_trend_report.py --output .\outputs\tech-trends-raw.html --
 
 `.github/workflows/daily-tech-trends.yml` 会在每天 **07:00 Asia/Shanghai** 自动运行（GitHub Actions 使用 UTC，因此 cron 为前一天 `23:00 UTC`），也可从 Actions 页面手动触发。手动运行时可填写 `report_date`（`YYYY-MM-DD`）；例如 `2026-09-03` 会以中国时间 `2026-09-02 07:00` 至 `2026-09-03 07:00` 为主要观察窗口，但允许当前 GitHub Trending、Hacker News 和近期高价值公告作为补充信号。它使用官方 `openai/codex-action` 运行 `.github/prompts/daily-tech-trends.md`，由 Codex 采集、阅读来源、编写报告并提交到 `main`；随后的 Pages 工作流会发布页面。
 
+Codex 还通过 `.codex/config.toml` 加载 `https://orz-mcp.netlify.app/mcp` 这个远程 MCP，优先用于抓取公开网页、仓库 README 和文档，减少 Runner 上直接执行 `curl` 的网络/DNS问题。
+
 在仓库 **Settings -> Secrets and variables -> Actions** 中配置：
 
 | 类型 | 名称 | 值 |
