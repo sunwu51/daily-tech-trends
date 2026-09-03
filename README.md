@@ -21,7 +21,7 @@ python .\outputs\tech_trend_report.py --output .\outputs\tech-trends-raw.html --
 
 脚本只负责收集与评分。最终中文报告必须由 Codex 阅读入选条目的原始来源后编写，不能直接发布原始预览。
 
-官方来源包括 Cloudflare、Google Developers、AWS、Kubernetes、Rust、GitHub Blog、Google Security、Microsoft Engineering、Netflix TechBlog、Meta Engineering、Mozilla Hacks、Python Insider、Go Blog、LLVM Releases、Docker、Grafana Labs 和 OpenAI News。每个来源最多进入 5 条候选，最终报告中同一机构最多 2 条。Anthropic 当前没有提供带可靠发布日期的官方 RSS，因此未使用第三方 Feed 或 sitemap 猜测发布时间。
+官方来源包括 Cloudflare、Google Developers、AWS、Kubernetes、Rust、GitHub Blog、Google Security、Microsoft Engineering、Netflix TechBlog、Meta Engineering、Mozilla Hacks、Python Insider、Go Blog、LLVM Releases、Docker、Grafana Labs 和 OpenAI News。每个 RSS 来源最多进入 3 条候选，RSS 候选总量最多 25 条；最终报告中同一机构最多 2 条。Anthropic 当前没有提供带可靠发布日期的官方 RSS，因此未使用第三方 Feed 或 sitemap 猜测发布时间。
 
 ## 每日 GitHub Action
 

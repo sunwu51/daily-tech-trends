@@ -54,7 +54,8 @@ RSS_FEEDS = {
     "Grafana Labs": "https://grafana.com/blog/index.xml",
     "OpenAI News": "https://openai.com/news/rss.xml",
 }
-RSS_CANDIDATE_LIMIT = 5
+RSS_SOURCE_LIMIT = 3
+RSS_TOTAL_LIMIT = 25
 
 STOP_WORDS = frozenset(
     "the a an and or for with from into your our how why what new introducing "
@@ -226,7 +227,7 @@ def rss_items() -> list[Item]:
             source_items.append(Item(source, clean_text(node.findtext(f"{ns}title") or "Untitled"), link,
                 published, clean_text(summary), kind="official"))
         source_items.sort(key=lambda item: item.published, reverse=True)
-        items.extend(source_items[:RSS_CANDIDATE_LIMIT])
+        items.extend(source_items[:RSS_SOURCE_LIMIT])
     return items
 
 
@@ -306,8 +307,13 @@ def write_candidates(items: list[Item], output: Path, failures: list[str]) -> No
     """Write bounded, source-attributed input for the Codex curation pass."""
     source_counts: collections.Counter[str] = collections.Counter()
     selected: list[Item] = []
+    rss_count = 0
     for item in items:
-        limit = 10 if item.source.startswith("GitHub Trending") else RSS_CANDIDATE_LIMIT
+        if item.kind == "official":
+            if rss_count >= RSS_TOTAL_LIMIT or source_counts[item.source] >= RSS_SOURCE_LIMIT:
+                continue
+            rss_count += 1
+        limit = 10 if item.source.startswith("GitHub Trending") else 5
         if source_counts[item.source] >= limit:
             continue
         source_counts[item.source] += 1
