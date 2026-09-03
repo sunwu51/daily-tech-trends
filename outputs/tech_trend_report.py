@@ -18,6 +18,7 @@ import json
 import math
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -84,15 +85,26 @@ class Item:
 
 
 def fetch_json(url: str) -> Any:
+    return json.loads(fetch_bytes(url).decode("utf-8"))
+
+
+def fetch_bytes(url: str) -> bytes:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=12) as response:
-        return json.loads(response.read().decode("utf-8"))
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=12) as response:
+                return response.read()
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+            last_error = exc
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+    assert last_error is not None
+    raise last_error
 
 
 def fetch_text(url: str) -> str:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=12) as response:
-        return response.read().decode(response.headers.get_content_charset() or "utf-8", "replace")
+    return fetch_bytes(url).decode("utf-8", "replace")
 
 
 def parse_date(value: str | None) -> dt.datetime | None:

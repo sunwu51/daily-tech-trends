@@ -36,6 +36,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Configure source-fetch retries
+        run: echo "$GITHUB_WORKSPACE/.github/bin" >> "$GITHUB_PATH"
+
       - name: Resolve report window
         env:
           REQUESTED_REPORT_DATE: ${{ inputs.report_date }}
@@ -49,6 +52,8 @@ jobs:
       - name: Generate the report with Codex
         uses: openai/codex-action@v1
         timeout-minutes: 20
+        env:
+          RES_OPTIONS: "attempts:3 timeout:2"
         with:
           # Store the full Responses API URL in the CODEX_BASE_URL repository variable.
           responses-api-endpoint: ${{ vars.CODEX_BASE_URL }}
