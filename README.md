@@ -1,6 +1,6 @@
 # Daily Tech Trends
 
-每天采集过去 24 小时的技术动态，再由 Codex 阅读原始来源，生成中文 AI 策展报告。当天报告会将 GitHub Trending Daily 的全语言与中文榜各前 10 项作为候选池；报告按日期归档。
+每天采集过去 24 小时的技术动态，再由 Codex 阅读原始来源，生成中文 AI 策展报告。当天报告会将 GitHub Trending Daily 的全语言与中文榜各前 10 项作为候选池，并在可验证时至少选入 4 个 GitHub Trending 项目；报告按日期归档。
 
 ## 项目结构
 
