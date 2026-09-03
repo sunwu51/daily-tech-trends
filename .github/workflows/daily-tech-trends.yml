@@ -46,8 +46,9 @@ jobs:
           echo "REPORT_WINDOW_END=${report_date}T07:00:00+08:00" >> "$GITHUB_ENV"
           echo "GITHUB_TRENDING_ARG=--include-github-trending" >> "$GITHUB_ENV"
 
-      - name: Generate and publish the report with Codex
+      - name: Generate the report with Codex
         uses: openai/codex-action@v1
+        timeout-minutes: 20
         with:
           # Store the full Responses API URL in the CODEX_BASE_URL repository variable.
           responses-api-endpoint: ${{ vars.CODEX_BASE_URL }}
@@ -60,3 +61,19 @@ jobs:
           # The prompt and checkout are trusted because this runs only from main.
           sandbox: danger-full-access
           allow-bots: "true"
+
+      - name: Commit and push the generated report
+        if: ${{ always() }}
+        env:
+          REPORT_DATE: ${{ env.REPORT_DATE }}
+        run: |
+          report="outputs/tech-trends-${REPORT_DATE}.html"
+          test -s "$report"
+          grep -q '</html>' "$report"
+          git add index.html outputs/tech-trends.html "$report"
+          if git diff --cached --quiet; then
+            echo "No report changes to publish."
+            exit 0
+          fi
+          git commit -m "Publish tech morning brief ${REPORT_DATE}" -m "Agent: codex"
+          git push origin HEAD:main
