@@ -50,7 +50,8 @@ jobs:
           echo "GITHUB_TRENDING_ARG=--include-github-trending" >> "$GITHUB_ENV"
 
       - name: Generate the report with Codex
-        uses: openai/codex-action@v1
+        # v1.12 can hang after printing the final output and can disrupt runner DNS.
+        uses: openai/codex-action@52fe01ec70a42f454c9d2ebd47598f9fd6893d56 # v1.11
         timeout-minutes: 20
         env:
           RES_OPTIONS: "attempts:3 timeout:2"
