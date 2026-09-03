@@ -176,8 +176,6 @@ def hacker_news_items() -> list[Item]:
         if not is_technical_title(story.get("title", "")):
             continue
         published = dt.datetime.fromtimestamp(story.get("time", 0), UTC)
-        if not is_within_window(published):
-            continue
         points, comments = story.get("score", 0), story.get("descendants", 0)
         items.append(Item(
             source="Hacker News", title=story.get("title", "Untitled"),
@@ -199,7 +197,7 @@ def rss_items() -> list[Item]:
             continue
         for node in root.findall(".//item"):
             published = parse_date(node.findtext("pubDate"))
-            if not published or not is_within_window(published):
+            if not published:
                 continue
             items.append(Item(source, clean_text(node.findtext("title") or "Untitled"),
                 node.findtext("link") or feed_url, published,
@@ -207,7 +205,7 @@ def rss_items() -> list[Item]:
         ns = "{http://www.w3.org/2005/Atom}"
         for node in root.findall(f".//{ns}entry"):
             published = parse_date(node.findtext(f"{ns}published") or node.findtext(f"{ns}updated"))
-            if not published or not is_within_window(published):
+            if not published:
                 continue
             link = next((x.attrib.get("href") for x in node.findall(f"{ns}link") if x.attrib.get("href")), feed_url)
             summary = node.findtext(f"{ns}summary") or node.findtext(f"{ns}content") or ""

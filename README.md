@@ -23,7 +23,7 @@ python .\outputs\tech_trend_report.py --output .\outputs\tech-trends-raw.html --
 
 ## 每日 GitHub Action
 
-`.github/workflows/daily-tech-trends.yml` 会在每天 **07:00 Asia/Shanghai** 自动运行（GitHub Actions 使用 UTC，因此 cron 为前一天 `23:00 UTC`），也可从 Actions 页面手动触发。手动运行时可填写 `report_date`（`YYYY-MM-DD`）；例如 `2026-09-03` 会统计中国时间 `2026-09-02 07:00` 至 `2026-09-03 07:00` 的内容。它使用官方 `openai/codex-action` 运行 `.github/prompts/daily-tech-trends.md`，由 Codex 采集、阅读来源、编写报告并提交到 `main`；随后的 Pages 工作流会发布页面。
+`.github/workflows/daily-tech-trends.yml` 会在每天 **07:00 Asia/Shanghai** 自动运行（GitHub Actions 使用 UTC，因此 cron 为前一天 `23:00 UTC`），也可从 Actions 页面手动触发。手动运行时可填写 `report_date`（`YYYY-MM-DD`）；例如 `2026-09-03` 会以中国时间 `2026-09-02 07:00` 至 `2026-09-03 07:00` 为主要观察窗口，但允许当前 GitHub Trending、Hacker News 和近期高价值公告作为补充信号。它使用官方 `openai/codex-action` 运行 `.github/prompts/daily-tech-trends.md`，由 Codex 采集、阅读来源、编写报告并提交到 `main`；随后的 Pages 工作流会发布页面。
 
 在仓库 **Settings -> Secrets and variables -> Actions** 中配置：
 
@@ -55,4 +55,4 @@ GitHub 未认证搜索存在较低的速率限制。需要提高采集覆盖率�
 
 ## 评分边界
 
-候选分数由来源内归一化热度、时效性、跨来源信号和官方/研究来源权重组成，只用于排序。GitHub Trending Daily 的 “stars today” 是当前榜单的热度信号，不代表技术正确性、生产成熟度或独立背书。GitHub 没有可按历史日期查询的 Trending 档案，因此补跑过去日期时不会混入当前 Trending 结果。
+候选分数由来源内归一化热度、时效性、跨来源信号和官方/研究来源权重组成，只用于排序。GitHub Trending Daily 的 “stars today” 是采集当时榜单的热度信号，不代表技术正确性、生产成熟度或独立背书。GitHub 和 Hacker News 的当前列表可作为补充信号，但补跑过去日期时不会将它们描述为历史榜单快照。
