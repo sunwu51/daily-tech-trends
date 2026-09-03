@@ -105,6 +105,10 @@ def parse_date(value: str | None) -> dt.datetime | None:
         return None
 
 
+def is_within_window(value: dt.datetime) -> bool:
+    return WINDOW_START <= value < NOW
+
+
 def clean_text(value: str) -> str:
     value = re.sub(r"<[^>]+>", " ", value or "")
     return re.sub(r"\s+", " ", html.unescape(value)).strip()
@@ -136,7 +140,7 @@ def github_items() -> list[Item]:
         for repo in payload.get("items", []):
             pushed = parse_date(repo.get("pushed_at")) or NOW
             created = parse_date(repo.get("created_at", ""))
-            if pushed < WINDOW_START and (not created or created < WINDOW_START):
+            if not is_within_window(pushed) and (not created or not is_within_window(created)):
                 continue
             name = repo["full_name"]
             found[name] = Item(
@@ -178,7 +182,7 @@ def classify_github_trends(items: list[Item], database: Path) -> list[Item]:
             fork_delta = item.metadata["forks"] - old["forks"] if old else None
             item.metadata["stars_delta"] = star_delta
             item.metadata["forks_delta"] = fork_delta
-            if created and created >= WINDOW_START:
+            if created and is_within_window(created):
                 item.kind = "project_new"
                 item.reasons.append("repository created within the last 24 hours")
                 selected.append(item)
@@ -218,7 +222,7 @@ def hacker_news_items() -> list[Item]:
         if not is_technical_title(story.get("title", "")):
             continue
         published = dt.datetime.fromtimestamp(story.get("time", 0), UTC)
-        if published < WINDOW_START:
+        if not is_within_window(published):
             continue
         points, comments = story.get("score", 0), story.get("descendants", 0)
         items.append(Item(
@@ -241,7 +245,7 @@ def rss_items() -> list[Item]:
             continue
         for node in root.findall(".//item"):
             published = parse_date(node.findtext("pubDate"))
-            if not published or published < WINDOW_START:
+            if not published or not is_within_window(published):
                 continue
             items.append(Item(source, clean_text(node.findtext("title") or "Untitled"),
                 node.findtext("link") or feed_url, published,
@@ -249,7 +253,7 @@ def rss_items() -> list[Item]:
         ns = "{http://www.w3.org/2005/Atom}"
         for node in root.findall(f".//{ns}entry"):
             published = parse_date(node.findtext(f"{ns}published") or node.findtext(f"{ns}updated"))
-            if not published or published < WINDOW_START:
+            if not published or not is_within_window(published):
                 continue
             link = next((x.attrib.get("href") for x in node.findall(f"{ns}link") if x.attrib.get("href")), feed_url)
             summary = node.findtext(f"{ns}summary") or node.findtext(f"{ns}content") or ""
@@ -356,7 +360,16 @@ def main() -> int:
                         help="Structured source data for the Codex Chinese curation pass.")
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY,
                         help="SQLite location for GitHub growth snapshots.")
+    parser.add_argument("--window-end", type=str,
+                        help="ISO 8601 timestamp for the exclusive end of the 24-hour collection window.")
     args = parser.parse_args()
+    if args.window_end:
+        window_end = parse_date(args.window_end)
+        if not window_end:
+            parser.error("--window-end must be an ISO 8601 timestamp with a timezone, such as 2026-09-03T07:00:00+08:00")
+        global NOW, WINDOW_START
+        NOW = window_end
+        WINDOW_START = NOW - dt.timedelta(hours=24)
     collectors = [("GitHub", github_items), ("Hacker News", hacker_news_items), ("RSS feeds", rss_items)]
     collected: list[Item] = []
     failures: list[str] = []

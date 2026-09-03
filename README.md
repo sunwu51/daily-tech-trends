@@ -22,28 +22,23 @@ python .\outputs\tech_trend_report.py --output .\outputs\tech-trends-raw.html --
 
 脚本只负责收集与评分。最终中文报告必须由 Codex 阅读入选条目的原始来源后编写，不能直接发布原始预览。
 
-## 在 Codex 中创建每日任务
+## 每日 GitHub Action
 
-1. 在 Codex Desktop 中将 `C:\Users\sunwu\Desktop\code\daily-tech-trends` 打开为本地项目。
-2. 在这个新项目中创建定时任务，运行时间设为每天 08:00，时区使用 Asia/Shanghai。
-3. 使用下面的完整提示词。
-4. 本地任务运行时，电脑需要保持开机，Codex Desktop 需要保持运行。
+`.github/workflows/daily-tech-trends.yml` 会在每天 **07:00 Asia/Shanghai** 自动运行（GitHub Actions 使用 UTC，因此 cron 为前一天 `23:00 UTC`），也可从 Actions 页面手动触发。手动运行时可填写 `report_date`（`YYYY-MM-DD`）；例如 `2026-09-03` 会统计中国时间 `2026-09-02 07:00` 至 `2026-09-03 07:00` 的内容。它使用官方 `openai/codex-action` 运行 `.github/prompts/daily-tech-trends.md`，由 Codex 采集、阅读来源、编写报告并提交到 `main`；随后的 Pages 工作流会发布页面。
 
-### 定时任务提示词
+在仓库 **Settings -> Secrets and variables -> Actions** 中配置：
 
-```text
-Every day, create a Chinese AI-curated technology trend report for the previous 24 hours in the current local project.
+| 类型 | 名称 | 值 |
+| --- | --- | --- |
+| Secret | `CODEX_API_KEY` | 自定义 Codex/Responses 服务的 token |
+| Variable | `CODEX_BASE_URL` | 完整的 Responses API 地址，例如 `https://api.example.com/v1/responses` |
+| Variable | `CODEX_MODEL` | 要使用的模型名，例如服务商提供的 `gpt-5-codex` |
 
-1. Confirm that the current project directory is `C:\Users\sunwu\Desktop\code\daily-tech-trends`. Determine the report date in China Standard Time as YYYY-MM-DD. Run `outputs/tech_trend_report.py --output outputs/tech-trends-raw.html --candidates-output outputs/tech-trend-candidates.json` to collect sources and update the GitHub history baseline. The raw preview must never be the final report.
-2. Read `outputs/tech-trend-candidates.json`. It is evidence only, not a final report. Do not promote existing GitHub repositories unless their type is `project_rising`, and clearly distinguish `project_new` from observed growth.
-3. Select exactly 10 substantive items whenever the candidate set contains 10 readable, technically meaningful sources. Treat 10 items as the daily target, not merely a maximum: after deduplication, expand across different technical areas and continue down the ranked candidates to fill every open slot with a verifiable secondary signal or early-stage item. Prioritize technical substance, independently corroborated discussion, actual measured GitHub growth, official releases, and engineering impact. Do not include a topic merely because it has a high score.
-4. Before finalizing the selection, read every dated report from the previous 7 report dates that exists under `outputs/tech-trends-YYYY-MM-DD.html`. Do not repeat an item if its normalized primary URL, GitHub `owner/repository`, or underlying topic already appeared in those reports. Ignore URL fragments, tracking query parameters, and trailing slashes when comparing URLs. Routine additional Stars, Forks, commits, pushes, or continued discussion are not sufficient reasons to repeat an item. Repeat a previously covered item only when there is a substantive new event such as a new release, security incident, material technical change, or official announcement; in that case, state what changed since the earlier report and link to the new primary evidence.
-5. For each selected item, open its primary URL and read the source material before writing. Do not infer claims from its title or raw summary. If the primary source cannot be read, omit it rather than guessing.
-6. Write the polished Chinese report to `outputs/tech-trends-YYYY-MM-DD.html`, replacing YYYY-MM-DD with the report date. Include a Chinese title, a concise editorial overview, and for every selected item: what happened, the core technical point, why it matters, evidence/source links, and a clear maturity or risk note. Keep raw metrics as supporting evidence, not the headline. Include a brief "值得继续观察" section for weaker early signals when needed to reach the 10-item target. The combined number of main and early-signal items should be exactly 10 whenever 10 readable candidates remain after the 7-day deduplication; only publish fewer than 10 when fewer than 10 candidates can be verified, and state that shortfall explicitly in the report.
-7. Update `outputs/tech-trends.html` into a lightweight HTML redirect/link to that exact dated report so it remains the latest-report entry point. Do not overwrite reports from earlier dates. Then run `python outputs/build_index.py` to refresh the root `index.html` archive page.
-8. Publish the new report to GitHub Pages: stage only `index.html`, `outputs/tech-trends.html`, and the new dated report; commit them with a concise date-specific message that follows the repository's commit-message instructions; then push `main`. Do not commit the raw preview, candidate JSON, or SQLite history baseline. If there is nothing new to commit, do not create an empty commit.
-9. State source outages, execution failures, or publication failures in the final task response, along with the generated dated report link. Do not use an external OpenAI API key; use the Codex task's own reasoning and browser/document-reading tools.
-```
+`CODEX_BASE_URL` 必须是服务实际接收 `POST /responses` 的完整地址，不能只填写域名或 `/v1`。token 仅通过 Secret 传给 Action，不会写入提交、报告或日志。
+
+日报由 Actions 的 `GITHUB_TOKEN` 推送，提交作者为 `github-actions[bot]`。这是自动化任务的独立身份，并不需要或使用个人 GitHub Token。
+
+工作流已申请 `contents: write`，因此可直接推送到 `main`。若仓库为受保护分支，请在分支保护规则中允许 GitHub Actions 写入，或不要要求该分支只能经由 Pull Request 合并。Pages 工作流也会在日报工作流成功结束后运行；这是必要的，因为 `GITHUB_TOKEN` 创建的 push 不会触发其他 `push` 工作流。
 
 ## GitHub Pages
 

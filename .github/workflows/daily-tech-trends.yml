@@ -1,0 +1,61 @@
+name: Generate Daily Tech Trends
+
+on:
+  schedule:
+    # GitHub Actions cron is UTC: 07:00 Asia/Shanghai is 23:00 UTC the day before.
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: "Report date in Asia/Shanghai (YYYY-MM-DD); blank means today"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-tech-trends
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve report window
+        env:
+          REQUESTED_REPORT_DATE: ${{ inputs.report_date }}
+        run: |
+          report_date="${REQUESTED_REPORT_DATE:-$(TZ=Asia/Shanghai date +%F)}"
+          test "$(date --date="$report_date" +%F)" = "$report_date"
+          echo "REPORT_DATE=$report_date" >> "$GITHUB_ENV"
+          echo "REPORT_WINDOW_END=${report_date}T07:00:00+08:00" >> "$GITHUB_ENV"
+
+      - name: Generate and publish the report with Codex
+        uses: openai/codex-action@v1
+        with:
+          # Store the full Responses API URL in the CODEX_BASE_URL repository variable.
+          responses-api-endpoint: ${{ vars.CODEX_BASE_URL }}
+          # Store the provider token as the CODEX_API_KEY Actions secret.
+          openai-api-key: ${{ secrets.CODEX_API_KEY }}
+          # Select the model from repository configuration, without editing this workflow.
+          model: ${{ vars.CODEX_MODEL }}
+          prompt-file: .github/prompts/daily-tech-trends.md
+          # Codex must be able to read the primary public sources it curates.
+          # The prompt and checkout are trusted because this runs only from main.
+          sandbox: danger-full-access
+          allow-bots: "true"
