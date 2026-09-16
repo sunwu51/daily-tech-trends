@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tech Morning Brief</title>
+  <style>
+    :root{color-scheme:light dark;--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#dbe3ef;--accent:#2563eb;--soft:#eef4ff}
+    @media(prefers-color-scheme:dark){:root{--bg:#0b1020;--card:#121a2c;--text:#e8edf7;--muted:#9aa8bd;--line:#26334b;--accent:#82aaff;--soft:#17233d}}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:980px;margin:auto;padding:40px 20px 72px}header{padding:34px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--card),var(--soft))}h1{margin:0;font-size:2.15rem}h2{margin:42px 0 18px;font-size:1.55rem}h3{margin:0 0 12px;font-size:1.24rem}p{margin:.55rem 0}.meta,.source-state,.label{color:var(--muted)}.overview{margin-top:20px}.item{margin:16px 0;padding:25px 28px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.label{font-size:.86rem}.field b{color:var(--accent)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}footer{margin-top:34px;color:var(--muted);font-size:.92rem}.count{padding:14px 18px;border-left:4px solid var(--accent);background:var(--soft);border-radius:8px}
+  </style>
+</head>
+<body><main>
+<header>
+  <h1>科技晨报</h1>
+  <p class="meta">2026-09-16 · 主要观察窗：2026-09-15 07:00 至 2026-09-16 07:00（中国标准时间）</p>
+  <p class="overview"><b>中文编辑概览：</b>今天的共同线索是“把选择与权限显式化”：SageMaker 让训练任务声明可接受的算力组合，Kubernetes 让 Pod 级资源进入 NUMA 放置，Cloudflare 把 Worker 权限收窄到单个应用；新上榜工具则在研究实验、编码 Agent 历史和桌面包管理中保留可审阅的过程。GitHub Trending 是报告生成时的当前榜单补充信号，不代表这些项目在观察窗结束时的历史排名。</p>
+  <p class="source-state"><b>来源状态：</b>已读取 2026-09-09 至 2026-09-15 七份报告，并按主 URL、仓库与底层主题去重。10 个入选来源均已读取，其中 6 个为当前 GitHub Trending 仓库；原始预览与候选 JSON 仅作证据。Cloudflare 一篇候选正文不可读取，已跳过。</p>
+</header>
+
+<h2>今日重点</h2>
+
+<article class="item">
+  <div class="label">当前 Trending · 开源业务管理</div>
+  <h3>Ever Gauzy：把人事、项目、工时与财务放进同一套自托管平台</h3>
+  <p class="field"><b>简介：</b>Ever Gauzy 是面向机构、代理公司与自由职业团队的开放业务管理平台，覆盖 ERP、CRM、HRM、招聘、项目任务、工时与生产力跟踪。它既提供浏览器界面和无头 API，也有 Windows、macOS、Linux 桌面端；小型团队可运行带 SQLite 的一体化桌面版或服务器版。</p>
+  <p class="field"><b>技术特点：</b>项目用 NestJS/Angular 组成 Nx 单仓，业务数据经 TypeORM、MikroORM 或 Knex 接入数据库。生产 Compose 不只启动 API、前端与 PostgreSQL，还编排 OpenSearch、MinIO、Redis、Cube 和 Zipkin；桌面计时器则把截图和活动记录送回 Gauzy Server，因此工时、任务、开票与报表可引用同一组织模型。</p>
+  <p class="field"><b>适用场景与价值：</b>例如外包工作室可让成员在计时器记录项目工时，管理者再从相同项目生成成本与发票，省去在计时、任务和财务系统间手工对账。这是依据其共用数据与模块设计作出的编辑判断，是否替代现有 ERP 仍取决于流程匹配。</p>
+  <p class="field"><b>限制与来源：</b>SaaS 明确仍为 Alpha；完整本地构建耗时，生产配置要求自行设置 JWT、刷新令牌、验证令牌和会话密钥，README 推荐 Kubernetes 而非最小 Compose。功能与部署说法来自作者，未见独立规模基准。来源：<a href="https://github.com/ever-co/ever-gauzy#-what-is-it">README：定位、组件与 Quick Start</a></p>
+</article>
+
+<article class="item">
+  <div class="label">当前 Trending · 自托管 AI 工作台</div>
+  <h3>LibreChat：多模型聊天界面开始承载受控代码工作区</h3>
+  <p class="field"><b>简介：</b>LibreChat 是可自托管的多用户 AI 对话平台，把 OpenAI、Anthropic、Google、Bedrock、本地模型及 OpenAI 兼容端点放进同一界面，并提供 Agent、MCP 工具、文件检索、代码解释器和权限管理。当前 README 标注的 v0.8.8-rc3 还加入测试中的 Agent 管理 API 与附加代码工作区。</p>
+  <p class="field"><b>技术特点：</b>部署管理员可经 OIDC 身份调用 API 管理 Agent、文件和 Skills；附加工作区让代码 worker 查看目录、检索和改写文件、执行带超时的 Bash。写文件和命令执行可分别设为 Ask、Allow 或 Deny，角色授权也约束文件搜索与代码运行；日志可通过 OpenTelemetry 关联导出。</p>
+  <p class="field"><b>适用场景与价值：</b>内部支持团队可在同一自托管入口配置模型与知识 Agent，再给某个代码 Agent 只读或需批准的仓库操作，而不必把所有人导向不同厂商控制台。权限选择使“谁能让 Agent 执行什么”成为部署配置，但并不自动证明工作区隔离足以处理不可信代码。</p>
+  <p class="field"><b>限制与来源：</b>附加工作区被作者明确标为 highly experimental，v0.8.8-rc3 也是候选版本；Full access 只适合可信环境，横向扩展的可恢复流还依赖 Redis。能力与安全改进均为项目方说明。来源：<a href="https://github.com/danny-avila/LibreChat#-whats-new-in-v088-rc3">README：v0.8.8-rc3 与 Features</a></p>
+</article>
+
+<article class="item">
+  <div class="label">当前 Trending · 逆向工程</div>
+  <h3>Ghidra：可交互也可自动化的多平台二进制分析框架</h3>
+  <p class="field"><b>简介：</b>Ghidra 是美国国家安全局研究部门维护的软件逆向工程框架，供恶意代码分析、漏洞研究和旧二进制理解使用。它在 Windows、macOS 与 Linux 上提供反汇编、汇编、反编译、控制流图和脚本能力，支持多种处理器指令集与可执行格式，也能无人值守运行。</p>
+  <p class="field"><b>技术特点：</b>分析员可在 CodeBrowser 交互检查函数，也可用 Java 或 Python 编写脚本与扩展，把批量导入、符号恢复和自定义分析步骤接到框架中；PyGhidra 提供 Python 启动路径。源码开发采用 Gradle 构建，并通过 GhidraDev Eclipse 插件或已构建安装中的 VS Code 项目开发扩展。</p>
+  <p class="field"><b>适用场景与价值：</b>安全团队收到一批不同架构固件时，可先用自动模式跑统一分析和脚本，再让分析员在图形界面追踪高风险函数；同一扩展机制减少为每种样本另造解析工具的工作，但分析结论仍需要人工验证。</p>
+  <p class="field"><b>限制与来源：</b>预编译版要求 64 位 JDK 25，源码构建还需 Gradle 9.1+、Python 和平台编译工具；官方明确提醒部分版本存在已知漏洞，使用前须查安全公告且不要覆盖旧安装。当前上榜只是关注信号，不是新发布。来源：<a href="https://github.com/NationalSecurityAgency/ghidra#ghidra-software-reverse-engineering-framework">README：能力、安全警告与安装</a></p>
+</article>
+
+<article class="item">
+  <div class="label">当前 Trending · macOS 包管理</div>
+  <h3>BrewUI：用原生界面操作 Homebrew，同时公开底层命令</h3>
+  <p class="field"><b>简介：</b>BrewUI 是 Homebrew 官方 macOS 图形界面，服务不习惯终端、但仍想发现、安装、升级和管理 Homebrew 软件包的用户。它以 Swift 6 和 SwiftUI 构建，数据来自本机 <code>brew</code> CLI 与 Homebrew JSON API，并在界面中展示实际执行过程，而非另造一套包数据库。</p>
+  <p class="field"><b>技术特点：</b>应用固定通过 <code>/bin/zsh</code> 调用 Homebrew，使用 <code>--no-rcs --no-global-rcs</code> 跳过可选启动文件，并把 PATH 收窄为检测到的 brew 目录及 <code>/usr/bin:/bin</code>。配置改从 Homebrew 自身读取的三层 <code>brew.env</code> 文件进入，避免登录 shell 的别名、命令替换或自定义 PATH 悄悄改变图形界面行为。</p>
+  <p class="field"><b>适用场景与价值：</b>IT 支持人员可让 macOS 用户在 GUI 中升级 cask，同时从控制台和 Doctor 报告看到与终端不同的执行环境；干净环境有助于复现故障，代价是用户原先写在 shell 配置里的变量不会生效。</p>
+  <p class="field"><b>限制与来源：</b>仅支持 macOS Tahoe 26 及以上；系统 <code>/etc/zshenv</code> 仍会先执行，应用只能随后清理环境。源码采用 AGPL-3.0，复用时包括网络使用条款。来源：<a href="https://github.com/Homebrew/BrewUI#-motivation">README：Motivation、Tech 与 Homebrew configuration</a></p>
+</article>
+
+<article class="item">
+  <div class="label">窗口内官方更新 · AI 算力调度</div>
+  <h3>SageMaker 训练与处理任务可提交实例偏好列表</h3>
+  <p class="field"><b>事件简介：</b>AWS 于 9 月 15 日宣布，SageMaker AI 的训练与处理任务不再只能指定一种实例：调用方可按优先级提交多组实例类型和数量。适合能在多种 GPU 或规格上得到相近结果、却常因单一高需求实例无容量而等待的训练、微调和数据处理工作。</p>
+  <p class="field"><b>技术机制：</b>列表项同时描述类型和数量，例如优先两台 <code>ml.g6.48xlarge</code>、其次四台 <code>ml.g5.48xlarge</code>；SageMaker 依序检查并在首个有容量的配置上启动。同一次任务还可指定按需容量或预留的 Flexible Training Plans，入口沿用现有训练与处理 API、SDK、CLI 和控制台。</p>
+  <p class="field"><b>实际影响：</b>平台团队可把已经验证过吞吐与显存的等价配置写进一次提交，省掉并发投递多个任务、抢到一个后取消其余任务的重试编排。启动更早只是官方表述的预期；实际时间与成本仍取决于区域容量、排序及不同规格的并行效率。</p>
+  <p class="field"><b>限制与来源：</b>偏好项不是任意硬件自动迁移，用户仍须确认代码、数据并行方式与批量大小能在每组配置正确运行；公告没有公开容量命中率或等待时间基准。功能在 SageMaker 可用区域提供。来源：<a href="https://aws.amazon.com/about-aws/whats-new/2026/09/amazon-sagemaker-training-processing-instance-pref-lists/">AWS 官方公告</a></p>
+</article>
+
+<article class="item">
+  <div class="label">窗口内官方更新 · Kubernetes 节点资源</div>
+  <h3>Kubernetes 1.37：Pod 级资源管理器进入 Beta</h3>
+  <p class="field"><b>事件简介：</b>Kubernetes 1.37 将 Pod-Level Resource Managers 提升到 Beta，让 kubelet 的 Topology Manager、CPU Manager 与 Memory Manager 直接读取 <code>.spec.resources</code> 做硬件放置。目标是让延迟敏感主容器获得独占、NUMA 对齐的 CPU 与内存，同时避免给日志或遥测 sidecar 也浪费整颗物理核心。</p>
+  <p class="field"><b>技术机制：</b>新混合分配模式把主容器放到独占的 NUMA 本地资源，非 Guaranteed 的 sidecar 则进入该 Pod 隔离的共享池，仍得到本地性和免受外部 Pod 干扰的保护。PodResources v1 gRPC 响应新增顶层 <code>cpu_ids</code> 与 <code>memory</code>，监控和设备插件可直接读取 Pod 分配，避免重复计算容器资源。</p>
+  <p class="field"><b>实际影响：</b>运行推理服务加轻量日志 sidecar 的集群，可把宝贵的独占核心留给推理进程，同时维持 NUMA 本地访问；这把以前“所有容器都申请整数资源，否则放弃对齐”的二选一变成可测试的折中。</p>
+  <p class="field"><b>限制与来源：</b><code>PodLevelResourceManagers</code> 特性门默认关闭，需要主动启用；这是 Beta 而非 GA，生产前应验证 kubelet 策略、节点拓扑、监控对新字段的处理及 sidecar 干扰。来源：<a href="https://kubernetes.io/blog/2026/09/15/kubernetes-v1-37-pod-level-resource-managers-beta/">Kubernetes 官方博客</a></p>
+</article>
+
+<article class="item">
+  <div class="label">窗口内官方更新 · Agent 最小权限</div>
+  <h3>Cloudflare Workers 增加单应用范围的四级角色</h3>
+  <p class="field"><b>事件简介：</b>Cloudflare 于 9 月 15 日开放 Worker 资源级授权，团队可让某个成员、CI 或 Agent 只访问一个 Worker，而不是整个账户。四个角色分别是仅看设置和可观测数据、可读代码内容、可修改但不能创建或删除、以及可完整管理，适配排障、审查、部署和管理四类任务。</p>
+  <p class="field"><b>技术机制：</b>角色与范围相乘：同一个 Metadata Read-Only 可作用于全部开发平台、所有 Workers 或单个 Worker。用户登录后只看被授权应用，API token 也可绑定相同范围；Editor 能部署代码和改设置但不能删除。路由与自定义域名另需目标 zone 的 Workers Routes 权限，因为改路由会影响生产流量。</p>
+  <p class="field"><b>实际影响：</b>排障 Agent 可只读某个 Worker 的指标、日志和 trace 而看不到源码；CI 泄露的 Editor token 最多改动该应用，不能删除它或触碰其他 Worker。这个边界减少凭据失陷的爆炸半径，但仍需团队妥善保管 token 并审计实际调用。</p>
+  <p class="field"><b>限制与来源：</b>资源级角色目前针对 Workers；D1、R2、KV 仍是后续计划，不能把文中设计当成已上线能力。修改 route 也不会仅凭 Worker Editor 获权。来源：<a href="https://blog.cloudflare.com/workers-granular-authorization/">Cloudflare 官方博客</a></p>
+</article>
+
+<article class="item">
+  <div class="label">窗口内官方更新 · 云成本治理</div>
+  <h3>AWS Billing Dashboard 加入成本异常部件</h3>
+  <p class="field"><b>事件简介：</b>AWS Billing and Cost Management 新增 Detected Anomalies 仪表板部件，让财务与云管理员把异常成本、月内支出、预算以及 Savings Plans、Reserved Instances 覆盖率放在同一视图。部件展示异常数及相对本月至今支出的总影响，并逐条给出成本影响、根因和持续时间。</p>
+  <p class="field"><b>技术机制：</b>用户可选择回看 30、60 或 90 天，并按严重度、服务、账户与区域过滤；点击项目会进入 Cost Anomaly Detection 控制台继续调查和记录判断。相同部件可随仪表板导出为 CSV/PDF、进入定时邮件，也支持跨账户共享。</p>
+  <p class="field"><b>实际影响：</b>FinOps 团队可把某业务账户的高严重度异常和承诺利用率放进固定周报，先判断异常占月度支出的比例，再进入专门控制台查因，减少在独立报表间复制数字；部件改善的是调查入口，并不代表自动纠正费用。</p>
+  <p class="field"><b>限制与来源：</b>异常与“根因”仍来自 AWS Cost Anomaly Detection，公告没有说明检测算法、延迟或误报率；团队应结合账单标签和业务事件复核。该部件在商业区域免费提供。来源：<a href="https://aws.amazon.com/about-aws/whats-new/2026/09/monitor-detected-anomalies-using-dashboards">AWS 官方公告</a></p>
+</article>
+
+<h2>值得继续观察</h2>
+
+<article class="item">
+  <div class="label">当前 Trending · 早期研究基础设施</div>
+  <h3>OpenResearch：用 Git 工作树保留并行研究实验的谱系</h3>
+  <p class="field"><b>简介：</b>OpenResearch 是本地优先的研究 Agent 工作区，把 Claude Code、Codex、OpenCode 或 Cursor 用于文献检索、提出假设、改代码、运行实验和产出材料。每个研究方向可进入独立 Agent 会话与隔离 Git worktree，项目、对话、日志、代码和产物默认保留在本机 SQLite 与文件系统。</p>
+  <p class="field"><b>技术特点：</b>实验树记录变体，每次运行获得对应已记录提交的不可变归档，把日志、diff、结果和产物绑定到来源代码；同一快照可在本机、SSH、Slurm、Kubernetes、Ray、Hugging Face Jobs 或 Modal 执行。Autoresearch 会循环提出想法、修改、运行、检查证据并决定下一步，而不是只生成一次答案。</p>
+  <p class="field"><b>适用场景与价值：</b>机器学习研究者可让多个 Agent 从同一基线尝试不同损失函数，事后沿实验树找到结果、提交与日志，不必靠聊天记录猜哪个版本产生指标。是否真正提升研究质量仍需独立对照，而 Git 谱系本身只能保证过程可追溯。</p>
+  <p class="field"><b>限制与来源：</b>Windows 仍为 Beta；远端服务只绑定 loopback、没有应用层认证，同一主机的其他用户可能访问。官方构建默认发送可关闭的粗粒度遥测。后续值得看独立团队能否复现实验、并发失败恢复率与远程多用户安全审计。来源：<a href="https://github.com/alphaXiv/OpenResearch#built-for-research-agents">README：实验模型、运行环境与限制</a></p>
+</article>
+
+<article class="item">
+  <div class="label">当前 Trending · 早期 Agent 开发工具</div>
+  <h3>Atlas：把编码 Agent 会话和 Git 提交连成 checkpoint</h3>
+  <p class="field"><b>简介：</b>Atlas 是面向编码 Agent 的本地开发工作区，尝试补上提交记录里缺失的提示、工具调用和失败路径。它可并排运行 Claude Code、Codex、自带 Agent 及 ACP 注册表工具，把项目说明、笔记和跨 Agent 决策组成共享上下文；代码、会话和知识默认留在设备。</p>
+  <p class="field"><b>技术特点：</b>每次会话写入 <code>.atlas/sessions.db</code>，先清除秘密，再把任意工具产生的 commit 与会话关联为 checkpoint；amend/rebase 后用 patch-id 重新对齐，遇到 squash 歧义则标为孤儿而不猜测。语义记忆在本机嵌入并用 HNSW 检索，<code>.atlas/knowledge/</code> 笔记仍是 Markdown，画布与会话另用 JSON/JSONL。</p>
+  <p class="field"><b>适用场景与价值：</b>维护者几个月后看到一段 Agent 生成代码，可从 commit 回到当时提示、工具调用和被放弃的方案；换 Agent 时也能继承决策摘要。其价值取决于记录完整度与秘密清理是否可靠，不能仅凭“本地优先”判断安全。</p>
+  <p class="field"><b>限制与来源：</b>正式支持平台只有 macOS，Linux/Windows 虽可从同一 Tauri 代码构建但未经测试；长尾 ACP Agent 仍在 QA，匿名遥测默认开启，团队同步需登录。后续应关注独立安全审计、rebase/squash 链接准确率和大型仓库的检索延迟。来源：<a href="https://github.com/pacifio/atlas#checkpoints">README：Checkpoints、How it works 与平台限制</a></p>
+</article>
+
+<p class="count">共 8 条“今日重点”与 2 条“值得继续观察”，合计 10 条；其中 6 个是报告生成时的 GitHub Trending 仓库。当前榜单仅作新鲜度补充。</p>
+<footer>本报告依据可读取的一手公开资料进行中文策展。产品能力、成熟度与风险请以链接原文和实际测试为准。</footer>
+</main></body></html>
