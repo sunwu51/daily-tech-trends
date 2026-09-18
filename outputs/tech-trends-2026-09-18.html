@@ -1,0 +1,70 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title>
+<style>:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#dbe3ef;--accent:#2563eb;--soft:#eef4ff}@media(prefers-color-scheme:dark){:root{--bg:#0b1020;--card:#121a2c;--text:#e8edf7;--muted:#9aa8bd;--line:#26334b;--accent:#82aaff;--soft:#17233d}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 system-ui,"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:980px;margin:auto;padding:40px 20px 72px}header{padding:34px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--card),var(--soft))}h1{margin:0}h2{margin-top:42px}h3{margin:0 0 12px}.meta,.state,.label,footer{color:var(--muted)}.item{margin:16px 0;padding:25px 28px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.label{font-size:.86rem}.field b,a{color:var(--accent)}a{text-decoration:none}.count{padding:14px 18px;border-left:4px solid var(--accent);background:var(--soft)}code{font-size:.92em}</style></head><body><main>
+<header><h1>科技晨报</h1><p class="meta">2026-09-18 · 主要观察窗：2026-09-17 07:00 至 2026-09-18 07:00（中国标准时间）</p>
+<p><b>中文编辑概览：</b>今天的主线一头是权限与供应链边界：AWS 把 SFTP 客户端真实地址带到鉴权链路，Rust 社区则预警以招聘视频通话为入口的定向攻击；另一头是 Agent 工具开始贴近真实工作环境，既能借用已登录浏览器，也能把企业文档、知识库和岗位流程接入执行链。GitHub Trending 与 Hacker News 均为生成时的当前榜单补充信号，不代表它们在观察窗结束时曾处于相同名次，也不等同于当天发布。</p>
+<p class="state"><b>来源状态：</b>已读取 2026-09-11 至 2026-09-17 七份报告，并按主 URL、仓库与底层主题去重；open-code-review、security-audit-skill、OpenResearch、Ghidra、LangBot、Tinycast 等无新事件的重复项均未再选。10 个入选来源均已读取，其中 6 个为报告生成时的当前 GitHub Trending 仓库。Android Authority 的 GrapheneOS 页面返回 403；OpenAI Astra 页面未返回完整公告主体，二者均已跳过。原始预览和候选 JSON 仅作证据。</p></header>
+
+<h2>今日重点</h2>
+<article class="item"><div class="label">窗口内官方安全通告 · Rust 供应链</div><h3>Rust 项目预警针对 crate 维护者的定向攻击</h3>
+<p class="field"><b>事件简介：</b>Rust 的 crates.io 团队与安全响应工作组称，Rust 项目成员和热门 crate 所有者正遭遇一轮账户与设备接管尝试，攻击目的可能是取得发布权限后投放恶意包。诱饵往往是工作、项目或合同视频会议，对方先建立看似可信的公司与 LinkedIn 身份，再要求安装“缺失音频编解码器”或执行剪贴板里的命令。</p>
+<p class="field"><b>技术机制：</b>这不是依赖代码里的传统漏洞，而是先控制维护者终端或账户，再利用其合法发布身份跨过仓库信任边界。官方把它与 6 月针对 Rust 开发者的类似活动、8 月 <code>arrayref</code> 短暂失陷联系起来，但明确表示尚不能确认是否属于同一攻击行动。</p>
+<p class="field"><b>实际影响：</b>拥有包发布权限的维护者应自行创建会议、只用熟悉平台，复查多因素认证与异常登录；组织还应把发布令牌、终端和日常会议环境隔离。这样做针对的是攻击链入口，而非等到恶意版本进入下游后再撤包。</p>
+<p class="field"><b>限制与来源：</b>通告没有披露受影响人数、样本或归因证据，只称这种手法已被朝鲜相关行动使用，不能据此断言本轮攻击者身份。来源：<a href="https://blog.rust-lang.org/2026/09/17/targeted-attacks/">Rust 官方通告</a>（正文由<a href="https://github.com/rust-lang/blog.rust-lang.org/blob/main/content/targeted-attacks.md">官方源文档</a>核验）</p></article>
+
+<article class="item"><div class="label">窗口内官方更新 · 文件传输鉴权</div><h3>AWS Transfer Family 经 NLB 保留 SFTP 客户端源 IP</h3>
+<p class="field"><b>事件简介：</b>AWS Transfer Family 现在可在 VPC 托管的 SFTP 端点前使用自有 Network Load Balancer 时保留客户端源 IP。过去 NLB 会把连接地址替换为自身私网 IP，日志和事件看不到真实来源，自定义身份提供者也无法依据来访地址授权。</p>
+<p class="field"><b>技术机制：</b>新能力通过 Proxy Protocol v2 把原始连接信息从 NLB 传给 Transfer Family；启用后，真实源 IP 同时进入服务日志、事件与认证请求。开关按 Transfer Family 服务器设置，可经控制台、CLI 或 API 配置，不要求为整个账户统一切换。</p>
+<p class="field"><b>实际影响：</b>企业把合作方 SFTP 放在自有 NLB 后时，可继续使用固定来源网段做访问控制，并让审计记录指向真正客户端，而不是负载均衡器。它修复的是网络身份传递，不替代密钥认证、用户隔离或传输内容检查。</p>
+<p class="field"><b>限制与来源：</b>仅适用于 NLB 后的 VPC 托管 SFTP 服务器，必须正确配置并信任 PPv2 链路；公告没有提供迁移失败或伪造头部的测试数据。来源：<a href="https://aws.amazon.com/about-aws/whats-new/2026/09/transfer-family-sftp-source-ip-nlb/">AWS 公告</a>与<a href="https://docs.aws.amazon.com/transfer/latest/userguide/working-with-nlb.html#nlb-sftp-source-ip">用户指南</a></p></article>
+
+<article class="item"><div class="label">窗口内官方更新 · 批处理运维</div><h3>AWS Batch 增加批量取消与终止 API</h3>
+<p class="field"><b>事件简介：</b>AWS Batch 新增 <code>CancelJobs</code>、<code>TerminateJobs</code> 与 <code>TerminateServiceJobs</code>，一次调用最多处理 50 个作业，并在同一响应中返回逐作业结果。此前大规模队列清理通常要由客户端循环调用单作业接口，自行处理部分失败和请求节流。</p>
+<p class="field"><b>技术机制：</b><code>CancelJobs</code> 面向 SUBMITTED、PENDING、RUNNABLE 状态；两个 Terminate 接口覆盖包括 STARTING、RUNNING 在内的任意状态，也支持 array job。配套的 <code>ListJobs</code> 新增 <code>isCancelled</code>、<code>isTerminated</code>，服务作业列表则返回终止标记，便于控制器核对最终状态。</p>
+<p class="field"><b>实际影响：</b>训练或渲染批次发现坏输入时，平台可按 50 个 ID 一组停止整批任务，并直接记录每个结果，减少请求编排与补偿代码。批量接口缩短操作路径，但不会自动决定哪些作业应该终止，调用方仍需保证筛选和重试幂等。</p>
+<p class="field"><b>限制与来源：</b>单次上限 50 个 ID；取消与终止适用状态不同，且逐项失败仍须处理。公告未给出吞吐、速率配额或费用变化。来源：<a href="https://aws.amazon.com/about-aws/whats-new/2026/09/aws-batch-bulk-cancellation/">AWS 公告</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 浏览器自动化</div><h3>BrowserSkill：让 Agent 借用已登录浏览器而不接管全部窗口</h3>
+<p class="field"><b>简介：</b>腾讯 BrowserSkill 是本地浏览器桥接工具，面向能调用 shell 的编码 Agent。它让 Cursor、Claude Code、Codex 等复用用户已经登录的 Chrome 或 Edge，在单独可见的 Agent 窗口里浏览；若确需操作用户现有标签页，必须显式借用并在完成后归还。</p>
+<p class="field"><b>技术特点：</b>Agent 调用 <code>bsk</code> CLI，CLI 经本地 IPC 交给守护进程，再由回环地址 WebSocket 把请求送到扩展；扩展只自动化 Agent 窗口。验证码、登录或确认步骤可暂停请求人工接管，借用确认和求助能力由浏览器配置保存，旧命令行参数不能越过这些开关。</p>
+<p class="field"><b>适用场景与价值：</b>例如 Agent 可在已登录的内部工单站查资料，同时用户继续使用普通窗口；遇到短信验证时交还人工，随后续跑。相比另建测试账户或把整个浏览器交给自动化，它保留现有会话，并缩小默认操作范围。</p>
+<p class="field"><b>限制与来源：</b>正式支持 Chrome、Edge；Firefox 尚在计划中。CLI、守护进程与扩展需保持协议兼容，沙箱会回收后台进程时还要在宿主机常驻 daemon；授权后的浏览器操作仍具有用户权限。来源：<a href="https://github.com/Tencent/BrowserSkill#how-it-works">README：架构与自动化设置</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 企业知识系统</div><h3>WeKnora：把文档问答、推理 Agent 与可回滚 Wiki 接在同一条流水线</h3>
+<p class="field"><b>简介：</b>腾讯 WeKnora 是可私有部署的开源知识框架，供企业把 PDF、Office、图片、XMind 以及飞书、GitLab、Notion 等来源变成可查询知识库。用户可做普通 RAG（检索增强生成）问答，也可让 ReAct Agent 调用检索、MCP、网络搜索与隔离沙箱处理多步任务，或把原始资料整理为相互链接的 Markdown Wiki。</p>
+<p class="field"><b>技术特点：</b>解析、向量化、检索与模型推理解耦，可组合 BM25 关键词、稠密向量、GraphRAG、父子分块和重排。检索分块与 Wiki 页面保留版本、diff 和回滚，编辑后自动重建索引；技能运行在会话常驻的 Docker、E2B 或 Cube 沙箱，当前版本已移除直接执行宿主进程的 Local 后端。</p>
+<p class="field"><b>适用场景与价值：</b>支持团队可同步产品文档与工单，先快速回答已知问题，复杂故障再由 Agent 检索多库、调用工具并产出带引用结果；内容负责人能修正错误分块并回滚。它把导入、检索、执行和知识维护放到可追踪流程中，减少在多个系统间手工搬运。</p>
+<p class="field"><b>限制与来源：</b>自托管需 Docker Compose，图谱、MinIO、Langfuse 等为可选 profile；模型、向量库、对象存储及外部数据源仍需分别配置。功能与“企业级”表述来自项目方，未见独立规模基准。来源：<a href="https://github.com/Tencent/WeKnora/blob/main/README_CN.md#-架构设计">中文 README：架构、功能与部署</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 岗位工作流</div><h3>knowledge-work-plugins：用文件化插件描述岗位流程与数据连接</h3>
+<p class="field"><b>简介：</b>Anthropic 的 knowledge-work-plugins 是面向 Claude Cowork、兼容 Claude Code 的开源岗位插件集，覆盖销售、客服、产品、法务、财务、数据分析等 11 类工作。它不是一个独立业务系统，而是让团队把常用命令、领域步骤和外部工具入口打包，作为可安装、可修改的工作起点。</p>
+<p class="field"><b>技术特点：</b>每个插件以 <code>plugin.json</code> 声明清单，以 Markdown skills 提供自动触发的领域方法，以 commands 暴露显式斜杠命令，再用 <code>.mcp.json</code> 连接 CRM、工单、数仓等 MCP 服务。以数据插件为例，查询、探索、可视化、仪表盘和交付前校验被拆成命令与技能；没有数仓连接时也可读取上传的 CSV/Excel。</p>
+<p class="field"><b>适用场景与价值：</b>分析团队可把自己的 Snowflake 连接、SQL 方言和校验规范放入插件，让成员从“探索表结构—写查询—画图—检查偏差”复用同一套步骤；这些对象都在 Markdown/JSON 中，调整流程不需要部署新服务。</p>
+<p class="field"><b>限制与来源：</b>仓库提供通用模板，实际权限、术语和审批必须由组织补齐；MCP 连接能触达的数据取决于外部服务授权。README 未给出成效评测，插件也不能替代法务、财务等专业复核。来源：<a href="https://github.com/anthropics/knowledge-work-plugins#how-plugins-work">总 README</a>与<a href="https://github.com/anthropics/knowledge-work-plugins/tree/main/data">数据插件说明</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending（中文榜） · 授权安全测试</div><h3>fscan：把内网发现、指纹与漏洞验证组成可控扫描任务</h3>
+<p class="field"><b>简介：</b>fscan 是面向已获授权企业内网的 Go 综合扫描工具，输入 IP、CIDR、域名、URL 或目标文件，输出 TXT、JSON、CSV。它串联主机发现、TCP 端口扫描、20 多类服务识别、Web/CMS/WAF 指纹、弱口令与漏洞 POC，并提供 SDK 嵌入安全平台或 Agent。</p>
+<p class="field"><b>技术特点：</b>服务探测采用类似 Nmap 的 fallback 和版本解析；端口扫描以滑动窗口、自适应线程池和流式迭代器调度，并对 ICMP 使用令牌桶限速。插件按服务、Web、本地模块拆分，可用 build tags 选择编译；SDK 暴露暂停、恢复、实时进度与 TaskID，结果系统实时刷盘以降低中断丢失。</p>
+<p class="field"><b>适用场景与价值：</b>安全团队在隔离测试网段可先发现存活主机和服务，再把匹配的 POC 定向验证并以 JSON 接入资产平台；排除列表、代理、网卡、并发和超时选项帮助约束扫描范围与网络压力，避免为每一阶段拼接不同命令。</p>
+<p class="field"><b>限制与来源：</b>工具同时包含弱口令、命令执行、凭据获取和持久化模块，只能用于明确授权目标；内置 fscan-lab 尚未完成。指纹数、覆盖率和性能均为项目方描述，误报漏报仍需人工复核。来源：<a href="https://github.com/shadow1ng/fscan#功能特性">README：功能、用法、路线图与免责声明</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending（中文榜） · 算法教育</div><h3>Hello 算法：让同一算法在动画与多语言实现之间对照运行</h3>
+<p class="field"><b>简介：</b><cite>Hello 算法</cite> 是开源免费的数据结构与算法入门教程，面向需要建立知识地图、又希望边看边运行代码的初学者。正文配动画图解，仓库提供 Python、Java、C++、Go、JavaScript 等 12 种语言实现，并可在线阅读或下载 PDF、EPUB。</p>
+<p class="field"><b>技术特点：</b>项目以相同章节和算法概念组织多语言代码，读者可一键运行示例，把抽象步骤与数组、树、图等结构的状态变化对应起来。贡献流程把内容纠错、代码转译和多语言翻译分开，使一种算法的实现可在不同语言间横向核对，而不是只提供单一代码片段集合。</p>
+<p class="field"><b>适用场景与价值：</b>例如刚学堆排序的读者可先看动画理解建堆与下沉，再运行自己熟悉语言的实现，并对照另一语言检查边界条件；教师也可把同章材料用于不同技术栈的班级，减少重复准备示例。</p>
+<p class="field"><b>限制与来源：</b>定位是新手教程，不替代复杂度证明、研究论文或生产级库；内容仍持续更新，不同语言版本的同步程度需按章节核对。文本、代码和媒体采用 CC BY-NC-SA 4.0，含非商业限制。来源：<a href="https://github.com/krahets/hello-algo#关于本书">README：定位、运行方式与许可</a></p></article>
+
+<h2>值得继续观察</h2>
+<article class="item"><div class="label">当前 Hacker News 讨论 · 早期编码 Agent</div><h3>Apprentice：用 Common Lisp 把模型、工具、预处理与循环变成可改对象</h3>
+<p class="field"><b>简介：</b>Apprentice 是实验性的 Common Lisp 编码 Agent harness，面向想直接修改 Agent 执行基础设施的开发者。它把大模型提供方、工具、仓库预处理“anchor”和驱动模型—工具往返的 loop 分成四类抽象，可在 REPL 中切模型、切循环、限定可访问目录，也可接本地 llama.cpp。</p>
+<p class="field"><b>技术特点：</b><code>defmodel</code> 描述端点、参数与消息转换，<code>deftool</code> 把参数、路径检查和执行体放在同一定义，anchor 可预处理文件并序列化索引状态。其 Apprentice loop 禁止主模型直接读写文件，先把调查交给子 Agent；累计任务达到阈值后才开放标准工具，以压缩主上下文。</p>
+<p class="field"><b>适用场景与价值：</b>研究者可实现一套“先索引仓库、再让小本地模型处理、必要时升级工具”的循环，并在 Lisp 镜像里即时调整，而不必 fork 固定编排器。价值在可实验性，尚不能推导出成本或准确率更优。</p>
+<p class="field"><b>限制与来源：</b>当前信号仅为低互动 HN 帖与作者 README；安装依赖 Quicklisp，文档没有稳定性、安全审计或基准数据。后续值得跟踪可复现实验、权限边界测试、版本发布与非作者用户案例。来源：<a href="https://github.com/skarnati20/apprentice#project-philosophy">README</a>与<a href="https://news.ycombinator.com/item?id=49748669">HN 讨论</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending（中文榜） · 开源内容策展</div><h3>HelloGitHub：月刊式筛选入门开源项目</h3>
+<p class="field"><b>简介：</b>HelloGitHub 是面向开源初学者的中文项目策展库，以每月 28 日发布的月刊收集有趣、入门级项目，也覆盖开源书籍、实战与企业级项目。仓库保存历期内容，读者可在 GitHub 或官网浏览，并通过推荐入口提交候选。</p>
+<p class="field"><b>技术特点：</b>它的核心机制不是运行时软件，而是把项目发现、编辑筛选、按期归档和社区推荐做成公开内容流水线；历期 Markdown 让项目描述与版本历史可追踪，官网承担更适合检索和阅读的展示层。中文、英文、日文 README 扩展入口，但月刊正文的语言覆盖需逐期确认。</p>
+<p class="field"><b>适用场景与价值：</b>刚接触开源的开发者可从一期短列表了解项目用途，再沿仓库链接阅读源码和贡献规则；相比直接面对 Trending 排名，它增加了编辑说明与长期归档。不过入选只代表策展选择，不能证明项目安全、维护活跃或适合生产。</p>
+<p class="field"><b>限制与来源：</b>这是成熟内容项目本次进入当前榜，并非窗口内新版本；仓库材料只说明月刊机制，未公开统一评审量表。后续应看第 126 期实际内容、候选筛选透明度及长期链接维护；内容采用 CC BY-NC-ND 4.0，禁止演绎。来源：<a href="https://github.com/521xueweihan/HelloGitHub#简介">README：简介、期刊归档与许可</a></p></article>
+
+<p class="count">今日重点 8 条，值得继续观察 2 条，合计 10 条；其中 6 个为报告生成时的当前 GitHub Trending 仓库。</p>
+<footer>本报告依据可读取的一手公开资料进行中文策展。当前榜单只作为生成时的补充信号；能力、成熟度与风险请以链接原文和实际测试为准。</footer></main></body></html>
