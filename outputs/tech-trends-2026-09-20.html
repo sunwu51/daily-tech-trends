@@ -1,0 +1,70 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title>
+<style>:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#dbe3ef;--accent:#2563eb;--soft:#eef4ff}@media(prefers-color-scheme:dark){:root{--bg:#0b1020;--card:#121a2c;--text:#e8edf7;--muted:#9aa8bd;--line:#26334b;--accent:#82aaff;--soft:#17233d}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 system-ui,"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:980px;margin:auto;padding:40px 20px 72px}header{padding:34px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--card),var(--soft))}h1{margin:0}h2{margin-top:42px}h3{margin:0 0 12px}.meta,.state,.label,footer{color:var(--muted)}.item{margin:16px 0;padding:25px 28px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.label{font-size:.86rem}.field b,a{color:var(--accent)}a{text-decoration:none}.count{padding:14px 18px;border-left:4px solid var(--accent);background:var(--soft)}code{font-size:.92em}</style></head><body><main>
+<header><h1>科技晨报</h1><p class="meta">2026-09-20 · 主要观察窗：2026-09-19 07:00 至 2026-09-20 07:00（中国标准时间）</p>
+<p><b>中文编辑概览：</b>本期可核验的新信号主要来自报告生成时的 GitHub Trending 当前榜单，而非观察窗内的正式发布。值得注意的共同方向是：Agent 开始获得可隔离的桌面与开发环境，文档和个人资料被整理为可供模型读取的结构化上下文，底层网络与分布式训练工具则继续把复杂机制暴露成可嵌入接口。当前榜单只说明生成时受到关注，不代表这些项目在 07:00 窗口结束时曾处于相同排名，也不等同于今日发布。</p>
+<p class="state"><b>来源状态：</b>已读取 2026-09-13 至 2026-09-19 的七份报告，并按主 URL、仓库与底层主题去重；security-audit-skill、HelloGitHub、Hello 算法、Halo、LunaTranslator 等无实质新事件的重复项未再选。候选采集未报告不可用源，10 个入选仓库页及 README 的定位、机制、使用和限制均已读取。原始预览与候选 JSON 仅作证据，未作为成稿发布。</p></header>
+
+<h2>今日重点</h2>
+<article class="item"><div class="label">当前 GitHub Trending · 计算机使用 Agent</div><h3>Cua：给 Agent 配置隔离桌面、跨平台驱动与评测轨迹</h3>
+<p class="field"><b>简介：</b>Cua 面向构建“计算机使用”Agent 的开发者，把可操作的 Linux 云桌面、Apple Silicon 上的本地 macOS/Linux 虚拟机、跨 macOS/Windows/Linux 的桌面驱动和任务评测工具放在一个开源项目中。用户可带自己的 Agent 与模型，让它执行命令、截图并操作原生应用或浏览器。</p>
+<p class="field"><b>技术特点：</b>Sandbox SDK 统一本地沙箱与云端 Fleet 的生命周期；Cua Driver 可经 CLI、MCP 或类型化 SDK 暴露界面检查和操作，平台允许时可后台执行而不抢鼠标焦点。Cua Bench 把任务、参考解法、验证器和轨迹导出连起来，CUA-S1 则试验用结构化界面元素做表单等边界明确的快速决策。</p>
+<p class="field"><b>适用场景与价值：</b>做桌面回归或 Agent 评测的团队可先领取隔离桌面，运行同一任务并保存截图、奖励与操作轨迹，避免直接把实验 Agent 放进员工主机；这是依据隔离与评测能力作出的编辑判断。</p>
+<p class="field"><b>限制与来源：</b>云 Fleet 的池在任务结束后仍可能保留付费容量，必须按文档清理；本地 Lume 依赖 Apple Silicon，Driver 的后台能力有平台边界。CUA-S1 仍是源码优先的早期研究发布，模型和数据另有许可。来源：<a href="https://github.com/trycua/cua#choose-your-path">README：组件、运行路径与限制</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 云开发环境</div><h3>Coder：让开发者与编码 Agent 共用自托管工作区控制面</h3>
+<p class="field"><b>简介：</b>Coder 是自托管的云开发环境平台，面向要在自有基础设施上集中交付 IDE、依赖和编码 Agent 的团队。管理员用 Terraform 定义 EC2、Kubernetes Pod 或 Docker 工作区，开发者仍可从 VS Code、JetBrains 等现有编辑器接入。</p>
+<p class="field"><b>技术特点：</b>工作区经 WireGuard 安全隧道连接，并可在空闲时自动关停。Coder Agents 的循环运行在组织控制面，模型凭据不进入工作区；每次动作带用户身份，同时由 AI Gateway 集中处理模型认证、成本记录和审计，因此隔离的执行环境与模型治理可以分开管理。</p>
+<p class="field"><b>适用场景与价值：</b>平台团队可为新成员或外部 Agent 从同一模板启动短期开发 Pod，预装代码与工具，任务完成后自动停机；相比在个人电脑复制环境，这能把资源期限、身份和模型支出留在同一审计链中。</p>
+<p class="field"><b>限制与来源：</b>快速体验使用内置数据库与临时访问域名；生产部署要求 PostgreSQL 13+、外部访问 URL，并需按验证架构自行定容。专属支持和部分大团队能力属于付费版。来源：<a href="https://github.com/coder/coder#self-hosted-cloud-development-environments-and-ai-agents">README：架构、Quickstart 与集成</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 私有检索</div><h3>Hister：为浏览记录与本地文件建立自己的全文索引</h3>
+<p class="field"><b>简介：</b>Hister 是可本地或自托管的个人搜索引擎，面向需要重新找到自己看过网页和保存文件的用户。浏览器扩展自动提交所选页面正文，也可导入历史、书签、目录和单个文件；结果可从 Web、终端界面、命令行或连接 MCP 的 AI 助手查询。</p>
+<p class="field"><b>技术特点：</b>它索引正文而不只存标题和 URL，并支持字段过滤、短语、通配符、否定和结果优先级。默认无遥测、无强制云同步，文档与索引保存在用户指定的 Hister 服务器；多用户部署会隔离各自文档。语义检索是可选层，需要用户另配 embedding（向量嵌入）端点。</p>
+<p class="field"><b>适用场景与价值：</b>研究者可让扩展持续收集自己访问过的技术页面，之后让 Agent 经 MCP 找回原文片段，而不用把全部浏览资料交给公共搜索服务。全文和精确查询也为向量召回失败时保留可解释的检索路径。</p>
+<p class="field"><b>限制与来源：</b>服务必须持续运行才能索引与搜索；启用远程 embedding 会把文档文本发给所选端点，需另行审查隐私。源码构建要求 Go 1.26、npm 和支持 CGO 的 C 编译器，许可为 AGPLv3+。来源：<a href="https://github.com/asciimoo/hister#features">README：功能、隐私与开发要求</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 文档理解</div><h3>Docling：把 PDF、办公文档、音视频转成统一结构</h3>
+<p class="field"><b>简介：</b>Docling 是面向检索增强生成、Agent 和文档分析流水线的本地文档转换工具。它读取 PDF、DOCX、PPTX、XLSX、HTML、图片、邮件、音频及多种专业格式，输出 Markdown、HTML、WebVTT、DocTags 或无损 JSON，也可作为 CLI、Python 库、API 服务或 MCP 服务使用。</p>
+<p class="field"><b>技术特点：</b>解析流程把版面、阅读顺序、表格结构、代码、公式、图像类别和 OCR 结果汇入统一的 <code>DoclingDocument</code>；视频输入则组合自动语音识别转录与代表性关键帧。统一中间表示让同一份复杂 PDF 能分别导出给人阅读的 Markdown 和保留结构的 JSON。</p>
+<p class="field"><b>适用场景与价值：</b>企业建立内部知识库时，可在隔离环境把扫描合同、演示文稿和会议录音先转换为统一对象，再交给 LangChain、LlamaIndex 或自建索引，减少为每种文件各写解析器的工作。</p>
+<p class="field"><b>限制与来源：</b>Python 3.9 已在 2.70.0 后停止支持，需 3.10+；代码为 MIT，但选用的 OCR、视觉语言和语音模型各有独立许可。元数据抽取与复杂化学结构理解仍列为“即将支持”，不能当成现有能力。来源：<a href="https://github.com/docling-project/docling#features">README：格式、结构、运行方式与路线图</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · QUIC / HTTP/3</div><h3>quiche：把 QUIC 连接状态交给库，把 I/O 与事件循环留给应用</h3>
+<p class="field"><b>简介：</b>Cloudflare/quiche 是 Rust 实现的 IETF QUIC 传输协议与 HTTP/3 库，服务需要把新传输协议嵌入代理、DNS 或客户端的系统开发者。它已用于 Cloudflare 边缘 HTTP/3、Android 的 DNS over HTTP/3，也可作为 curl 的 HTTP/3 后端。</p>
+<p class="field"><b>技术特点：</b>quiche 提供处理数据包与维护连接状态的低层 API，应用自行提供 UDP socket、事件循环和定时器：收到包调用 <code>recv()</code>，用 <code>send()</code> 生成出站包，超时后调用 <code>on_timeout()</code>。<code>SendInfo.at</code> 给出 pacing（平滑发包）时刻；薄 C API 允许 C/C++ 通过 FFI 链接同一静态库。</p>
+<p class="field"><b>适用场景与价值：</b>已有自定义网络运行时的代理团队可保留自己的 I/O 调度，只把握手、流和拥塞状态交给 quiche；这种边界避免库强迫应用更换整个事件循环，但也要求集成者正确驱动定时器与发包节奏。</p>
+<p class="field"><b>限制与来源：</b>许多流量与并发上限默认为零，应用必须按场景配置；示例客户端/服务器不适合生产，附带证书为自签名。构建需 Rust 1.88+、CMake 和 BoringSSL，Windows 还需 NASM。来源：<a href="https://github.com/cloudflare/quiche#configuring-connections">README：API、pacing、FFI 与构建要求</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 工程 Agent 技能</div><h3>Agent Skills：把规格、构建、验证与发布拆成可安装流程</h3>
+<p class="field"><b>简介：</b>addyosmani/agent-skills 是给 Claude Code、Codex、Cursor、Copilot 等编码 Agent 使用的工程技能集，面向希望把资深工程师的检查步骤做成可复用资产的团队。仓库提供 25 个技能和 9 个斜杠命令，覆盖需求规格、规划、增量实现、测试、评审、性能与发布。</p>
+<p class="field"><b>技术特点：</b><code>/spec → /plan → /build → /test → /review → /ship</code> 把生命周期映射为独立入口，任务相关技能还能按上下文自动激活。<code>/build auto</code> 在一次批准计划后逐项实现，但仍要求每个任务测试、单独提交，并在失败或高风险动作处暂停；这把“自动推进”与“取消验证”明确分开。</p>
+<p class="field"><b>适用场景与价值：</b>团队可只安装代码审查、测试驱动开发等所需技能，让不同 Agent 在合并前执行相同检查对象和质量门槛，减少流程只存在个人长提示中的情况；实际约束力仍取决于宿主 Agent 是否忠实执行。</p>
+<p class="field"><b>限制与来源：</b>“生产级”和流程收益是作者主张，README 未给独立缺陷率对照；一次安装 25 项也会扩大上下文和供应链审查范围，宜先列出再按需安装。来源：<a href="https://github.com/addyosmani/agent-skills#commands">README：命令、自动构建边界与安装</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending · 市场数据应用</div><h3>OpenStock：把行情、观察列表与个性化摘要做成可自托管 Web 应用</h3>
+<p class="field"><b>简介：</b>OpenStock 是开源股票市场看板，面向需要自建行情观察工具的个人或教学项目。它提供股票搜索、每用户观察列表、公司资料、图表、市场热图与每日新闻邮件；项目明确不是券商，也不提供投资建议。</p>
+<p class="field"><b>技术特点：</b>Next.js 15/React 19 前端以 Better Auth 和 MongoDB 保存身份与观察列表，Finnhub 提供标的、公司与新闻数据，TradingView 小组件承载图表和技术指标。Inngest 处理定时事件，按观察列表触发每日摘要，并可调用 Gemini 生成欢迎内容；Docker Compose 可同时启动应用与 MongoDB。</p>
+<p class="field"><b>适用场景与价值：</b>课程或内部研究小组可把关注标的、行情视图和邮件摘要部署在自己的 MongoDB 周围，直接修改数据源与页面，而不依赖封闭订阅产品；这并不意味着数据拥有再分发权，仍需遵守提供商规则。</p>
+<p class="field"><b>限制与来源：</b>Finnhub 免费层可能不是实时行情，完整运行还需 MongoDB、API key 和邮件账号；跨 Reddit、X、新闻及 Polymarket 的情绪洞察是可选能力。AGPL-3.0 要求修改、分发或以网络服务部署时按相同许可公开源码并署名。来源：<a href="https://github.com/Open-Dev-Society/OpenStock#features">README：栈、功能、数据与许可</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending（中文榜） · 管理后台</div><h3>SoybeanAdmin：用自动文件路由与多套 UI 版本搭建 Vue 管理端</h3>
+<p class="field"><b>简介：</b>SoybeanAdmin 是面向中大型管理系统前端的 Vue 3 模板，给需要快速搭建权限后台、主题化页面和移动端适配的开发者提供现成骨架。主版本使用 Vite 8、TypeScript、Pinia、Naive UI 与 UnoCSS，另有 Ant Design Vue 和 Element Plus 分支。</p>
+<p class="field"><b>技术特点：</b>项目采用 pnpm monorepo，将页面、组件和工具包分开；Elegant Router 根据文件自动生成路由导入、声明与类型，同时允许前端静态路由或后端动态权限路由。ESLint、Prettier 与 simple-git-hooks 承担代码门禁，ApiFox 提供在线 Mock 数据，主题与国际化已预置。</p>
+<p class="field"><b>适用场景与价值：</b>团队开发带菜单、按钮权限和多语言的运营后台时，可从类型化路由与现成错误页起步，把时间留给业务表单和接口对接，而不是重新拼布局、主题和路由生成脚本。</p>
+<p class="field"><b>限制与来源：</b>本地开发要求 Node.js 20.19+、pnpm 10.5+，README 明确不要用 npm 或 yarn 安装这个 monorepo；浏览器支持为 Edge、Firefox、Chrome、Safari 最近两个版本，不支持 IE。MIT 许可但作者要求商业使用保留版权信息。来源：<a href="https://github.com/soybeanjs/soybean-admin#特性">README：特性、版本、使用与浏览器边界</a></p></article>
+
+<h2>值得继续观察</h2>
+<article class="item"><div class="label">当前 GitHub Trending · 早期分布式训练</div><h3>Higgsfield：用 GitHub 工作流调度多节点大模型实验</h3>
+<p class="field"><b>简介：</b>higgsfield-ai/higgsfield 是 GPU 工作负载管理器与机器学习框架，面向在自有多节点服务器训练数十亿到万亿参数模型的团队。它为用户分配独占或共享节点、排队处理资源争用，并用接近标准 PyTorch 的训练函数启动、监控实验和保存 checkpoint。</p>
+<p class="field"><b>技术特点：</b>框架支持 DeepSpeed ZeRO-3 与 PyTorch FSDP，把模型参数、梯度和优化器状态分片到节点；安装器在服务器配置 Docker、部署密钥和运行二进制，并为实验生成 GitHub Actions 部署/运行工作流，代码推送后自动送到节点，实验 UI 也从 GitHub 进入。</p>
+<p class="field"><b>适用场景与价值：</b>小型研究团队可把训练代码、依赖版本、部署动作与 checkpoint 入口连到一次提交，减少人工登录多台机器复制环境；但这只是 README 描述的工程路径，不能证明故障恢复或超大模型扩展效率。</p>
+<p class="field"><b>限制与来源：</b>当前安装示例仍固定到 <code>0.0.3</code>，节点必须是 Ubuntu、可 SSH，且非 root 用户需免密码 sudo；只列出 Azure、LambdaLabs 与 FluidStack 的测试。后续应关注新版本、活跃维护、公开故障注入测试，以及多节点吞吐和恢复时间的独立复现。来源：<a href="https://github.com/higgsfield-ai/higgsfield#how-its-all-done">README：设计、部署与兼容性</a></p></article>
+
+<article class="item"><div class="label">当前 GitHub Trending（中文榜） · AI 系统课程</div><h3>AISystem：从芯片、编译器到推理与框架的中文课程仓库</h3>
+<p class="field"><b>简介：</b>Infrasys-AI/AISystem 是面向高年级本科生、研究生和 AI 系统从业者的中文开放课程，不是训练或推理软件。它用讲义、PPT、视频与 Notebook 串起 AI 芯片体系结构、编译器、推理系统和框架核心技术，并把大模型基础内容迁到独立的 AIFoundation 仓库。</p>
+<p class="field"><b>技术特点：</b>课程按硬件、编译、推理、框架分层：硬件覆盖 CPU/GPU/NPU、Tensor Core 与 NVLink；编译部分从 LLVM 进入中间表示、算子融合、内存优化、Kernel 与自动调优；推理部分讨论模型压缩、计算图转换与算子调度；框架部分再连接自动微分、计算图和分布式训练。</p>
+<p class="field"><b>适用场景与价值：</b>学习者可沿同一目录把“模型为何受硬件约束”追到编译与执行层，并用公开材料建立系统化路线；对只学过模型 API 的工程师，这比零散搜索术语更容易看到各层依赖关系。</p>
+<p class="field"><b>限制与来源：</b>仓库注明文字课程仍在逐节补充，部分章节直接标为待更新；完整仓库约 10GB，作者建议从 Releases 按需下载。后续值得观察课程版本日期、练习与可运行实验覆盖、勘误响应，以及第三方教学采用反馈，才能判断内容的持续可维护性。来源：<a href="https://github.com/Infrasys-AI/AISystem#课程内容大纲">README：课程对象、大纲与下载限制</a></p></article>
+
+<p class="count">今日重点 8 条，值得继续观察 2 条，合计 10 条；10 项均来自报告生成时的当前 GitHub Trending 候选，其中中文榜 2 项。它们是窗口外/当前列表补充信号，不作历史排名声明。</p>
+<footer>本报告依据可读取的一手公开资料进行中文策展。榜单热度不等于发布、成熟度或独立验证；能力、许可与部署风险请以链接原文和实际测试为准。</footer></main></body></html>
