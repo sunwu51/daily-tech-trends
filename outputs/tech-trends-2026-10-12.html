@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief — 2026-10-12</title><style>body{font:16px/1.8 system-ui,-apple-system,"Noto Sans SC",sans-serif;background:#f5f7fa;color:#1b2b3e;margin:0}main{max-width:920px;margin:auto;padding:32px 22px 80px}header{border-bottom:3px solid #174f78}h1{font-size:2.4rem;margin:.2em 0}h2{margin-top:42px;border-bottom:1px solid #d1dae5;padding-bottom:8px}article{background:#fff;border:1px solid #dce3ec;border-radius:12px;padding:20px 25px;margin:18px 0}h3{font-size:1.36rem;margin:4px 0 14px}a{color:#155a9a}p{margin:10px 0}.tag,.source,footer{font-size:.84rem;color:#52657c}.source{overflow-wrap:anywhere}.overview{background:#e9f1fa;border-left:4px solid #2771aa;padding:15px 20px}.overview p{margin:6px 0}</style></head><body><main>
+<header><div>TECH MORNING BRIEF · 2026-10-12</div><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-10-12 07:00 前的 24 小时，截止于 2026-10-12T07:00:00+08:00。</p></header>
+<div class="overview"><strong>编辑总览</strong><p>本期聚焦小显存模型运行、合成监测管理、业务语义查询，以及从视觉创作到本地检索的开源工具。窗口内可直接核验的带发布时间公告有限，因此纳入 10 月 7 日和 8 日的官方文章，以及采集时的 GitHub Trending、Hacker News 当前列表作为补充信号。当前列表不是 07:00 截止时的历史快照，项目进入榜单也不意味着当天发布。</p><p>共 10 条：今日重点 7 条、值得继续观察 3 条；其中 7 个不同 Trending 仓库。项目能力依据当前 README，作者测试与编辑推断分别标明。</p></div>
+<section id="focus"><h2>今日重点 <small>7 条</small></h2>
+<article><div class="tag">近期补充信号 · Grafana 官方公告，10 月 7 日发布</div><h3><a href="https://grafana.com/blog/manage-synthetic-checks-at-scale-introducing-folders-in-grafana-cloud-synthetic-monitoring/">Grafana 合成监测文件夹：批量管理检查与团队权限</a></h3>
+<p><strong>事件简介：</strong>Grafana Cloud 的 Synthetic Monitoring 现已普遍提供文件夹功能。合成监测是从探测点主动发起 HTTP、DNS、浏览器等检查，用来发现服务可用性与速度问题；当检查数随团队和环境增加，平铺列表难以判断归属、集中停用或设置编辑权限。公告发表于主窗口之前。</p>
+<p><strong>技术机制：</strong>检查可放进现有 Grafana 文件夹树，与仪表板和告警共享组织结构；文件夹视图支持对本级及子文件夹检查批量启停、迁移或删除。权限由文件夹权限与合成监测角色共同决定；API 的 folderUid 与 Terraform 资源的 folder_uid 使自动化配置也能指定归属。</p>
+<p><strong>实际影响：</strong>例如支付团队在预发布维护期间，可将该环境的一组探测统一停用，维护结束再恢复，而不必逐个找 HTTP 与浏览器检查；同一文件夹还可限制仅该团队编辑。</p>
+<p><strong>限制与来源：</strong>官方文档说明删除文件夹会把检查移入默认文件夹并继续运行，不能把删文件夹当作停测。Terraform 管理的检查若在界面迁移，下次 plan 会显示漂移并可能移回配置中的文件夹；接入前需约定配置的权威来源。</p>
+<p class="source">原始资料：<a href="https://grafana.com/blog/manage-synthetic-checks-at-scale-introducing-folders-in-grafana-cloud-synthetic-monitoring/">https://grafana.com/blog/manage-synthetic-checks-at-scale-introducing-folders-in-grafana-cloud-synthetic-monitoring/</a></p></article>
+<article><div class="tag">近期补充信号 · OpenAI/Oracle 官方案例，10 月 8 日发布</div><h3><a href="https://openai.com/index/oracle">Oracle 将业务对象关系接入自然语言查询与 Codex 工作流</a></h3>
+<p><strong>事件简介：</strong>OpenAI 发布 Oracle 内部使用 ChatGPT Work 与 Codex 的案例。招聘团队用职位描述准备人才市场资料；Oracle Applications Lab 则让业务人员用自然语言提出报表问题，由系统检索内部数据并生成分析。该案例发表于主窗口之前，展示的是特定企业流程。</p>
+<p><strong>技术机制：</strong>Applications Lab 先整理公司业务对象、对象之间的关系与规则，形成语义层；随后把业务问题转为 SQL 查询，并由 Codex 选择内部系统、收集结果、返回报表或应用。这里关键是把“客户、订单、状态”等内部含义固定为可查询的对象关系，避免仅凭一句自然语言猜数据库表与字段。</p>
+<p><strong>实际影响：</strong>例如财务人员询问跨系统的某类支出，可先经语义层定位相关实体，再生成查询草案，由负责人核对数字与权限；这可能减少反复请数据团队手工拼接报表的工作，仍需要人对结果负责。</p>
+<p><strong>限制与来源：</strong>页面给出的耗时缩减和使用人数是 Oracle 与 OpenAI 的案例陈述，并非独立对照试验；未公开语义层、查询校验和权限控制的实现细节。Oracle 受访者也强调架构、安全和代码维护仍由人负责。</p>
+<p class="source">原始资料：<a href="https://openai.com/index/oracle">https://openai.com/index/oracle</a></p></article>
+<article><div class="tag">GitHub Trending 当前日榜 · 项目发现</div><h3><a href="https://github.com/pytorch/pytorch">PyTorch：动态图自动微分与 GPU 张量计算基础</a></h3>
+<p><strong>简介：</strong>PyTorch 是面向机器学习研究者和应用开发者的 Python 张量与神经网络库。张量可以放在 CPU 或 GPU 上做切片、线性代数等计算；配合神经网络模块与数据加载器，可写训练、推理和实验代码。此次只作为采集时 Trending 的项目发现，不代表新版本发布。</p>
+<p><strong>技术特点：</strong>torch.autograd 对可微张量操作记录计算过程，在反向传播时按链式法则求梯度；torch.nn 在这一机制上组织参数与层。开发者可用普通 Python 控制流决定每次前向计算路径，因此处理输入长度变化或按条件选择分支时，不必先固定整张计算图。README 也列出多进程共享张量与数据加载组件。</p>
+<p><strong>适用场景与价值：</strong>例如研究者比较两种依样本条件切换的模型结构，可在 Python 训练循环中直接改分支、运行前向与反向计算，再用 GPU 张量计算加速批量实验；省下另行写求导逻辑的工作，但训练效果仍取决于模型和数据。</p>
+<p><strong>限制与来源：</strong>README 的平台构建说明区分 CUDA、ROCm 与 Intel GPU，具体二进制和驱动要按环境选择；Windows 分布式支持被标为原型。这里概述仓库现有能力，未据当前榜单推断新增功能或性能排名。</p>
+<p class="source">原始资料：<a href="https://github.com/pytorch/pytorch">https://github.com/pytorch/pytorch</a></p></article>
+<article><div class="tag">GitHub Trending 中文当前日榜 · 项目发现</div><h3><a href="https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever">Shadowrocket 规则集：把域名清单转成可订阅的分流配置</a></h3>
+<p><strong>简介：</strong>该仓库为 iOS Shadowrocket 用户提供可订阅的纯文本规则，决定哪些网站直连、哪些交给用户已有的代理，并可过滤部分广告请求。它服务于需要维护多套网络分流配置的人，规则文件本身不提供代理连接或联网能力。</p>
+<p><strong>技术特点：</strong>维护者用 Python 将 GFWList、广告清单等上游列表转换为 Shadowrocket 格式，去重后生成黑名单、白名单、国内外划分等不同配置，并按北京时间 8:00 定期发布。黑名单对未知网站默认直连，白名单则默认交给代理；使用者按自己的网络策略选择文件，应用加载规则时再执行域名匹配。</p>
+<p><strong>适用场景与价值：</strong>例如设备管理员要让业务网站直连、已知广告域名被过滤，可选对应配置并在 Shadowrocket 中订阅，之后更新上游列表时不必逐条手工改规则；误分流仍需看客户端日志定位具体域名。</p>
+<p><strong>限制与来源：</strong>README 承认视频广告无法靠简单 URL 规则完整拦截，旧 top500 可达性数据获取方式也已失效；每日构建是维护者的发布安排，不应推断每条上游列表都实时准确。</p>
+<p class="source">原始资料：<a href="https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever">https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever</a></p></article>
+<article><div class="tag">GitHub Trending 当前日榜 · 项目发现</div><h3><a href="https://github.com/lyogavin/airllm">AirLLM：用逐层加载在小显存机器上运行大模型</a></h3>
+<p><strong>简介：</strong>AirLLM 是给研究者和本地模型开发者用的 Python 推理库，输入 Hugging Face 模型 ID 或本地模型路径，在显存有限的 GPU 上执行原本装不下的大模型。它解决的是权重常驻显存的容量问题，适用于能接受更高磁盘和传输开销的试验环境。</p>
+<p><strong>技术特点：</strong>库先把模型拆成层，执行时一次只将当前层的权重送入 GPU；显存需求因而更接近单层大小，而非整个模型大小。可选预取让加载与计算部分重叠；4/8 位块量化只压缩权重以减轻磁盘读取瓶颈。训练路径则逐层流式读取冻结的基座权重，只让 LoRA 适配器常驻 GPU。</p>
+<p><strong>适用场景与价值：</strong>例如只有一张小显卡的开发者想检查大模型输出或做小规模适配，可先用层流式运行验证流程，避免第一步就租用大显存实例；代价是权重仍需放在磁盘或主机内存，吞吐不能从显存数字推断。</p>
+<p><strong>限制与来源：</strong>README 中 70B/4GB 等显存数字是作者给定环境的结果，不是独立复现；部分新模型要求特定 transformers 构建和很大的模型文件。Mac 路径仅支持 Apple Silicon，受限模型还需授权令牌。</p>
+<p class="source">原始资料：<a href="https://github.com/lyogavin/airllm">https://github.com/lyogavin/airllm</a></p></article>
+<article><div class="tag">GitHub Trending 中文当前日榜 · 项目发现</div><h3><a href="https://github.com/XIU2/CloudflareSpeedTest">CloudflareSpeedTest：按本地网络实测筛选 CDN 地址</a></h3>
+<p><strong>简介：</strong>CloudflareSpeedTest（CFST）是面向网络维护者和需要诊断 CDN 路径的用户的命令行工具，在本机对 Cloudflare IPv4/IPv6 地址做延迟、丢包和下载速度测试，输出候选地址与 CSV 结果。它针对同一 CDN 在不同运营商线路表现差异较大的问题。</p>
+<p><strong>技术特点：</strong>默认流程先从地址段取样做 TCP 连接延迟测试，按延迟及丢包率筛选，再对靠前地址下载测速，最后按速度排序写出 result.csv；HTTP 延迟模式与阈值可另行配置。两段测量避免对全部地址都做较重的下载测试，结果也保留原始延迟、丢包和速度列供人工复核。</p>
+<p><strong>适用场景与价值：</strong>例如运维人员要排查某地访问自有 CDN 站点慢，可在该地线路运行测试、比较几个候选地址，再检查 DNS 或 Hosts 策略；工具给的是该线路当时的测量依据，不会自动保证其他地区也更快。</p>
+<p><strong>限制与来源：</strong>README 明确指出代理会扭曲结果、每次随机取样会变化；它用于网站流量，不能拿来优选 UDP 的 Cloudflare WARP。其他 CDN 需用户自备下载测速地址。</p>
+<p class="source">原始资料：<a href="https://github.com/XIU2/CloudflareSpeedTest">https://github.com/XIU2/CloudflareSpeedTest</a></p></article>
+<article><div class="tag">GitHub Trending 中文当前日榜 · 项目发现</div><h3><a href="https://github.com/krahets/hello-algo">Hello 算法：用动画和可运行代码拆解数据结构</a></h3>
+<p><strong>简介：</strong>Hello 算法是面向编程初学者的免费开源数据结构与算法教材。读者通过网页章节、动画图解和可运行的代码示例理解排序、树等概念；仓库提供多语言文本与实现，定位是教学资料而不是算法库或新发布的研究成果。</p>
+<p><strong>技术特点：</strong>它把同一概念的图示、讲解与代码练习放在相邻学习流程，读者可先看状态变化，再运行实现观察输入输出。README 说明源码可一键运行，并由社区继续做代码转译与翻译校对；这种安排减少了从抽象伪码跨到可执行程序时的认知跳跃。</p>
+<p><strong>适用场景与价值：</strong>例如自学者理解二叉树遍历时，可以对照动画看访问顺序，再在熟悉的语言中修改示例数据运行；教师也可用图示引导讨论，并让学生通过代码验证边界情况。这是从资料组织方式推得的使用场景。</p>
+<p><strong>限制与来源：</strong>仓库说明内容仍在更新，邀请读者报告语法、缺章和代码错误；教材的例子不等于生产环境实现。文本、代码和媒体统一标注 CC BY-NC-SA 4.0，商用再分发要先核对许可条件。</p>
+<p class="source">原始资料：<a href="https://github.com/krahets/hello-algo">https://github.com/krahets/hello-algo</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察 <small>3 条</small></h2>
+<article><div class="tag">GitHub Trending 当前日榜 · 早期观察</div><h3><a href="https://github.com/bilawalsidhu/gods-eye-view">God’s Eye View：把公开地理信号叠到浏览器地球</a></h3>
+<p><strong>简介：</strong>God’s Eye View 是在本地启动、由浏览器查看的三维地球应用，供地图数据开发者和地理信息爱好者探索飞机、船舶、卫星、地震、天气与公开摄像头等信号。它把不同公开源放到可点选的空间界面，并提供语音查询和场景分享。</p>
+<p><strong>技术特点：</strong>项目按图层组织数据：飞行器来自应答机数据、卫星轨道来自公开轨道要素，天气图层接入预报或观测源；点选目标后显示元数据并可切换附近摄像头。无密钥时使用 Esri 影像与基础地形，写实三维或部分服务需 Cesium、Google 等提供商密钥。</p>
+<p><strong>适用场景与价值：</strong>例如研究人员想给学生展示一次地震与附近交通活动的空间关系，可先叠图、查看更新时间，再分享带相机位置和图层状态的链接；这适合探索与演示，不能直接替代经校验的应急决策数据。</p>
+<p><strong>限制与来源：</strong>README 明说交通是基于真实道路的模拟，摄像头姿态及发射轨迹有粗略估计；图层刷新频率、许可证各异。后续应看数据源失效时的标注准确性和独立案例；DATA_SOURCES.md 还提醒 MIT 代码许可不覆盖第三方数据，部分资料限非商用。</p>
+<p class="source">原始资料：<a href="https://github.com/bilawalsidhu/gods-eye-view">https://github.com/bilawalsidhu/gods-eye-view</a> · <a href="https://github.com/bilawalsidhu/gods-eye-view/blob/main/DATA_SOURCES.md">https://github.com/bilawalsidhu/gods-eye-view/blob/main/DATA_SOURCES.md</a></p></article>
+<article><div class="tag">GitHub Trending 当前日榜 · 早期观察</div><h3><a href="https://github.com/storytold/artcraft">ArtCraft：先摆场景，再选择图像或视频模型</a></h3>
+<p><strong>简介：</strong>ArtCraft 是面向视觉创作者的桌面式 AI 图像与视频工作台，提供 Windows、macOS 安装包，也可在 Linux 从源码构建。用户可用文字提示探索想法，再用二维画布、三维场景和不同生成模型调整镜头、人物位置与素材层次。</p>
+<p><strong>技术特点：</strong>README 展示了把背景、道具和前景分层的二维合成，以及用三维资产先设相机和角色姿态再生成画面的流程；遮罩、局部重绘和图片转三维网格用于指定要改的区域或对象。开发文档说明桌面程序基于 Rust/Tauri，前端使用 Vite，任务数据库有 SQLite 迁移。</p>
+<p><strong>适用场景与价值：</strong>例如广告分镜团队要让同一角色在一组镜头中保持位置关系，可先用场景布置与姿态控制做草稿，再比较模型输出并人工挑选，少依赖反复写长提示词来表达空间位置。</p>
+<p><strong>限制与来源：</strong>模型目录中若干版本被标为禁用或桌面端受限，不能把目录数字当成全部可用能力；后台服务在另一个仓库。后续应看实际导出流程、跨镜头一致性测试和第三方创作案例，当前效果仍主要由项目演示支撑。</p>
+<p class="source">原始资料：<a href="https://github.com/storytold/artcraft">https://github.com/storytold/artcraft</a> · <a href="https://github.com/storytold/artcraft/blob/main/_docs/dev_setup.md">https://github.com/storytold/artcraft/blob/main/_docs/dev_setup.md</a></p></article>
+<article><div class="tag">Hacker News 当前讨论 · 窗口外补充信号</div><h3><a href="https://tedhaley.ca/pensieve/">Pensieve：本机索引文件、仓库与代理会话的检索入口</a></h3>
+<p><strong>简介：</strong>Pensieve 是给 Mac 开发者与编码代理使用的本地检索工具，索引用户选定的文件夹、Git 仓库和代理会话，让人或 MCP 客户端用自然语言、精确词或过滤条件找相关片段。它想解决代理为定位一处代码而反复 grep、读取大量文件的问题。</p>
+<p><strong>技术特点：</strong>它用本机嵌入模型建语义索引，也支持精确匹配；搜索结果可给出文件和行号，代理再读取必要片段。文件改动、未提交内容与 worktree 会增量重建索引；另用 git blame 和近期提交推断代码区域的维护者。可选 AI 摘要与搜索本体分开配置。</p>
+<p><strong>适用场景与价值：</strong>例如维护者问“支付拒绝后为什么不重试”，可先找代码行和相关事故记录，再让代理读那几处原文，而不必把全库塞入上下文。页面提供的工具调用节省数字有测试方法，但仍是作者自测。</p>
+<p><strong>限制与来源：</strong>完整桌面应用要求 Apple Silicon 与 macOS 14；网页称 Linux、Intel Mac 可安装后端和浏览器视图。可选云端 AI 洞察会把选定内容交给外部模型。后续应看独立仓库基准、误召回率和长期索引成本；当前 HN 讨论是采集时列表，不代表窗口结束时排名。</p>
+<p class="source">原始资料：<a href="https://tedhaley.ca/pensieve/">https://tedhaley.ca/pensieve/</a> · <a href="https://github.com/TedHaley/pensieve">https://github.com/TedHaley/pensieve</a></p></article>
+</section>
+<footer>编选说明：核对前七个已有报告日期（10 月 3、4、5、6、7、10、11 日），按主链接、仓库及议题去重。10 月 8、9 日没有对应报告文件。Shpyrd 页面只返回一段休眠说明，缺乏可核验的产品机制，因此未入选。所有 Trending 条目均为采集时的项目发现信号。</footer></main></body></html>
