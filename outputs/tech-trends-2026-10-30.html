@@ -1,0 +1,67 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="2026-10-30 中文 AI 策展科技趋势晨报"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main><header><p class="meta">TECH MORNING BRIEF · 2026-10-30</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-10-29 07:00 至 2026-10-30 07:00，即截止前 24 小时。工作流截止值：<time datetime="2026-10-30T07:00:00+08:00">2026-10-30T07:00:00+08:00</time>。窗口用于编辑聚焦，亦纳入明确标注的当前列表补充。</p><nav><a href="#focus">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<div class="overview"><strong>中文编辑概览</strong><p>今天关注“实际生效的对象”：测试是否真的展示回归、扩容是否覆盖附加卷、加密连接是否协商到目标算法。开源侧则提供网关接入、网络测量与 AI 系统学习的具体路径。观察栏保留两个可读但仍需复现的研究实现，明确数据偏差和验证范围，不把演示与回测成绩写成采用结论。</p><p>共 10 项：今日重点 8 项、值得继续观察 2 项，含 4 个不同的 project_trending 仓库；各组织或发布方最多两项。五篇官方原文的 RSS 时间均在主窗口内；季度统计与生产实验的实际观察期在正文另列，不将披露日当作发生日。</p><p>已读取候选 JSON 中 GitHub Trending Daily 全语言与中文语种各前十，共 20 个不同仓库，并补读当前榜单。四个入选仓库是生成时当前列表补充，不代表截止时的历史排名，也不表示当日发布。Doomformer 来自截止后的 HN 当前列表，提交时间不等于项目发布时间。</p></div>
+<section id="focus"><h2>今日重点 <small>8 项</small></h2>
+<article data-kind="official" data-publisher="engineering.fb.com"><p class="meta">窗口内官方披露 · RSS 2026-10-29T16:00:12+00:00</p><h3>01 · JiTTesting：先生成能展示行为差异的测试，再判断是否真是缺陷</h3>
+<p><strong>事件简介：</strong>Meta 披露 JiTTesting 从研究走向内部生产后的结果。系统针对代码变更生成可执行测试，在合并前暴露行为变化；它补充既有测试和代码审查，不只让模型读差异后给出文字意见。</p>
+<p><strong>技术机制：</strong>系统夜间利用闲置算力筛选高风险变更。一条路径直接寻找新旧代码的行为差别，另一条先推断修改意图、构造可能的错误版本，再生成可区分它们的测试。失败样例经多个模型及确定性规则筛选，才联系工程师确认是否属于预期变化。</p>
+<p><strong>实际影响：</strong>编辑判断：大型代码库可把审查交接对象变为失败测试与执行轨迹，让开发者确认具体回归，减少逐条阅读泛化风险提示的工作。</p>
+<p><strong>限制与来源：</strong>Meta 自报联系对象中 64% 参与、发现的真阳性率为 60%，并称上半年提前捕获 74 个严重隐私缺陷；这些是内部结果，不能直接外推到其他仓库。系统仍需人设定标准并判断行为意图。</p>
+<p class="source"><a href="https://engineering.fb.com/2026/10/29/security/catching-bugs-before-they-land-jittestings-human-on-the-loop-approach-at-full-scale/">官方原文</a></p></article>
+<article data-kind="official" data-publisher="aws.amazon.com"><p class="meta">窗口内官方披露 · RSS 2026-10-29T18:06:00+00:00</p><h3>02 · RDS 附加存储卷支持自动扩容：分别设置容量上限</h3>
+<p><strong>事件简介：</strong>Amazon RDS 为 Oracle 和 SQL Server 的附加存储卷增加自动扩容。原先主卷可自动增长，附加卷则需人工预估和配置；最多三个附加卷可把总容量扩到 256 TiB，此次变化补齐这些卷的容量管理。</p>
+<p><strong>技术机制：</strong>用户为每个附加卷设定最大存储限制，服务持续监控实际用量，在接近已配置容量时自动向上扩展。新建与现有数据库实例均支持，可通过控制台、CLI 或 RDS API 开启。</p>
+<p><strong>实际影响：</strong>编辑判断：归档或业务数据持续增长时，管理员可为各卷留出受控增长空间，减少反复预测容量和手工申请扩盘的步骤；上限仍应结合预算与增长速度配置。</p>
+<p><strong>限制与来源：</strong>AWS 称扩容无停机、功能本身不另收费，但仍按已配置存储资源计费，不能理解为免费增加容量。范围限公告列明的两种引擎，覆盖商业区及美国 GovCloud；公告未给出缩容能力或具体触发阈值，本期不补写。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-rds-oracle-sqlserver-autoscaling-additional-storage-volumes">官方原文</a></p></article>
+<article data-kind="official" data-publisher="aws.amazon.com"><p class="meta">窗口内官方披露 · RSS 2026-10-29T16:00:00+00:00</p><h3>03 · Aurora PostgreSQL 增加后量子密钥交换：客户端支持与协议版本都要核对</h3>
+<p><strong>事件简介：</strong>Aurora PostgreSQL 兼容版增加后量子 TLS 密钥交换选项，用于保护客户端到数据库的传输。TLS 是加密连接协议；本次改变握手时建立共享密钥的方式，区别于本周已报道的 Serverless 计算容量扩展。</p>
+<p><strong>技术机制：</strong>18 及以上版本允许动态修改集群参数 ssl_groups，无需重启。白名单包含 X25519MLKEM768 等把传统椭圆曲线与后量子 ML-KEM 结合的组；服务端按列表顺序选择客户端同样支持的首个组。</p>
+<p><strong>实际影响：</strong>编辑判断：需要迁移数据库连接加密标准的团队，可先盘点驱动支持，再在参数组中配置并验证实际协商结果，减少把“服务已支持”误当成“现有连接已使用”的验收遗漏。</p>
+<p><strong>限制与来源：</strong>默认组仍为 prime256v1:X25519。ML-KEM 组要求 TLS 1.3；官方要求强制使用时设置最低协议为 TLSv1.3，并说明某些 TLS 1.2 RSA 握手会忽略 ssl_groups。它不是存储加密或证书签名算法的全面替换。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/10/aurora-postgresql-post-quantum-tls-key-exchange/">新增能力公告</a> · <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Security.html#PostgreSQL.Concepts.General.SSL.Groups">官方文档：默认值、协商及限制</a></p></article>
+<article data-kind="official" data-publisher="grafana.com"><p class="meta">窗口内官方披露 · RSS 2026-10-29T15:01:42+00:00</p><h3>04 · Grafana 13.3：共享变量配置，减少仪表盘之间的重复维护</h3>
+<p><strong>事件简介：</strong>Grafana 发布 13.3，其中跨仪表盘变量进入公开预览。变量常用于选择环境、区域或集群；此前同一选择器散落在多个仪表盘，修改配置时容易遗漏，造成各页查询范围不一致。</p>
+<p><strong>技术机制：</strong>用户在 Dashboards &gt; Variables 集中定义变量，并限定为组织全局或某个文件夹可用。编辑仪表盘时引用相应变量，查看者仍可改变所选值，但配置由中心维护。版本还提供公开预览的 Notebooks，把查询面板与调查说明保存在同一可编辑文档。</p>
+<p><strong>实际影响：</strong>编辑判断：新增一个生产区域后，运维团队可维护共享选择器，而非逐个复制配置；调查时把相关图表和推理写在一起，也方便同事接续检查。</p>
+<p><strong>限制与来源：</strong>跨页变量与 Notebooks 均非全面正式可用。自托管分别需开启 grafana.dashboardGlobalVariables 与 dashboard.notebooks，云端笔记逐步推出。本项聚焦配置与调查材料管理，区别于昨日 o11y-bench 的代理评分更新。</p>
+<p class="source"><a href="https://grafana.com/blog/grafana-13-3-release-all-the-latest-features/">官方原文</a></p></article>
+<article data-kind="official" data-publisher="blog.cloudflare.com"><p class="meta">窗口内官方披露 · RSS 2026-10-29T12:55:00+00:00</p><h3>05 · Cloudflare 三季度 DDoS 报告：短时小流量攻击更需要及时处理</h3>
+<p><strong>事件简介：</strong>Cloudflare 发布第三季度分布式拒绝服务攻击报告，即利用大量请求耗尽目标资源的 DDoS。窗口内的新信息是季度分析；数据覆盖七至九月，不能视为过去一天新发生的攻击。</p>
+<p><strong>技术机制：</strong>其网络记录的 1,820 万次网络层攻击中，96% 不足十分钟、98% 低于 1 Gbps。DNS 放大攻击环比增长 215%：攻击者伪造受害者地址发出小查询，让开放解析器把更大的响应送往受害者；一般 UDP 洪泛占比也明显上升。</p>
+<p><strong>实际影响：</strong>编辑判断：网站和网络团队除评估极大流量承载，还应检查短时突发能否自动识别、限流，以及是否存在开放反射服务。大量攻击在人工读到告警前已结束，仅靠事后响应可能错过处置窗口。</p>
+<p><strong>限制与来源：</strong>上述比例来自 Cloudflare 所见及所缓解的流量，不是全网普查。超 1 Tbps 攻击由二季度 805 次降到 251 次，与执法行动同期出现，文章提出可能关联，未证明单一因果；不能据此降低所有业务的防护容量。</p>
+<p class="source"><a href="https://blog.cloudflare.com/ddos-threat-report-2026-q3/">官方原文</a></p></article>
+<article data-kind="project_trending" data-publisher="higress-group"><p class="meta">GitHub Trending Daily (Chinese) 当前 Daily 前十 · 当前列表补充，非发布事件</p><h3>06 · Higress：用可热更新插件管理模型请求与工具入口</h3>
+<p><strong>简介：</strong>higress-group/higress 是基于 Istio、Envoy 的云原生 API 网关，服务于管理微服务、模型接口及代理工具的团队。可在 Kubernetes 中部署，也提供单 Docker 容器的本地体验，把请求路由与管理控制台一并启动。</p>
+<p><strong>技术特点：</strong>网关通过 Go、Rust 或 JavaScript 编写的 Wasm 插件扩展逻辑；Wasm 是隔离执行模块的格式，插件可独立升级，并处理 SSE 这类持续返回数据的流式响应。配套工具把 OpenAPI 接口描述转换为远程 MCP 工具服务，再由网关施加认证、限流与调用审计。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：给内部助手接入已有业务接口时，可先转换接口定义，再集中配置谁能调用、调用多频繁，减少每个工具服务重复编写这些接入控制；流式处理也避免先攒完整回答才转发。</p>
+<p><strong>限制与来源：</strong>README 将单容器启动定位于学习及简单站点，Kubernetes 另有 Helm 路径。它只声明兼容许多 NGINX Ingress 注解，不能据此承诺全部配置直接迁移；热更新无流量损失和规模性能均为作者描述，本期未做故障与负载实测。</p>
+<p class="source"><a href="https://github.com/higress-group/higress">当前 README</a></p></article>
+<article data-kind="project_trending" data-publisher="XIU2"><p class="meta">GitHub Trending Daily (Chinese) 当前 Daily 前十 · 当前列表补充，非发布事件</p><h3>07 · CloudflareSpeedTest：先筛延迟与丢包，再测候选地址下载速度</h3>
+<p><strong>简介：</strong>XIU2/CloudflareSpeedTest 是 Windows、Linux、macOS 等环境可运行的命令行测速工具。用户输入 IPv4、IPv6 地址段，比较 CDN 节点的延迟、丢包和下载速度，输出终端列表与 result.csv；其他 CDN 需要自行提供合适的测试地址。</p>
+<p><strong>技术特点：</strong>默认先以 TCP 连接测试延迟，再按延迟和丢包条件过滤，逐个测试候选地址下载速度并排序。HTTPing 模式改用 HTTP 请求，也可从响应头识别地区；并发、端口、测试时长及速度下限都能通过参数指定。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：排查同一网站在不同接入网络中的体验时，可在各网络分别跑相同条件，将连接建立与实际传输分开比较，减少仅凭一次 ping 就选节点的误判；CSV 也便于留存当次样本。</p>
+<p><strong>限制与来源：</strong>默认下载地址不保证可用，作者建议自建；代理会污染结果，每段随机取样也使多次输出不同。工具只适用于网站，不支持 UDP 的 WARP 优选。HTTPing 并发过高可能触发扫描限制，测速结果不是长期速度保证。</p>
+<p class="source"><a href="https://github.com/XIU2/CloudflareSpeedTest">当前 README</a></p></article>
+<article data-kind="project_trending" data-publisher="Infrasys-AI"><p class="meta">GitHub Trending Daily (Chinese) 当前 Daily 前十 · 当前列表补充，非发布事件</p><h3>08 · AISystem：从芯片、编译器到推理引擎理解 AI 系统</h3>
+<p><strong>简介：</strong>Infrasys-AI/AISystem 是面向高年级学生、研究生和 AI 系统工程师的开源课程与幻灯片资料库。它关注模型背后的计算机系统设计，提供文字、视频和 PPT 入口，帮助读者把算法需求与硬件、编译、运行框架联系起来。</p>
+<p><strong>技术特点：</strong>内容按系统概述、芯片架构、编译、推理、框架组织。编译部分把计算图的算子融合与内存优化对应到前端，再讨论后端内核优化和自动调优；推理部分接到量化、模型转换、调度等部署环节，框架部分解释自动微分和计算图执行。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：模型上线后速度不达预期时，工程师可按这些层次定位学习缺口，区分是图转换、算子实现还是硬件访存问题，减少只反复换模型参数却不了解执行路径的尝试。它侧重系统实现，区别于本周模型训练与算法入门教材。</p>
+<p><strong>限制与来源：</strong>仓库提示约 10 GB，建议按 Releases 下载所需资料；文字仍在补充，多面体章节标为待更新。最新大模型内容另归档到 AIFoundation，不能把本库视为完整实时资料；引用 PPT 需标明出处。</p>
+<p class="source"><a href="https://github.com/Infrasys-AI/AISystem">当前 README</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察 <small>2 项</small></h2>
+<article data-kind="project_trending" data-publisher="hugo2046"><p class="meta">GitHub Trending Daily (Chinese) 当前 Daily 前十 · 当前列表补充，非发布事件</p><h3>09 · QuantsPlaybook 的离线 RRG 复现：把数据偏差放在回测结果旁</h3>
+<p><strong>简介：</strong>hugo2046/QuantsPlaybook 是用 Python 复现金工研报的研究代码库。本项观察其中行业相对旋转图 RRG 的离线实验：面向学习量化研究流程的人，从本地 DuckDB 快照计算行业信号、映射 ETF，再生成组合和回测报表。</p>
+<p><strong>技术特点：</strong>相对强度与动量形成双轴信号，随后构建行业暴露矩阵，以 cvxpy 求解带行业上限的组合，再用 vectorbt 回测。Notebook 以收盘信号、次日开盘成交运行；缺数据会抛 OfflineDataError，不静默插值，便于暴露快照覆盖问题。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：研究者可先安装依赖、取得约 1.1 GB 快照并运行同一 Notebook，再对照研报查差异，减少先搭在线行情接口的准备；这仍是方法教学，不是直接交易系统。</p>
+<p><strong>限制与来源：</strong>项目承认流通市值替代自由流通市值、季度 ETF 持仓不完整，以及只保留在售 ETF、漏掉退市样本的生存偏差，会改变约束与收益；只支持快照内行业等权基准。后续应看补入完整持仓及退市样本后的独立复跑、窗口一致的对照，才判断结论是否稳健，不能采用总 README 的宣传收益作验证。</p>
+<p class="source"><a href="https://github.com/hugo2046/QuantsPlaybook">仓库 README：定位与用法</a> · <a href="https://github.com/hugo2046/QuantsPlaybook/blob/master/C-%E6%8B%A9%E6%97%B6%E7%B1%BB/%E7%9B%B8%E5%AF%B9%E6%97%8B%E8%BD%AC%E5%9B%BERRG%E8%A1%8C%E4%B8%9A%E8%BD%AE%E5%8A%A8/README.md">RRG 项目：流程、已知偏离与离线限制</a></p></article>
+<article data-kind="discussion" data-publisher="mottopanikeiku"><p class="meta">HN 当前列表补充 · 提交 2026-10-29T23:25:46+00:00，晚于截止；非发布日期</p><h3>10 · Doomformer：把整数网络编成游戏地图，并逐项核对计算结果</h3>
+<p><strong>简介：</strong>mottopanikeiku/doomformer 是把整数神经网络编译为 ZDoom 地图的实验工具，在 ViZDoom 中运行，适合研究非常规计算和编译验证的人。Python 3.11 以上的 Linux、macOS 可安装，示例包括小网络计算和手写数字识别。</p>
+<p><strong>技术特点：</strong>地图中的玩家替身穿过带权重的触发线完成累加，用区域亮度、地板和天花板高度保存数值，门与楼梯表达比较及激活。Python 从游戏读回暴露值，与独立 NumPy 整数实现逐项比较，容差为零；编译结果也可静态提取权重检查。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：教学时可以改变一条权重线，再观察输出与校验如何变化，把抽象矩阵运算及编译错误变成可检查的具体对象，价值在可视化实验和验证路径。</p>
+<p><strong>限制与来源：</strong>它依赖 ZDoom 扩展格式及 ACS 脚本，不是原版 1993 年引擎。作者承认远慢于 NumPy，Transformer 转换也限特定训练配方；整数结果一致不证明分类正确或编译器普遍正确。应跟踪独立随机网络复跑、不同引擎兼容性及未覆盖输入，而非将演示当成实用推理加速。</p>
+<p class="source"><a href="https://github.com/mottopanikeiku/doomformer">当前 README</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-10-23 至 2026-10-29 的七份现存报告，按规范化主链接、GitHub owner/repository 及底层议题核对。排除 Superpowers、ThinkRail、Bili23、DeepTutor、Impeccable、OpenBot 等旧项目，并排除相近的前端设计、消息机器人及跨工具上下文连续性候选。AISystem 聚焦芯片、编译及推理系统，区别于训练入门；QuantsPlaybook 本项聚焦离线数据口径与研究复现，七日内未报道同项研究。Aurora 与 Grafana 的本次具体变更已在条目解释，没有用旧事件凑数。</p><p>来源核验：通过受信任 orz_fetch 远程 MCP 的 web_fetch 标准协议读取原文、项目当前 README 的定位、机制、用法及相关限制，并补读 Aurora 官方参数文档和 RRG 项目说明。会话未直接暴露该工具，故使用 MCP 协议调用。支持原文、URL、摘录和筛选记录保存在 work/tech-trends-2026-10-30/。采集器未报告来源组失败，本次核验没有请求失败；总条数、Trending 和观察栏均无短缺。作者结果与编辑判断已区分，本期未实测项目功能或性能。</p><p>原始预览与候选 JSON 仅作证据，未作为最终报告。报告、轻量跳转页与索引留在工作树，提交与线上发布交由后续工作流；本次未验证线上发布结果。</p></footer></main></body></html>
