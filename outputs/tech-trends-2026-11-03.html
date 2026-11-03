@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="2026年11月3日中文科技趋势策展报告"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head>
+<body><main><header><p class="meta">TECH MORNING BRIEF · 2026-11-03</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-02 07:00 至 2026-11-03 07:00，即截止前 24 小时。工作流截止值：<code>2026-11-03T07:00:00+08:00</code>。窗口用于编辑聚焦，亦纳入明确标注的近期和当前列表补充。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<div class="overview"><h2>中文编辑概览</h2><p>今天的技术主线是把操作对象和实际边界说清楚：DNS 增量计算要证明输出等价，桌面代理要回读操作结果，模型凭证管理也要覆盖服务启用和微量探测。开源工具呈现了从控件树、网页会话到视觉任务链的不同自动化方法；观察栏关注本地大模型推理与自动遥测注入，等待跨环境复现。</p><p>共 10 项：今日重点 8 项、值得继续观察 2 项，含 5 个不同的 project_trending 仓库，各组织或发布方均不超过两项。四篇官方材料的 RSS 时间落在主窗口内；Google 调查正文标为 11 月 2 日、未给时分，来自截止后的 HN 补充。事故调查覆盖此前事件，不等于当日新发生。</p><p>筛选范围为采集器读取的 GitHub Trending Daily 全语言及中文语种各前十，去重共 20 个仓库。榜单仅是生成时的当前关注信号，不代表 07:00 截止时的历史排名；项目采集锚点与 HN 提交时间均不等于项目发布日期。</p></div>
+<section id="main"><h2>今日重点</h2><p class="meta">8 项</p>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内工程披露 · RSS 2026-11-02 14:00 UTC</p><h3>01 · Cloudflare DNS 定向构建：只重算能证明需要更新的部分</h3>
+<p><b>事件简介：</b>Cloudflare 披露 DNS 构建流水线改造。DNS 区域保存一个域名的记录与设置；某些设置变化过去会重建整个区域，大客户数千万条记录因此反复加载。本次新材料解释怎样缩小计算范围，并非新的 DNS 协议。</p>
+<p><b>技术机制：</b>事件携带变更字段，规划器选择只更新指定名称、名称加共享元数据或完整区域；执行前重读数据库，避免排队期间状态改变。调度器合并同一区域的工作，Kafka 消息在此前任务全部完成后才推进确认位置，优先允许重做而不丢变更。</p>
+<p><b>实际影响：</b>编辑判断：维护配置发布系统时，可借鉴“目标输出须与全量构建逐字节一致”的验收方式。作者用生产流量镜像比较输出，报告峰值内存从 79 降至 12 GiB，进一步缩短等待后，中位构建延迟由约 7.7 降至 3.3 秒。</p>
+<p><b>限制与来源：</b>延迟只到写入 Quicksilver，不含全球分发，也不是单个区域的承诺。未知变更通常仍全量构建；超大区域因无法完成全量构建而有例外，罕见情况需人工重建名称。数字为 Cloudflare 自报。</p>
+<p class="source"><a href="https://blog.cloudflare.com/dns-targeted-zone-builds/#choosing-the-smallest-safe-build">官方原文：规划、镜像验证与例外</a></p></article>
+<article data-kind="discussion" data-publisher="Google"><p class="meta">官方调查 2026-11-02，未给时分 · 截止后 HN 当前列表补充</p><h3>02 · LLMJacking 调查：盗取模型访问权，再通过中继出售额度</h3>
+<p><b>事件简介：</b>Mandiant 汇总 2026 年多起企业模型资源盗用事件：攻击者拿到云身份或模型密钥后，将推理费用记到受害组织账上。调查称部分个案单日超过十万美元、累计接近或达到百万美元；这是调查披露，不能当作过去一天刚发生的损失。</p>
+<p><b>技术机制：</b>入口包括泄露的服务账号、代码仓库访问令牌和公开模型端点。攻击者以 max_tokens=1 的极小请求验证密钥，再创建更多身份、启用模型服务；下游“LLM Mixer”中继汇集这些凭证，路由并转售调用，把窃取访问权与售卖额度分工。</p>
+<p><b>实际影响：</b>编辑判断：企业应同时监控模型调用与身份、服务启用变化。仅看大流量告警可能漏掉前期微量探测；密钥按环境、模型及额度分开，可限制一个普通工具凭证被拿去调用昂贵模型的范围。</p>
+<p><b>限制与来源：</b>攻击链与金额来自调查方个案，不代表行业发生率；低价服务是否依赖赃物也须按具体证据判断。正文日期在观察日内但无精确时间，HN 提交在截止后，本期作为近期调查补充。</p>
+<p class="source"><a href="https://cloud.google.com/blog/topics/threat-intelligence/llmjacking-monetizing-compromised-cloud-models/">调查原文：攻击链、检测与处置</a></p></article>
+<article data-kind="project_trending" data-publisher="vercel-labs"><p class="meta">GitHub Trending 全语言 Daily 前十 · project_trending · 当前列表补充，非新发布</p><h3>03 · agent-desktop：从系统控件树取得可操作对象，再回读确认</h3>
+<p><b>简介：</b>vercel-labs/agent-desktop 是供 AI 代理操作桌面应用的命令行工具与 C 库，支持 macOS、Windows、Linux。它读取操作系统的无障碍控件树，返回按钮、输入框等对象，适合让现有代理完成桌面中的点击与填表。</p>
+<p><b>技术特点：</b>snapshot 返回 JSON 快照及带快照标识的元素引用，代理用该引用执行动作后再次取快照。界面变化导致引用过期或目标不唯一时返回明确错误，须重新定位；默认通过无障碍接口操作，不移动鼠标或抢焦点，显式 headed 模式才允许物理输入。</p>
+<p><b>适用场景与价值：</b>编辑判断：需要从桌面管理软件读取列表再填写表单时，代理可先识别具名控件、操作后核对新状态，减少反复按截图猜坐标的步骤。任务规划仍在调用它的代理中，工具不会自行完成整条业务流程。</p>
+<p><b>限制与来源：</b>macOS 要授予无障碍权限，Linux 需图形会话与 AT-SPI 组件；Wayland 截图、剪贴板等各有依赖。部分按住键鼠命令暂拒执行。快照和截图可能含桌面私密内容，不能据“本地 CLI”推断输出可公开。</p>
+<p class="source"><a href="https://github.com/vercel-labs/agent-desktop#readme">README：定位、引用、安装与平台边界</a></p></article>
+<article data-kind="project_trending" data-publisher="D4Vinci"><p class="meta">GitHub Trending 全语言 Daily 前十 · project_trending · 当前列表补充，非新发布</p><h3>04 · Scrapling：把普通请求、浏览器会话和可续跑采集接起来</h3>
+<p><b>简介：</b>D4Vinci/Scrapling 是 Python 网页采集框架，面向需要提取静态页面、动态网站或后台接口数据的开发者。可从单页字段提取扩展到并发爬取，输出 JSON、CSV 或 Markdown，也提供命令行和供代理接入的工具协议服务。</p>
+<p><b>技术特点：</b>同一个 Spider 可按会话 ID 将链接分给 HTTP 会话或 Chromium 浏览器会话，解析函数用 CSS、XPath 选择字段，再产生后续请求。crawldir 保存待处理请求和已见链接，使中断后可续跑；自动节流依据响应速度及限流反馈调整每个域名的等待时间。</p>
+<p><b>适用场景与价值：</b>编辑判断：同步一个同时含静态目录与脚本详情页的知识站时，可让目录走轻量请求、详情页走浏览器，共用解析与导出流程，减少分别维护两套采集脚本的工作。它侧重采集调度，区别于近期只讨论浏览器执行与脚本重放的项目。</p>
+<p><b>限制与来源：</b>要求 Python 3.10+。基础 pip 包只有解析器，抓取与爬虫需额外依赖，浏览器路径还要安装浏览器；续跑检查点不保存结果，条目须另存。性能和反机器人能力是作者主张，不是任意站点可用保证。</p>
+<p class="source"><a href="https://github.com/D4Vinci/Scrapling#getting-started">README：会话、续跑示例及安装限制</a></p></article>
+<article data-kind="project_trending" data-publisher="maotoumao"><p class="meta">GitHub Trending 中文语种 Daily 前十 · project_trending · 当前列表补充，非新发布</p><h3>05 · MusicFree：播放器负责分页与缓存，音源通过插件接入</h3>
+<p><b>简介：</b>maotoumao/MusicFree 是 Android、Harmony OS 音乐播放器，提供主题、歌单与歌词等功能。它本身不集成任何平台音源，搜索和播放依靠另装插件；桌面版是另一仓库，不能把当前项目直接写成全平台音乐服务。</p>
+<p><b>技术特点：</b>插件是符合协议的 CommonJS 模块，定义搜索、播放、歌单导入和取歌词等函数，播放器处理分页与缓存。用户可从本地或网络安装 JavaScript 文件、JSON 描述文件；歌词还可在歌曲间建立关联，沿关联链使用同一份歌词。</p>
+<p><b>适用场景与价值：</b>编辑判断：维护自有音乐资料库的人，可编写插件将目录查询与播放地址转换为约定输入输出，沿用播放器的歌单、缓存及界面，减少为一种新数据来源重写客户端的工作。它关注播放接入，区别于本周网页嗅探和视频下载工具。</p>
+<p><b>限制与来源：</b>README 提醒项目可能长期处于不稳定测试版，更新频率不定；第三方插件需自行检查安全性。示例源过滤 VIP、试听和付费歌曲，不提供破解。代码列为 AGPL 3.0，另有使用约定；本期未测试插件可用率。</p>
+<p class="source"><a href="https://github.com/maotoumao/MusicFree#插件">README：插件协议、安装与限制</a></p></article>
+<article data-kind="project_trending" data-publisher="MaaAssistantArknights"><p class="meta">GitHub Trending 中文语种 Daily 前十 · project_trending · 当前列表补充，非新发布</p><h3>06 · MAA：用识别结果驱动任务跳转，减少游戏日常重复点按</h3>
+<p><b>简介：</b>MaaAssistantArknights/MaaAssistantArknights 是《明日方舟》游戏助手，利用图像识别执行作战、基建换班、招募及奖励领取等日常任务。常见用法是在电脑连接受支持模拟器后勾选、排序任务；也有命令行和多语言接口供开发者集成。</p>
+<p><b>技术特点：</b>任务 JSON 将识别算法、动作与 next 后继任务分开：模板匹配或文字识别命中后执行点击，再按顺序寻找首个匹配的后继。roi 限定识别区域，maxTimes 限制重复次数，onErrorNext 指定异常后的路径，流程不只是固定坐标连点。</p>
+<p><b>适用场景与价值：</b>编辑判断：玩家每天重复进入多个菜单时，可按画面状态推进同一任务链，少逐次等待并点按；维护者也可通过模板与 JSON 调整界面适配。本项针对特定游戏视觉任务，不重复近期通用 Android 远程控制平台。</p>
+<p><b>限制与来源：</b>新手手册主要针对 Windows 10／11 的 WPF 界面，部分定时等功能不属于核心库，其他界面可能缺失。模拟器须按要求设分辨率，美服要求 1920×1080；外服功能未全面测试，不能将“支持”理解为完全等效。</p>
+<p class="source"><a href="https://github.com/MaaAssistantArknights/MaaAssistantArknights#readme">当前 README</a> · <a href="https://docs.maa.plus/zh-cn/manual/newbie.html">新手用法与平台差异</a> · <a href="https://docs.maa.plus/zh-cn/protocol/task-schema.html">任务字段与执行顺序</a></p></article>
+<article data-kind="official" data-publisher="Docker"><p class="meta">窗口内官方技术指南 · RSS 2026-11-02 14:00 UTC，非版本发布</p><h3>07 · Docker Sandbox 工作区指南：代码放在哪里，决定如何交接结果</h3>
+<p><b>事件简介：</b>Docker 发布沙箱代码布局指南，区分共享宿主检出、任务独立工作树，以及把仓库完全留在沙箱内的方式。新信息是文件、依赖与 Git 操作的具体交接边界，区别于本周虚构漏洞案例中的审查输出核验。</p>
+<p><b>技术机制：</b>直接挂载让编辑器即时看到代理修改，但切换分支也会改变代理正在处理的文件。只挂载链接工作树时，其 .git 指向挂载外元数据，沙箱内不能正常做 Git 操作；clone mode 则把宿主源只读挂载，再建立具有自身元数据的独立克隆。</p>
+<p><b>实际影响：</b>编辑判断：需要边改边预览时可共享检出；希望代理自行管理分支时，可用独立克隆，审阅后取回已提交分支。这样把并行任务的文件变化分开，减少人工编辑和代理改动互相混入，但仍须协调共享服务与工具。</p>
+<p><b>限制与来源：</b>共享目录中的原生依赖可能在 Linux 沙箱与宿主系统间不兼容。无挂载模式需发布端口才能预览服务，删除沙箱会丢失只存在其中的文件；分支本身不能隔离同一目录的同时编辑。</p>
+<p class="source"><a href="https://www.docker.com/blog/docker-sandbox-code-checkout-workflows/">官方指南：布局、Git 元数据与交接</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内官方公告 · RSS 2026-11-02 18:43 UTC</p><h3>08 · RDS 快照费用细分：按备份对象追查保留成本</h3>
+<p><b>事件简介：</b>Amazon RDS 支持按单个数据库快照查看费用。过去成本与使用报告、Cost Explorer 只在数据库实例层面聚合快照开销，管理员能看到一台实例的总备份成本，却难以直接追查某份快照的费用。</p>
+<p><b>技术机制：</b>新能力默认启用，快照可使用成本分配标签，在账务分析中细分到具体备份对象。它改变费用归属的可见粒度，不是自动删除快照、修改保留策略或调整存储容量；与本周附加卷自动扩容是不同变更。</p>
+<p><b>实际影响：</b>编辑判断：团队为测试、迁移和长期留存保存多份快照时，可给对象标明用途，再核对哪些备份持续产生费用，减少只凭实例总账反推责任项目的工作。是否删除仍需结合恢复要求判断，标签不会代替保留决策。</p>
+<p><b>限制与来源：</b>公告称覆盖全部 RDS 引擎、商业区域及美国 GovCloud，无额外功能费；这不表示快照存储免费。原文未说明历史账单是否回溯细分，也未提供自动节费效果，不能据此承诺成本下降。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-rds-per-snapshot-billing/">官方公告：粒度、标签和范围</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察</h2><p class="meta">2 项</p>
+<article data-kind="project_trending" data-publisher="FlashML-org"><p class="meta">GitHub Trending 全语言 Daily 前十 · project_trending · 当前列表补充，非新发布</p><h3>09 · FreeToken：在个人硬件上协调专家权重与上下文缓存</h3>
+<p><b>简介：</b>FlashML-org/FreeToken 是面向个人电脑的混合专家模型推理引擎。混合专家模型每步只激活部分专家网络；项目把 GPU、CPU 和主存组合起来运行开放权重模型，提供桌面应用及兼容常用模型接口的本地服务，服务于想在自有硬件运行代理的开发者。</p>
+<p><b>技术特点：</b>README 列出按带宽安排 CPU／GPU 协作、双缓冲提示处理，以及按最近使用情况淘汰的专家缓存。显存可在专家权重和上下文键值缓存间动态重新分配；语义锚点保存状态，旨在减少工具调用等上下文编辑后的重复计算。</p>
+<p><b>适用场景与价值：</b>编辑判断：给本地编码助手接模型时，可先用 ft serve 启动，再把客户端基础地址指向本地，减少重写调用端的工作。机制是否节省等待，取决于模型、缓存命中与硬件带宽，兼容接口不等于代理任务质量已获验证。</p>
+<p><b>限制与来源：</b>桌面版列 Windows／Linux；命令行安装文档要求 Linux x86_64、NVIDIA、r580+ 驱动和 CUDA 13 工具链，AMD 指南仍为 WIP。应继续观察固定模型与硬件下的第三方吞吐、尾延迟、长会话稳定性及质量对照，不能把作者宣传速度当普遍结果。</p>
+<p class="source"><a href="https://github.com/FlashML-org/FreeToken#about">README：机制与定位</a> · <a href="https://github.com/FlashML-org/FreeToken/blob/main/docs/install.md">安装要求</a> · <a href="https://github.com/FlashML-org/FreeToken/blob/main/docs/quickstart.md">服务与代理接入</a></p></article>
+<article data-kind="official" data-publisher="Grafana"><p class="meta">窗口内正式可用公告 · RSS 2026-11-02 15:44:53 UTC</p><h3>10 · Instrumentation Hub 正式可用：自动注入 SDK 仍须核对重启行为</h3>
+<p><b>事件简介：</b>Grafana Cloud 将 Instrumentation Hub 转为正式可用，并增加选择性 OpenTelemetry SDK 注入。它先发现 Kubernetes 中的服务，再按范围接入遥测；本项关注采集部署，区别于近期代理质量评估与仪表盘配置。</p>
+<p><b>技术机制：</b>界面选择经 Fleet Management 下发到 Alloy，写成按命名空间、标签匹配的规则。Pod 创建时，准入 webhook 挂载 SDK，并用 LD_PRELOAD 等启动变量加载到进程；Beyla 的内核侧 eBPF 观测与进程内 SDK 配合，避免重复产生指标。</p>
+<p><b>实际影响：</b>编辑判断：运维可先给一组服务接入调用链，再调整采样与范围，减少逐应用改代码和镜像的准备。但博客“无需破坏性重启”不应简写为不重启：文档明确现有 Pod 要重建，配置或 SDK 变化也会触发替换，并遵守中断预算。</p>
+<p><b>限制与后续观察：</b>仅限 Linux Kubernetes，SDK 支持 .NET、Java、Node.js、Python；冲突的 LD_PRELOAD、自带 SDK 或原生编译应用等会被跳过。应跟踪不同运行时的兼容、滚动替换时延与实际遥测覆盖；注入器失效时放行 Pod，不代表 SDK 已成功注入。</p>
+<p class="source"><a href="https://grafana.com/blog/instrumentation-hub-start-your-observability-journey-easier-and-still-stay-in-control/">正式可用公告</a> · <a href="https://grafana.com/docs/grafana-cloud/send-data/inst-hub-setup/sdk-injection/">注入、重建与跳过条件</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-10-27 至 2026-11-02 七份现存报告，按规范化主链接、GitHub owner/repository 与底层议题核对。排除 Game Studios、T3 Code、猫抓、Kornia、CloudflareSpeedTest 等已报道仓库，以及相近的金融预测、会话记忆与入门算法教材。Docker、Grafana 和 RDS 条目分别解释与先前报道的不同具体对象，没有将旧热度当新发布。</p><p>来源核验与不足：使用受信任 orz_fetch MCP 的 web_fetch 读取入选原文、当前 README 的介绍、设计、用法与限制，另补读 MAA、FreeToken 和 Grafana 文档。原始响应、URL、支持摘录和筛选记录保存在 work/tech-trends-2026-11-03/。中文 Trending 额外读取达到 50,000 字符上限，未取得项目正文，筛选范围采用本次采集器成功获得的前十条；未据截断榜单补写排名。采集器未报告来源组失败，所选十项主来源均可读，没有条数、Trending 配额或观察栏短缺。Grafana 博客与文档的重启表述存在差异，正文已按机制说明。本期未运行项目或独立复测性能，作者陈述与编辑判断已区分。</p><p>原始预览与候选 JSON 仅作证据，没有作为最终报告发布。报告、轻量跳转页与索引留在工作树，由后续工作流提交与发布；本次未验证线上发布结果。</p></footer></main></body></html>
