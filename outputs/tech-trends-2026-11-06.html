@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main>
+<header><div class="meta">TECH MORNING BRIEF · 2026-11-06</div><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-05 07:00 至 2026-11-06 07:00，即截止前 24 小时。工作流截止值：2026-11-06T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；当前榜单与近期补充均另行标注。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<aside class="overview"><strong>中文编辑概览</strong><p>本期关注数据与责任如何沿工程链路传递：临时文件有取件与失效规则，构建依赖有来源记录，网页答案有引用，资源解析则必须统一检查边界。观察栏追踪 Git 存储的计算拆分、TPU 容量诊断及跨机构代理授权，分别等待上线数据、故障复验和协议互通证据。</p><p>共 10 项：今日重点 7 项，值得继续观察 3 项；包含 4 个不同的 project_trending 仓库，各组织或发布方最多两项。五篇官方材料 RSS 时间位于主窗口内；GhostMap 正文仅标 11 月 5 日，来自截止后 HN 当前列表，不断言精确发表时分。</p><p>已读取候选 JSON 的 GitHub Trending Daily 全语言与中文语种各前十，去重共 20 个仓库。榜单为生成时信号，不代表窗口结束时的历史排名，不意味着当日发布；项目采集锚点和 HN 提交时间均不当作项目发布时间。</p></aside>
+<section id="main"><h2>今日重点 <small>7 项</small></h2>
+<article data-kind="project_trending" data-publisher="vastsa"><div class="meta">GitHub Trending Daily 当前前十 · project_trending · 生成时补充信号，非新发布</div><h3>01 · FileCodeBox：用取件口令交付临时文件</h3>
+<p><strong>简介：</strong>vastsa/FileCodeBox 是可自托管的文件与文本分享工具，面向临时交付资料的人。发送者无需注册，上传后取得口令，接收者输入口令取件；服务可用 Docker 启动，数据目录挂载到宿主保存。</p>
+<p><strong>技术特点：</strong>FastAPI 后端与 Vue 3 界面把文件、文本放进同一分享流程，支持分片上传，并按时间或取件次数失效、清理。存储可用本地、S3、OneDrive 或 WebDAV；兼容 MCP 工具协议的客户端还能调用 share_text、share_file 创建分享。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：给外部协作者交付一次性日志包时，可设置取件次数与保存时长，减少创建账户、发完后再手工清理文件的步骤；存储仍由部署方选择和管理。</p>
+<p><strong>限制与来源：</strong>安全文档默认单文件上限为 10 MiB，可配置；首次启动须设置管理员密码。MCP 默认不要求 Token，关闭游客上传或启用 Token 校验后才要求凭证，公开部署须明确这一入口的访问设置。</p>
+<p class="source"><a href="https://github.com/vastsa/FileCodeBox#readme">当前 README</a> · <a href="https://fcb-docs.aiuo.net/guide/security">安全设置</a></p></article>
+<article data-kind="project_trending" data-publisher="lz4"><div class="meta">GitHub Trending Daily 当前前十 · project_trending · 生成时补充信号，非新发布</div><h3>02 · LZ4：把压缩速度与压缩比的取舍显式交给调用者</h3>
+<p><strong>简介：</strong>lz4/lz4 提供无损压缩算法的 C 参考库与命令行程序，面向需要快速压缩、解压文件或数据流的开发者。它可通过 Make 构建，也提供 CMake、Meson、Visual Studio 路径；本项是项目发现，不是版本发布。</p>
+<p><strong>技术特点：</strong>调用者可提高 acceleration 因子，用压缩比换取压缩速度；LZ4_HC 则多花压缩端 CPU，争取更小结果。长数据流拆成多个块，再放入 frame 帧格式；跨实现互通需要遵守帧规范，不能只约定裸块算法。字典输入仅使用末尾 64 KB。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：日志传输链路若更在意接收端解压开销，可用自身样本比较普通与 HC 模式，在发送端多做计算、保持相同解码路径；小消息也可测试共同字典，减少重复内容占用。</p>
+<p><strong>限制与来源：</strong>README 基准注明处理器、编译器与语料，速度不是任意业务保证。库采用 BSD 2-Clause，命令行采用 GPL-2.0-or-later；嵌入库与分发程序需分别核对许可。压缩比也必须用实际数据验收。</p>
+<p class="source"><a href="https://github.com/lz4/lz4#readme">README：机制、构建及格式</a></p></article>
+<article data-kind="project_trending" data-publisher="aoaostar"><div class="meta">GitHub Trending Daily 当前前十 · project_trending · 生成时补充信号，非新发布</div><h3>03 · aoaostar/legado：把阅读客户端配置整理为可导入资源</h3>
+<p><strong>简介：</strong>aoaostar/legado 是「阅读」APP 的书源、订阅源、净化规则、排版和主题配置集合，供已有客户端的用户选择导入。它不是阅读器源码，也不负责提供一个新的电子书客户端；README 另链实际 APP 下载入口。</p>
+<p><strong>技术特点：</strong>资源按用途分组，书源和主题多以 JSON 文件发布，排版配置另有 ZIP。每组列出上游入口、条数、上次同步状态、更新时间与同步时间，使“成功取回配置”和“上游内容发生变化”有可区分的记录。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：在另一台设备恢复阅读配置时，可按类别选择同一组资源，减少逐项寻找主题和规则的工作；维护者也可从失败状态定位需要检查的上游，而不是把所有导入问题都归因于客户端。</p>
+<p><strong>限制与来源：</strong>仓库页明确不支持一键导入，需前往其配套网站；当前列表中已有一组同步失败。同步成功不证明每条书源仍可用，README 未提供逐源可用率或性能测试，本期不推断其覆盖质量，也不把同步日期写成发布日。</p>
+<p class="source"><a href="https://github.com/aoaostar/legado#readme">当前 README：资源与同步记录</a></p></article>
+<article data-kind="official" data-publisher="AWS"><div class="meta">窗口内公告 · RSS 2026-11-05 20:56 UTC</div><h3>04 · Web Answer 正式可用：一次工具调用返回带引用的网页答案</h3>
+<p><strong>事件简介：</strong>AWS 宣布 Amazon Bedrock AgentCore 的 Web Answer 正式可用。原有 Web Search 负责找内容，新工具进一步返回综合答案及引用，供构建联网代理的开发者使用，减少自行串接搜索、读取和答案生成的环节。</p>
+<p><strong>技术机制：</strong>工具自行规划搜索，并行执行多次检索，再判断证据是否足以回答。调用方可用域名包含、排除列表及发表日期过滤器限定材料范围；它作为 AgentCore Gateway 的目标，经 MCP 工具协议调用，以 IAM 云身份权限认证。</p>
+<p><strong>实际影响：</strong>编辑判断：内部助手需要回答近期产品兼容问题时，可先限定官方文档域名和时间，再把返回引用交给用户核查，减少为每类问题重建搜索与综合流水线的工程工作。</p>
+<p><strong>限制与来源：</strong>公告仅列美国东部北弗吉尼亚区域，按工具调用计费，未给检索质量或时延测量。AWS 的 zero data egress 是厂商表述，不能据此推断任意数据和合规要求均已满足；有引用也不证明答案逐句正确。本项区别于此前 Kiro GovCloud 搜索入口的区域扩展。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/web-answer-amazon-bedrock/">正式可用公告</a></p></article>
+<article data-kind="official" data-publisher="Docker"><div class="meta">窗口内公告 · RSS 2026-11-05 15:28:22 UTC</div><h3>05 · Docker 与 ActiveState：让应用依赖也经过受控上游</h3>
+<p><strong>事件简介：</strong>Docker 宣布与 ActiveState 合作，将受控内容从基础镜像延伸至应用安装的依赖包。基础镜像中系统包经过维护，并不意味着构建时 pip、npm 或 Maven 从公共仓库取回的应用库也已获批准；此次合作针对后一个环节。</p>
+<p><strong>技术机制：</strong>ActiveState Curated Catalog 只提供团队批准的组件，从原始源码构建，并附软件物料清单 SBOM 和构建来源记录。团队已有的 Artifactory 或 Nexus 可把它设为上游，开发者和编码代理继续使用熟悉的包管理命令。</p>
+<p><strong>实际影响：</strong>编辑判断：平台团队可集中确定允许进入构建的依赖版本，应用团队少逐包重复准备来源证据；基础镜像与应用包的维护责任也能分别追查。这区别于近期 Docker 沙箱的执行隔离。</p>
+<p><strong>限制与来源：</strong>修复时限为服务方承诺：ActiveState 关键漏洞五个工作日、高危十个；DHI 部分能力属付费档。公告仍要求固定摘要、冷静期和沙箱，受控目录不替代这些控制，也未给独立的攻击拦截或总体节费测量。</p>
+<p class="source"><a href="https://www.docker.com/blog/docker-activestate-trusted-content/">官方合作与供应链机制</a></p></article>
+<article data-kind="discussion" data-publisher="Bitdefender"><div class="meta">近期调查 2026-11-05，未给时分 · 截止后 HN 当前列表补充</div><h3>06 · GhostMap 调查：资源解析分歧可让 Android 陷入反复崩溃</h3>
+<p><strong>事件简介：</strong>Bitdefender 披露 GhostMap：特制 Android 安装包即使不含可执行代码、不申请权限，也可在系统自动读取资源时触发持续崩溃。最初野外样本只导致安装失败；反复崩溃版本是研究者后续复现，不能写成已发生的大规模攻击。</p>
+<p><strong>技术机制：</strong>APK 使用 ZIP 容器。两个系统库对非常规压缩方式分类不一致，使声明长度绕过边界检查，随后按这个长度映射文件；读取超出真实文件范围的区域会触发 SIGBUS 原生错误，杀死进程。若读取者是 system_server，重启后再次读取便形成循环。</p>
+<p><strong>实际影响：</strong>编辑判断：维护安装包扫描流水线时，应把结构校验放在调用系统解析器之前，并隔离解析进程，避免一个异常包拖垮整个扫描任务。问题说明“没有执行代码”也不等于解析输入安全。</p>
+<p><strong>限制与来源：</strong>研究方报告复现覆盖 Android 10 起的版本，并列出 Pixel 10、Android 17 的具体构建；这些不是全设备普查。其称发表时无修复、Google 未按安全更新处理，均为研究方披露；故障属于拒绝服务，未证明代码执行或数据窃取。</p>
+<p class="source"><a href="https://www.bitdefender.com/en-us/blog/labs/ghostmap-android">研究原文、时间线与崩溃证据</a></p></article>
+<article data-kind="official" data-publisher="GitHub"><div class="meta">窗口内公告 · RSS 2026-11-05 16:00 UTC</div><h3>07 · GitHub 识别 ACCESSIBILITY.md：给无障碍限制一个固定入口</h3>
+<p><strong>事件简介：</strong>GitHub 现在在仓库概览突出显示 ACCESSIBILITY.md，让维护者集中说明无障碍目标、测试环境、已知障碍与反馈流程。此前信息可能散落在问题单和贡献说明中，遇到屏幕阅读器或键盘操作问题的人难以找到具体处理路径。</p>
+<p><strong>技术机制：</strong>平台识别根目录、.github 或 docs 中的同名文件，也支持从组织的 .github 仓库继承。公开仓库可从 Insights 的 Community Standards 创建初始文档；新仓库默认带 accessibility 标签，用来组织后续问题单。</p>
+<p><strong>实际影响：</strong>编辑判断：命令行工具可在同一入口写清表格输出的阅读障碍和替代命令，再要求修改输出的贡献者提交相应验证，让用户绕行办法与开发验收要求相互对应，减少每次报告都重建背景。</p>
+<p><strong>限制与来源：</strong>文件没有固定格式，需要项目持续维护。写出某版 WCAG 无障碍指南目标不构成符合性认证；实际认证声明还应给出评估范围、日期、方法与评估者。平台提高文档可发现性，并不会自动修复应用障碍。</p>
+<p class="source"><a href="https://github.blog/open-source/maintainers/accessibility-statements-now-have-a-home-on-github/">官方识别规则与文档边界</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察 <small>3 项</small></h2>
+<article data-kind="official" data-publisher="GitHub"><div class="meta">窗口内架构披露 · RSS 2026-11-05 20:23:21 UTC · 有限私测</div><h3>08 · Rubicon 私测：把 Git 对象存储与引用事务分开扩展</h3>
+<p><strong>事件简介：</strong>GitHub 披露新 Git 存储架构 Rubicon，目前仅有限私测，计划明年初扩大推出。它针对大量代理并发向不同分支推送的负载，把服务请求的计算节点、持久数据与后台维护拆开，避免所有工作都跟着完整仓库副本扩展。</p>
+<p><strong>技术机制：</strong>Git 对象包放入 Azure Blob Storage；引用与包清单存入 Ref-CAS 复制日志服务。写入先持久保存对象包，再以比较并交换事务更新引用，只锁涉及的引用；读取先比较日志序号，落后时再拉所需数据。独立压实节点合并包，发布前校验对象集合一致。</p>
+<p><strong>实际影响：</strong>编辑判断：大型仓库可借这一分工分开增加读写节点与维护节点，减少垃圾回收、包合并抢占在线 CPU 的影响；本地盘可重建为缓存，不再承担唯一持久副本职责。</p>
+<p><strong>限制与后续观察：</strong>每秒数万次引用事务等数字是 GitHub 自报，不代表完整端到端推送吞吐。单对象读取、部分副本等仍列为后续优化；应观察扩大上线后的尾延迟、故障恢复与压实积压数据，再判断真实负载下能否持续保持性能。</p>
+<p class="source"><a href="https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/">官方架构、私测状态及路线图</a></p></article>
+<article data-kind="project_trending" data-publisher="Google"><div class="meta">GitHub Trending Daily 当前前十 · project_trending · 生成时补充信号，非新发布</div><h3>09 · Google Skills 的 TPU 排障流程：先查容量被谁占用</h3>
+<p><strong>简介：</strong>google/skills 是 Google 产品与云技术的代理工作流集合。本项观察其中 GKE TPU 预留容量排障技能，服务于已有加速器预留、却无法创建或扩展节点池的运维人员；它是可安装的诊断指引，不是新的集群调度器。</p>
+<p><strong>技术特点：</strong>流程先比较预留总数与 inUseCount，再沿虚拟机标签找回所属集群和节点池，结合 Ready 状态与自动修复设置定位占用者。共享预留需检查拥有者项目，并区分健康任务占用与异常节点持有容量，避免把所有缺货错误都判为泄漏。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：训练集群扩容失败时，助手可按同一证据链汇总日志、指标与容量归属，减少在控制台间反复查找。技能明确只运行只读诊断，把修复方案交给用户；区别于近期通用编码技能及 Expo 平台知识。</p>
+<p><strong>限制与后续观察：</strong>要求相应日志、监控和资源查看权限，适用于 Standard 集群；Autopilot 不能关闭自动修复。恢复异常节点不会自动给新池腾出容量，整片 TPU 修复还会重建节点池。尚缺独立效果数据，应看公开故障复跑、误诊率及跨项目归属检查的完整性。</p>
+<p class="source"><a href="https://github.com/google/skills#readme">README：定位与安装</a> · <a href="https://github.com/google/skills/blob/main/skills/cloud/gke-ai-troubleshooting-tpu-reservation-stockout/SKILL.md">具体技能：诊断、权限与修复边界</a></p></article>
+<article data-kind="official" data-publisher="Cloudflare"><div class="meta">窗口内新倡议 · RSS 2026-11-05 17:03:04 UTC</div><h3>10 · Trusted Agent Delegation：代理身份之外，还要表达用户关系</h3>
+<p><strong>事件简介：</strong>Cloudflare 宣布 Trusted Agent Delegation 联盟，讨论云端个人代理代用户访问网站时的身份、信誉与责任。与昨日访问分析和放行策略不同，本次增量是跨机构协议协调倡议，尚不是已完成互通的新授权协议。</p>
+<p><strong>技术机制：</strong>文章区分代理运营者身份、会话、账户和更强用户标识：Web Bot Auth 以请求签名识别代理平台，OAuth 可传递账户关系，MOLE 探索无需用户专属标识的信誉与限流。网站还需要机器可读方式表达允许哪些动作，单靠 robots.txt 的抓取路径规则不够。</p>
+<p><strong>实际影响：</strong>编辑判断：共享代理替多人购物时，只封代理会连带阻断正常用户；若能传递必要的用户关系和可核对声明，网站才有条件对具体账户作决策。不同场景需要的信息强度应分别确定。</p>
+<p><strong>限制与后续观察：</strong>多层代理链如何表达、声明如何验证仍待完善，本地代理也非初始重点。联盟计划通过会议与 IETF 协作细化问题；应跟踪公开规范、多个独立实现的互通、撤销与隐私测试，不能把倡议写成已解决交易授权和责任归属。</p>
+<p class="source"><a href="https://blog.cloudflare.com/trusted-agent-delegation/">新倡议与协议分工原文</a></p></article>
+</section>
+<footer><p>七日去重：读取 2026-10-30 至 2026-11-05 七份现存报告，按规范化主链接、GitHub owner/repository 与底层议题核对。排除 Auto Ontology、agent-desktop、Scrapling、Worktrunk、MAA、闲鱼监控、MusicFree 和 LEDE 等旧项；不再重复通用编码流程、浏览器自动化与音乐播放接入。Google 本项聚焦预留加速器的容量归属；Cloudflare 使用新联盟公告，解释与昨日访问控制的实质区别。</p><p>来源与限制：入选原文及当前 README 均通过受信任 orz_fetch MCP 读取，补读 FileCodeBox 安全文档与 Google 具体排障流程；支持响应、URL、摘录和筛选记录保存在 work/tech-trends-2026-11-06/。采集器未报告来源组失败，本次正文核验无请求失败；edgetunnel 的 README 仅有分隔线，证据不足，已排除。中文榜单补读达到 80,000 字符上限，前十范围依据采集器完整结果，不据截断页面补写排名。条数、Trending 配额与观察栏均无短缺；作者测量与编辑推断已区分，本期未独立运行项目或复测性能。</p><p>原始预览及候选 JSON 仅作证据，未作为最终报告发布。报告、轻量跳转及索引留在工作树，由后续工作流提交和发布；本次未验证线上发布结果。</p></footer></main></body></html>
