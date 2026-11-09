@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main><header><p class="meta">TECH MORNING BRIEF · 2026-11-09</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-08 07:00 至 2026-11-09 07:00，即截止前 24 小时。工作流截止值：2026-11-09T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header><aside class="overview"><h2>中文编辑概览</h2><p>本期关注工具在真实工程中的输入、执行步骤和交付边界：仿真先编译模型，解析服务测量地址，翻译保留原文，知识库保留冲突。热度之外，部署说明与实际配置的差异同样值得核对；观察栏关注 GPU 集群工厂与本地三维编辑器，等待恢复能力和跨平台证据。</p><p>共 10 项：今日重点 8 项、值得继续观察 2 项，含 9 个不同的 project_trending 仓库，每个组织或发布方均不超过两项。候选 RSS 未发现主窗口内的官方新稿；近期官方材料多已报道，本期以当前项目发现补充，不将其写成今日发布。</p><p>已筛选当前 GitHub Trending Daily 全语言及中文语种各前十，去重共 20 个仓库。榜单反映生成时关注，不能追溯为窗口截止时排名。KetchUp 的 HN 提交时间为 2026-11-08 22:35:35 UTC，位于主窗口内，但只是讨论时间；读取到的项目内容是当前版本。</p></aside><section id="main"><h2>今日重点</h2>
+<article data-kind="project_trending" data-repository="google-deepmind/mujoco"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>01 · MuJoCo：先编译关节模型，再反复运行物理仿真</h3>
+<p><strong>简介：</strong>google-deepmind/mujoco 是面向机器人、生物力学及机器学习研究的通用物理引擎，模拟关节结构与环境接触。开发者可用 C 接口或 Python 绑定驱动实验，也能在桌面与浏览器查看模型和运动。</p>
+<p><strong>技术特点：</strong>内置 XML 编译器预先分配低层数据结构，运行时直接在这些结构上推进仿真，并提供计算物理量的辅助函数。Python 包自带引擎；仓库另给出多线程 rollout，即批量推进多条运动轨迹的教程。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：研究机械臂控制时，可先描述关节与接触对象，再用同一模型比较不同控制输入，减少自行编写动力学与可视化程序的准备工作。仿真结果仍须与实际设备校准。</p>
+<p><strong>限制与来源：</strong>当前 Python 入口要求 3.11 以上；官方推荐版本化二进制，main 分支可能不稳定。浏览器 WebAssembly 版本明确慢于原生 C，不能拿浏览器体验推断训练吞吐；项目也声明并非获官方支持的 Google 产品。</p>
+<p class="source"><a href="https://github.com/google-deepmind/mujoco#readme">当前 README：定位、机制、用法与边界</a></p></article>
+<article data-kind="project_trending" data-repository="pymumu/smartdns"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>02 · SmartDNS：比较解析地址的可达速度，而非只比回答先后</h3>
+<p><strong>简介：</strong>pymumu/smartdns 是运行在本地网络的 DNS 域名解析服务器，供路由器、树莓派等设备为客户端选择访问地址。它并发查询多个上游，再检测返回地址从本地访问的速度，也支持指定域名地址与广告过滤。</p>
+<p><strong>技术特点：</strong>多个上游返回的 IP 进入测速与优选流程；启用缓存时，未命中可先返回一个地址并设短有效期，后台收齐结果后保留速度相近的优选地址。双栈优选还可在 IPv4 明显更快时抑制 IPv6 回答。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：同一网站在不同网络线路表现不同时，可让局域网客户端共用这套选择机制，减少逐台手改地址的操作。它关注终端访问选路，与本周 Cloudflare 的权威 DNS 配置构建属于不同问题。</p>
+<p><strong>限制与来源：</strong>默认向全部已配置上游发请求，上游仍可能记录查询；FAQ 建议可信上游、加密传输及分组。过期缓存可能使动态域名换址后访问失败，可按域关闭。README 的五倍速度仅是作者单例。</p>
+<p class="source"><a href="https://github.com/pymumu/smartdns#readme">当前 README：定位、机制、用法与边界</a> · <a href="https://pymumu.github.io/smartdns/faq/">FAQ：缓存、隐私与动态域名</a></p></article>
+<article data-kind="project_trending" data-repository="immersive-translate/immersive-translate"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>03 · 沉浸式翻译：保留段落原文，让译文成为阅读辅助</h3>
+<p><strong>简介：</strong>immersive-translate/immersive-translate 当前是沉浸式翻译的版本发布与反馈仓库。产品是浏览器双语阅读工具，帮助读者查看外文资讯、论文和文档，支持网页、PDF、电子书与字幕，可选不同翻译服务。</p>
+<p><strong>技术特点：</strong>官方文档介绍先识别网页正文区域，再按段落呈现原文和译文；悬停段落时也可在其下显示翻译，保留上下文。安装扩展后可直接对当前页操作，部分服务支持术语库、领域设置或自定义接口。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：工程师阅读外文接口说明时，可边看译文边核对原始参数与条件，减少在两个窗口来回复制文本，也方便发现术语误译。双语布局提供核对路径，不保证翻译正确。</p>
+<p><strong>限制与来源：</strong>当前 README 明确产品并非开源，仓库不含源码，旧开源项目已归档。进阶功能以产品内范围为准；内容处理、保留与不用于训练的承诺有服务适用范围，不能外推到全部第三方接口。</p>
+<p class="source"><a href="https://github.com/immersive-translate/immersive-translate#readme">当前 README：定位、机制、用法与边界</a> · <a href="https://immersivetranslate.com/docs/">官方文档：正文识别与段落翻译</a></p></article>
+<article data-kind="project_trending" data-repository="shadow1ng/fscan"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>04 · Fscan：把资产发现、协议识别与扫描结果接在一起</h3>
+<p><strong>简介：</strong>shadow1ng/fscan 是供获授权内网检查使用的综合扫描工具，接收 IP、网段、域名或网址，可批量发现主机、扫描端口、识别服务并输出 TXT、JSON 或 CSV。它还包含弱口令检查与漏洞利用模块，使用范围须明确。</p>
+<p><strong>技术特点：</strong>端口采用 TCP 全连接扫描，服务、网页与本地模块分为插件；pkg/fscan 提供 Go 开发接口，支持任务暂停、恢复、进度回调与 TaskID 追溯。端口与服务并发、超时和发包限制可分别设置。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：安全平台汇总一段授权测试网络的资产时，可接入扫描进度与结构化结果，再逐条复核服务与问题，减少解析终端文字、手工拼接任务状态的工作。这与昨日代码审计线索反证是不同层面。</p>
+<p><strong>限制与来源：</strong>Web 管理界面需带 web 构建标签；可用插件应按实际构建查询。路线图仍列断点续扫、带宽限速和内存水位控制，不能当作已实现。README 的覆盖率与修复统计为作者记录，本期未执行扫描或验证检出率。</p>
+<p class="source"><a href="https://github.com/shadow1ng/fscan#readme">当前 README：定位、机制、用法与边界</a></p></article>
+<article data-kind="project_trending" data-repository="Johnshall/Shadowrocket-ADBlock-Rules-Forever"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>05 · Shadowrocket 规则集：将上游名单转换为可切换的策略文件</h3>
+<p><strong>简介：</strong>Johnshall/Shadowrocket-ADBlock-Rules-Forever 为已有 iOS Shadowrocket 用户提供纯文本路由和广告过滤配置。用户导入网址或二维码，再选择规则；仓库本身不提供代理服务器或网络连接服务。</p>
+<p><strong>技术特点：</strong>Python 按模板转换 GFWList、EasyList 等上游并去重，生成黑名单、白名单、仅去广告等版本。黑名单对未知网站默认直连，白名单默认代理；自定义修改在 build 分支的 manual 文件维护，Fork 后可启用 Actions 生成。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：已有客户端配置的人，可把上游名单更新与个人补充放入同一生成流程，减少逐条复制和清理重复项的操作。选择未知站点的默认动作，是导入前必须理解的策略差异。</p>
+<p><strong>限制与来源：</strong>作者称每日北京时间八点更新，不代表本期核验了今日执行成功。原 top500 获取方式已失效，目前依赖旧榜重构；视频广告不保证过滤，尤其 YouTube 无法仅靠网址匹配完全去除。兼容与效果均为作者说明。</p>
+<p class="source"><a href="https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever#readme">当前 README：定位、机制、用法与边界</a></p></article>
+<article data-kind="project_trending" data-repository="521xueweihan/GitHub520"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>06 · GitHub520：用可更新的 hosts 映射处理特定域名访问</h3>
+<p><strong>简介：</strong>521xueweihan/GitHub520 提供 GitHub 及相关图片、下载域名的 hosts 地址映射，面向遇到页面慢或图片缺失的用户。可把文本加入系统 hosts，或用 SwitchHosts 订阅远程文件，不是新的 GitHub 镜像站。</p>
+<p><strong>技术特点：</strong>仓库定时更新域名到 IP 的映射，并提供文本与 JSON；SwitchHosts 可按小时刷新，修改后必要时清理系统 DNS 缓存。机制是固定一组域名解析结果，与 SmartDNS 对任意查询并发测速的常驻服务不同。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：开发者遇到特定资源域名解析不佳时，可先对照映射与实际连接表现，再决定是否采用，减少为图片、附件等域名逐个查找地址的工作。静态覆盖会影响后续解析选择，不能据此保证线路一定更快。</p>
+<p><strong>限制与来源：</strong>README 明示仍在测试、仅本机通过；移动系统直接修改 hosts 需要 root 或越狱。许可为 CC BY-NC-ND 4.0。读取到的数据更新时间为十一月九日 10:14 北京时间，已在截止后，仅作当前补充，非七点历史状态。</p>
+<p class="source"><a href="https://github.com/521xueweihan/GitHub520#readme">当前 README：定位、机制、用法与边界</a></p></article>
+<article data-kind="project_trending" data-repository="auto-novel/auto-novel"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>07 · AutoNovel：小说翻译站的部署链路需要对照实际配置</h3>
+<p><strong>简介：</strong>auto-novel/auto-novel 是自动生成、分享轻小说机翻的网站工程，涉及网络、文库与本地小说。它面向网站维护和贡献者，不是承诺一键个人使用的翻译插件；README 明确未按个人部署设计。</p>
+<p><strong>技术特点：</strong>贡献指南将 Vue 3、TypeScript 前端与 JVM 17、Kotlin、Ktor 后端分开；Compose 再编排 web、api、server 及数据库服务，以健康检查安排启动依赖，文件目录挂载到宿主。前端还依赖工作区包，须先构建。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：研究内容站工程的人，可沿前端构建、接口服务与数据依赖逐层调试，减少把全部启动失败误归因于翻译模型的情况。本项关注网站交付与数据服务，不重复双语网页阅读的段落呈现。</p>
+<p><strong>限制与来源：</strong>README 称个人部署可不填 ACCESS_TOKEN_SECRET，但当前 Compose 强制要求它及 POSTGRES_PASSWORD，不能照旧示例认定能启动。开发服务器默认连线上后端，贡献指南要求勿污染数据；功能可用与前向兼容均无保证。</p>
+<p class="source"><a href="https://github.com/auto-novel/auto-novel#readme">当前 README：定位、机制、用法与边界</a> · <a href="https://github.com/auto-novel/auto-novel/blob/main/CONTRIBUTING.md">贡献指南：架构与开发边界</a> · <a href="https://github.com/auto-novel/auto-novel/blob/main/docker-compose.yml">实际部署配置</a></p></article>
+<article data-kind="project_trending" data-repository="anthropics/claude-quickstarts"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>08 · Claude Quickstarts 的 Knowledge Wiki：先归并证据，再回答重复问题</h3>
+<p><strong>简介：</strong>anthropics/claude-quickstarts 是 Claude API 应用示例集合，本项聚焦 Knowledge Wiki 教程。它面向反复查询变化较慢文档的开发者，将材料先整理成托管记忆存储中的 Markdown 知识库，再用只读会话答题。</p>
+<p><strong>技术特点：</strong>工作流先按批提取事实，解析未决缺口，再由分析与整理步骤对照原文合并页面；每条事实保留出处，冲突和被替代数字不强行合一。Notebook 还核对实际执行记录，比较有无知识库的单问成本。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：围绕同一组尽调文件持续提问时，可复用已归并的事实和冲突，减少每次重新搜索后再跨文档对齐口径。它处理文档证据整理，区别于本周数据库语义层对术语与 SQL 的审定。</p>
+<p><strong>限制与来源：</strong>依赖 Beta 托管服务，要求 Python 3.11+；单文件上限 100 KB。作者承认共享页面并发写入可能覆盖内容，最繁忙实体页约损失 5% 行。成本与得分为作者基准，不能外推为所有语料的节省。</p>
+<p class="source"><a href="https://github.com/anthropics/claude-quickstarts#readme">当前 README：定位、机制、用法与边界</a> · <a href="https://github.com/anthropics/claude-quickstarts/tree/main/managed-agents/knowledge-wiki">具体教程：流程、用法和已知内容损失</a></p></article>
+</section><section id="watch"><h2>值得继续观察</h2>
+<article data-kind="project_trending" data-repository="dsx-ai-factory/nvke"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布</p><h3>09 · NVKE 预览：在自有 GPU 机器上提供独立 Kubernetes 集群</h3>
+<p><strong>简介：</strong>dsx-ai-factory/nvke 是平台团队自托管的 Kubernetes 管理平面，用于在自有 NVIDIA GPU 基础设施创建客户工作集群。每个工作集群有独立控制平面、etcd 数据存储与节点池，客户沿用 kubectl 操作。</p>
+<p><strong>技术特点：</strong>临时种子集群先建立管理集群，再单独安装管理服务；管理平面经 NICo、Cluster API 和节点代理调配机器。节点用 TPM 安全芯片经 SPIFFE/SPIRE 身份证明后领取加入凭证；配套 NVKR 负责固定输入构建镜像。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：为多组实验提供集群时，可把申请、节点池扩缩和生命周期接到同一管理入口，减少逐组手建控制平面的重复步骤。无 GPU 的本地模拟路径可先验证流程，但不能证明真实硬件可用。</p>
+<p><strong>限制与来源：</strong>预览不推荐生产，目前只兼容 NICo；默认 API 为明文 HTTP 且认证关闭，须另配置保护。管理平面无升级或备份恢复流程，FDE 评估镜像不提供静态数据保密。后续应看认证部署、恢复演练与真实节点升级的独立记录。</p>
+<p class="source"><a href="https://github.com/dsx-ai-factory/nvke#readme">当前 README：定位、机制、用法与边界</a></p></article>
+<article data-kind="project" data-repository="Ketchup3D/app"><p class="meta">HN 窗口内提交 · 当前项目核验，非发布公告</p><h3>10 · KetchUp3D：以本地几何编辑探索木工设计</h3>
+<p><strong>简介：</strong>Ketchup3D/app 是 Rust 编写的三维边与面编辑器，可在桌面或浏览器运行，适合给书架、桌柜等木工项目建模。用户画平面轮廓、推拉出厚度，再输入尺寸、吸附几何位置并用组件组织零件。</p>
+<p><strong>技术特点：</strong>ketchup-core 单独保存双精度几何、平面发现和历史记录，不依赖界面或 GPU；ketchup-app 用 egui 处理交互、wgpu 渲染，并通过 WebAssembly 进入浏览器。当前 README 使用 .k3d 项目格式，兼容旧 .ketchup。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：制作家具前，可先在同一模型检查零件比例和装配位置，再保存本地项目，减少只凭二维草图反复推敲空间关系的准备。模型仍需结合材料与实际工艺验收。</p>
+<p><strong>限制与来源：</strong>官网与 README 对项目扩展名有差异，本文按当前源码说明；云存储与移动端不在此版本范围。官网称 SketchUp 导入不含纹理、场景等，OBJ 导出不含材质。后续看复杂模型往返、浏览器兼容和跨系统实测，而非仅看演示截图。</p>
+<p class="source"><a href="https://github.com/Ketchup3D/app#readme">当前 README：定位、机制、用法与边界</a> · <a href="https://ketchup3d.github.io/app/">官网：用途与导入导出限制</a></p></article>
+</section><footer><p>七日去重：逐篇读取 2026-11-02 至 2026-11-08 七份报告，核对规范化主链接、owner/repository 与底层议题。排除 Sherlock、Astryx、ip2region、Halo 等重复仓库，以及重复的通用技能、聊天机器人、浏览器代理与媒体下载主题。SmartDNS、GitHub520、路由规则集分别处理动态解析优选、固定域名映射和客户端策略生成；与此前权威 DNS 构建亦有不同对象。没有将重复热度当作新事件。</p><p>来源核验与不足：主来源及补充文档通过受信任 orz_fetch MCP 读取，已核对 README 介绍、机制、用法与相关限制。原始响应、支持摘录和筛选记录保存在 work/tech-trends-2026-11-09/。采集器未报告来源组失败，正文核验无请求失败。Nyneon 工具目录证据不足以解释实现，未选；billion-context 长文截断且属于近期会话压缩相近主题，未采用。AutoNovel 和 KetchUp 的文档差异已在条目说明；未运行这些项目或独立验证性能、检出率和作者基准。总条数、Trending 配额与观察栏均无短缺。</p><p>原始预览及候选 JSON 仅作证据，未作为最终报告发布。轻量跳转与索引已更新；文件留在工作树，提交和线上发布由后续工作流完成，本次未执行或验证线上发布。</p></footer></main></body></html>
