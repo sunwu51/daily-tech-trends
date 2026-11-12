@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main>
+<header><div class="meta">TECH MORNING BRIEF · 2026-11-12</div><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-11 07:00 至 2026-11-12 07:00，即截止前 24 小时。工作流截止值：2026-11-12T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；生成时当前列表与截止后材料均另行标注。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<aside class="overview"><h2>中文编辑概览</h2><p>今天关注工程系统怎样在约束下继续工作：服务器并发边界需要修补，有限算力要分给更有收益的请求，安全策略要跟上区域扩展。项目侧选择离线文档识别、流式网关与多渠道机器人；观察栏则追问实验共识、Rust GPU 支持和浏览器指导能否获得更完整的验证。</p><p>共 10 项：今日重点 7 项，值得继续观察 3 项，含 4 个不同的 project_trending 仓库；各组织或发布方最多两项。四篇官方材料 RSS 时间位于主窗口，Rust 正文仅标日期；Apache 官方仅标十一月十一日，由截止后 HN 当前列表发现，Ornith RSS 已晚于截止三十六分钟。</p><p>已读取候选 JSON 中当前 GitHub Trending Daily 全语言与中文语种各前十，去重共 20 个仓库。榜单只代表生成时关注，不能还原截止七点的历史排名，也不意味着当日发布；采集器项目时间锚点与 HN 提交时间均不作为发布日期。</p></aside>
+<section id="main"><h2>今日重点</h2><p class="meta">7 项</p>
+<article data-kind="official" data-publisher="Apache"><p class="meta">11 月 11 日官方安全修复；正文无时分 · 截止后 HN 当前列表发现</p><h3>01 · Apache HTTP Server 2.4.71：修复 HTTP/2 并发处理中的远程执行漏洞</h3>
+<p><strong>事件简介：</strong>Apache 发布 HTTP Server 2.4.71，修复三项漏洞，其中 CVE-2026-119618 为关键级别。它影响 2.4.55 至 2.4.70 的 HTTP/2 模块；这次修复针对网页服务器处理网络请求的入口，与昨日 Git 的仓库输入漏洞不同。</p>
+<p><strong>技术机制：</strong>mod_http2 的 assign_headers() 在多线程共享资源时同步不当，可造成堆内存损坏并进一步导致远程代码执行。官方还列出 mod_md 空指针崩溃，以及 mod_vhost_alias 单字节栈越界修复，三者的受影响版本不同。</p>
+<p><strong>实际影响：</strong>编辑判断：运维团队应核查实际承接 HTTP/2 的服务器和容器镜像，再安装补丁并验证加载的模块版本；只检查前端代理是否更新，可能遗漏后方仍可直接访问的服务。</p>
+<p><strong>限制与来源：</strong>独立 mod_h2 的受影响范围为 2.0.8 至 2.0.42。Wiz 二手表格的修复版本与其正文矛盾，本项采用 Apache 官方范围，不转述该数字。Wiz 称发表时未见在野利用，不能据此证明之后没有攻击。</p>
+<p class="source"><a href="https://httpd.apache.org/security/vulnerabilities_24.html#CVE-2026-119618">Apache 官方公告</a> · <a href="https://www.wiz.io/blog/cve-2026-119618-rce-apache-http-server-vulnerability">Wiz 交叉核对</a></p></article>
+<article data-kind="official" data-publisher="Meta"><p class="meta">窗口内工程披露 · RSS 2026-11-11 17:00:38 UTC</p><h3>02 · Meta Intelligent Delivery：把额外算力分给最可能受益的请求</h3>
+<p><strong>事件简介：</strong>Meta 披露广告投放中的 Intelligent Delivery：在容量和延迟预算有限时，预测哪些请求值得增加计算，再调整区域、硬件和排序工作量。本次是运行机制披露，区别于昨日 TLX 的内核流水线，以及用户偏好如何传入推荐链路。</p>
+<p><strong>技术机制：</strong>Resource Core Model 在候选检索前运行一次，含六十亿稀疏参数与两千万稠密参数，派生模型分别预测收益、计算消耗和延迟。区域流量按分钟调整，工作负载按实测效率匹配硬件，主机内再在尾延迟目标下削减低收益的昂贵工作。</p>
+<p><strong>实际影响：</strong>编辑判断：多阶段推理服务可先测量增加候选数的收益与成本，再决定给哪类请求扩算力，减少给所有请求统一增加预算的浪费。区域迁移会改变主机负载，因此需要端到端闭环测试。</p>
+<p><strong>限制与来源：</strong>累计约一成排序增益及代理贡献比例均为 Meta 自报。代理提出并测试配置后仍由工程师批准；跨所有阶段的单模型实时决策仍是方向，不能写成已完全自动优化。</p>
+<p class="source"><a href="https://engineering.fb.com/2026/11/11/ml-applications/intelligent-delivery-serve-better-ads/">Meta 架构与实测口径</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内区域公告 · RSS 2026-11-11 21:00 UTC</p><h3>03 · AWS Network Security Manager 扩区：持续检查防护策略是否偏离</h3>
+<p><strong>事件简介：</strong>AWS Network Security Manager 在欧洲主权云及另三十一个区域可用。它帮助安全团队集中部署和执行网络安全策略；本次是区域扩展，欧洲主权云公告明确支持 AWS WAF 网页应用防火墙和 Shield 防护。</p>
+<p><strong>技术机制：</strong>持续部署自动化将 WAF 规则应用到面向互联网的资产，例如应用负载均衡器，并在目标账户和资源上管理 Shield Advanced 保护。服务检测实际配置与中央策略的偏离，再应用修复，减少逐个资源重新核对的操作。</p>
+<p><strong>实际影响：</strong>编辑判断：业务在新增区域建立入口时，平台团队可用中央策略维持相同规则，再检查偏离与修复记录，减少因各账户手工配置不同而留下的管理缺口。这管理的是入口防护，区别于本周日志保存期限策略。</p>
+<p><strong>限制与来源：</strong>公告不是全部区域功能逐项对照，也未提供误修复率或收敛耗时。标准区域与欧洲主权云分别链接价格页；不能将扩区理解为功能免费、自动满足合规认证，或每个入口已获得相同保护。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/network-security-mgr-eu-sovereign-cloud/">AWS 区域、机制与计费入口</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">截止后近期补充 · RSS 2026-11-11 23:36 UTC（北京时间 11 月 12 日 07:36）</p><h3>04 · Ornith 接入 JumpStart：将编码任务的组织方式纳入训练</h3>
+<p><strong>事件简介：</strong>AWS 宣布 DeepReinforce AI 的 Ornith-1.0-9B 和 35B 可经 SageMaker JumpStart 部署。它们是基于 Qwen 3.5 后训练的编码代理模型；变化是进入托管模型目录，用户可从控制台或 Python SDK 在自己的 AWS 账户部署。</p>
+<p><strong>技术机制：</strong>9B 为九十亿参数稠密模型，公告列出 256K 词元上下文与三十二层解码器；35B 采用混合专家结构，每个词元只激活部分参数。两者以强化学习同时优化任务脚手架和解题轨迹，也就是不只训练最终代码，还训练组织搜索与尝试的方式。</p>
+<p><strong>实际影响：</strong>编辑判断：已有云端编码评测流程的团队，可固定同一组仓库任务比较两个规模，再记录完成率、延迟和显存，减少先自行搭建模型托管链路的准备。</p>
+<p><strong>限制与来源：</strong>单块 24GB 消费 GPU 可部署 35B、同规模领先等是公告主张，未交代精度、量化和长上下文内存条件，不作硬件保证。网址含 /2026/01/，正文日期为十一月十一日，时间标签按 RSS，明确已晚于七点。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/01/ornith-1-0-9b-ornith-1-0-35b-on-sagemaker-jumpstart/">AWS 接入与模型说明</a></p></article>
+<article data-kind="project_trending" data-publisher="hiroi-sora"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 中文语种</p><h3>05 · Umi-OCR：离线批量识别，并按文本块排除水印</h3>
+<p><strong>简介：</strong>hiroi-sora/Umi-OCR 是免费开源的离线文字识别桌面工具，服务于整理截图、扫描件和本地图片的用户。当前 README 列出 Windows 7 x64 与 Linux x64，可解压运行，内置多语言识别库，输出文本或双层可搜索 PDF。</p>
+<p><strong>技术特点：</strong>程序通过插件使用 PaddleOCR-json、RapidOCR-json 引擎，再做多栏排序、自然段合并或保留代码缩进。批处理可导出 TXT、JSONL、Markdown 和 CSV；忽略区域用矩形框排除完全落在框内的整个文本块，而不是逐字符涂除。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：整理一批带固定页眉和水印的扫描资料时，可先标出共同区域，再批量识别并输出可检索文档，减少逐张复制和反复删除同一页眉的工作；命令行与 HTTP 接口也提供接入已有流程的入口。</p>
+<p><strong>限制与来源：</strong>跨越忽略框的文本块仍会保留，竖排解析要求引擎自身支持。表格图片转 Excel、GPU 离线识别仍列远期计划，CSV 输出不能写成恢复表格结构；当前平台范围不包括已获支持的 macOS。</p>
+<p class="source"><a href="https://github.com/hiroi-sora/Umi-OCR#readme">README：使用、后处理与路线图</a></p></article>
+<article data-kind="project_trending" data-publisher="higress-group"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 中文语种</p><h3>06 · Higress：在流式模型请求前集中处理路由与插件</h3>
+<p><strong>简介：</strong>higress-group/higress 是基于 Istio 与 Envoy 的云原生 API 网关，供平台团队接入模型接口、微服务和 MCP 工具服务。既可部署到 Kubernetes，也可用 Docker 在本地启动；控制台、HTTP 和 HTTPS 使用不同入口。</p>
+<p><strong>技术特点：</strong>网关用 Go、Rust 或 JavaScript 编写的 Wasm 沙箱插件扩展行为，插件可独立升级。请求与响应支持完整流式处理，插件能处理 SSE 即服务器持续推送事件的协议；模型路由、词元限流和缓存放在入口，OpenAPI 描述还能经配套工具转换为托管 MCP 服务。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：多个业务调用不同模型并保持长连接时，可在网关统一设置认证和调用额度，业务代码少重复实现相同入口逻辑；按流处理也避免必须等完整响应才执行插件。</p>
+<p><strong>限制与来源：</strong>README 只称兼容许多 NGINX Ingress 注解，不能假定全部可直接迁移。毫秒生效、无损热更新为作者主张，本期未复测；文档中的 99.99% 保证属于阿里云商业产品，不能移作开源自建集群承诺。</p>
+<p class="source"><a href="https://github.com/higress-group/higress#readme">当前 README：架构与启动</a> · <a href="https://higress.cn/en/docs/latest/overview/what-is-higress/">官方定位与商业服务边界</a></p></article>
+<article data-kind="project_trending" data-publisher="langbot-app"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 中文语种</p><h3>07 · LangBot：保留业务工作流，把机器人接入不同聊天渠道</h3>
+<p><strong>简介：</strong>langbot-app/LangBot 是开源多平台 AI 即时通信机器人平台，面向要在 Slack、Telegram、企业微信等渠道提供助手的团队。可本地启动网页管理面板，配置模型、知识库和消息流水线，也可对接已有 Dify、n8n 工作流。</p>
+<p><strong>技术特点：</strong>平台适配层接收消息，LiteLLM 后端组织不同模型请求；内置知识库默认采用 Chroma 向量存储与重排序，先找相关材料再组织回答。一个实例可设多条流水线服务不同机器人，插件通过跨进程事件机制扩展，MCP 客户端支持 Stdio 与 HTTP 两种工具连接。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：内部支持团队已有 n8n 工单流程时，可把入口接进企业聊天工具，再分别设置各机器人的访问与限流，减少为每个渠道重写消息适配和工作流调用的工作。</p>
+<p><strong>限制与来源：</strong>插件独立安装，不随核心发行包捆绑；平台间图片、音频与流式响应能力不同。个人 QQ 需第三方 OneBot v11 实现，WhatsApp 原生接入仍在开发、可走 Matrix 桥接，不能把列表当所有渠道原生功能相同的保证。</p>
+<p class="source"><a href="https://github.com/langbot-app/LangBot#readme">README：定位、部署及插件</a> · <a href="https://langbot.app/docs/en/insight/features">官方功能与平台差异</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察</h2><p class="meta">3 项</p>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内技术披露 · RSS 2026-11-11 14:24:46 UTC · 实验性服务</p><h3>08 · Meerkat 的 QuePaxa 选择：领导者失效时让其他提议者接续</h3>
+<p><strong>事件简介：</strong>Cloudflare 解释实验性全球控制平面服务 Meerkat 为何采用 2023 年提出的 QuePaxa 共识算法。共识让多个副本确认同一事件日志；跨洲网络延迟波动时，严格依赖领导者的系统可能停在故障检测和重选阶段。</p>
+<p><strong>技术机制：</strong>提议者给方案分配优先级，记录者传播所见方案，其他提议者改采较高优先级，促成收敛。领导者保留一次往返的快速路径，但客户端等待短暂对冲超时后可联系其他副本，不必先确认领导者已经死亡才能继续推进。</p>
+<p><strong>实际影响：</strong>编辑判断：跨洲配置服务可用额外消息开销换取领导者失联时继续处理请求的机会；缩短对冲时间会增加提议者及网络流量，不是无成本提高可用性。</p>
+<p><strong>限制与后续观察：</strong>这是新工程披露，不是成熟替代品发布。作者仍在把崩溃停止设计扩展到崩溃恢复，并进行形式验证；应跟踪验证结果、故障注入和恢复后的尾延迟。文中不停顿曲线来自自测，不能外推任意网络分区。</p>
+<p class="source"><a href="https://blog.cloudflare.com/choosing-quepaxa/">原文：算法、权衡与未完成验证</a></p></article>
+<article data-kind="official" data-publisher="Rust"><p class="meta">窗口内成果披露 · RSS 2026-11-11 00:00 UTC，正文仅标日期 · 实验特性</p><h3>09 · Rust GSoC GPU 进展：类型检查与 nightly 分发降低试验门槛</h3>
+<p><strong>事件简介：</strong>Rust 公布 2026 年 GSoC 十三个项目成果。本项关注 std::offload GPU 卸载，即把部分 Rust 计算交给显卡，以及相关持续集成进展；它涉及编译与分发链路，区别于本周 TLX 的计算内核调优和 LLDB 的设备调试。</p>
+<p><strong>技术机制：</strong>编译器核对内核启动参数类型，从 CPU 侧收集泛型实例供 GPU 编译，并提供设备选择与启动宏。对多线程访问可变引用，项目增加安全抽象；另一项目将 offload 和自动微分模块带入官方 nightly 渠道，逐步用 LLVM 接口替代调用 Clang 辅助程序。</p>
+<p><strong>实际影响：</strong>编辑判断：想试验 Rust GPU 计算的研究者可先用 nightly 安装路径验证小内核，少一轮从源码编译整个 rustc 的准备，同时让类型错误更早暴露。</p>
+<p><strong>限制与后续观察：</strong>这些仍为实验模块，不等于稳定标准库承诺；GPU 流水线目前只在 CI 检查 CPU 设置侧。后续重点看真实显卡进入持续测试、驱动覆盖及回归记录，作者 RajaPerf 对比不能代表所有内核。</p>
+<p class="source"><a href="https://blog.rust-lang.org/2026/11/11/gsoc-2026-results/">Rust 官方成果与 CI 边界</a></p></article>
+<article data-kind="project_trending" data-publisher="GoogleChrome"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 全语言 · 采用效果观察</p><h3>10 · Modern Web Guidance 源仓库：让浏览器能力指引进入可测试流程</h3>
+<p><strong>简介：</strong>GoogleChrome/modern-web-guidance-src 是现代网页开发指引的源仓库，包含内容编写、校准和评测工具；安装用成品另在 modern-web-guidance 仓库。它面向编码代理和网页开发者，帮助按任务找到浏览器原生能力、兼容限制与替代方案。</p>
+<p><strong>技术特点：</strong>CLI 用本地嵌入模型与 BM25 词项检索寻找指南，再按标识读取具体模式；评测把真实网页任务交给有无指南的代理，用 Playwright 检查页面行为与无障碍状态。输入法提交指南例如先检查 isComposing，并针对 Safari 事件顺序给出额外判断，避免选字回车误发消息。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：维护中文聊天框时，可先检索对应交互，再按浏览器边界补测，减少只参考英语输入示例后漏掉组合输入状态。它提供具体平台机制，区别于通用代码审计技能。</p>
+<p><strong>限制与后续观察：</strong>实验 API 的读取须显式开启；匿名遥测包括搜索词，可用 DISABLE_TELEMETRY=1 退出。提升数据是项目自建任务评测，应继续看独立应用和多浏览器复跑、指南更新是否及时，不能把分数当真实缺陷降幅。</p>
+<p class="source"><a href="https://github.com/GoogleChrome/modern-web-guidance-src#readme">完整当前 README：检索、评测与遥测</a> · <a href="https://github.com/GoogleChrome/modern-web-guidance-src/blob/main/CONTRIBUTING.md">源仓库与发行仓库分工</a> · <a href="https://github.com/GoogleChrome/modern-web-guidance/blob/main/skills/modern-web-guidance/guides/forms/ime-safe-enter-submit.md">输入法具体指南</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-11-05 至 2026-11-11 七份报告，核对去掉片段、跟踪参数及多余尾斜线的主链接、GitHub owner/repository 和底层议题。排除 Astryx、Sure、HA-MCP、Daily Stock Analysis、Bili23、ip2region、GitHub520、D2L、Hello 算法等已报道仓库；浏览器自动化、通用代理技能等相近旧题也未重新填充。HowToCook 缺少本期所需技术内容，JeecgBoot 未优先于不同组织的具体工程机制。本期无重复仓库；相邻技术议题的具体区别已在正文交代。</p><p>核验与来源限制：入选主来源均经受信任 orz_fetch MCP 读取，仓库核对当前 README 的定位、动机、机制、用法与相关边界，并补读官方功能、贡献说明和输入法指南。Modern Web Guidance 初次长页截断后补读至结尾，未凭目录作结论。正文、URL、摘录与筛选记录保存在 work/tech-trends-2026-11-12/。采集器未报告来源组失败，本次正文核验无请求失败；Wiz 模块版本数字冲突已改用 Apache 官方依据。未运行这些项目或独立复测作者性能；无总条数、Trending 配额或观察栏短缺。</p><p>原始预览与候选 JSON 仅作工作证据，没有作为最终报告发布。轻量入口与索引已刷新，三份生成页面留在工作树供后续工作流提交发布；本次未执行提交、推送或线上发布验证。</p></footer></main></body></html>
