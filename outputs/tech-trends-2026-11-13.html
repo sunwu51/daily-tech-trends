@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main>
+<header><p class="meta">TECH MORNING BRIEF · 2026-11-13</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-12 07:00 至 2026-11-13 07:00，即截止前 24 小时。工作流截止值：2026-11-13T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；近期材料和生成时当前列表另行标注。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<section class="overview"><h2>中文编辑概览</h2><p>本期关注资源与权限如何按具体对象分配：依赖更新先等待、代理凭证只面向下游、工作流按团队授权，服务恢复则控制重连压力。项目侧追问工具的运行条件；观察栏保留原生推理、手表系统缓存研究、监控界面预览及图片工具，等待跨设备和真实任务证据。</p><p>共 10 项：今日重点 6 项，值得继续观察 4 项，包含 4 个不同的 project_trending 仓库，每个组织或发布方最多两项。四篇官方材料的 RSS 时间在主窗口内；GitHub 月报与图片项目的 HN 信号在截止后，已分别标注。</p><p>已读取候选 JSON 的 GitHub Trending Daily 全语言和中文语种各前十，去重共 20 个仓库，并补读当前榜单。榜单和 HN 只能提供生成时关注信号，不代表截止七点的历史排名；采集锚点与讨论提交时间不作为项目发布日期。</p></section>
+<section id="main"><h2>今日重点</h2>
+<article data-kind="official"><p class="meta">窗口内发布 · RSS 11 月 12 日 00:00 UTC，正文仅标日期</p><h3>01 · Rust 1.100：依赖更新可设置等待期，类型升级仍须做兼容检查</h3>
+<p><strong>事件简介：</strong>Rust 发布 1.100.0，稳定化 never type（永不产生值的类型，写作 !）、自定义分配器核心接口及 Cargo 依赖发布时间筛选。它既改变语言表达能力，也调整构建流程；可用 rustup update stable 更新。</p>
+<p><strong>技术机制：</strong>Cargo 在 .cargo/config.toml 设置 global-min-publish-age 后，解析依赖时跳过太新的版本；单次更新可显式绕过，选定版本随后由 Cargo.lock 保留。构建目录也把配置哈希移到父目录，减少不同特性组合或 Git 工作树共享缓存时的冲突。</p>
+<p><strong>实际影响：</strong>编辑判断：维护持续集成的团队可先用等待期避免立刻吸收刚发布的依赖，再评审锁文件变化；同时检查脚本是否依赖旧构建目录布局，减少缓存命中与产物路径判断错误。</p>
+<p><strong>限制与来源：</strong>缺少 pubtime 的索引记录不受等待期限制，cargo install 也忽略它。旧 edition 的 never type 回退由 () 改为 !，少数泛型代码可能失效；冷静期不替代依赖审查。本项是正式版本变化，区别于昨日 GPU 实验模块成果。</p>
+<p class="source"><a href="https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/">官方发布：语言、Cargo 与兼容边界</a></p></article>
+<article data-kind="official"><p class="meta">窗口内公告 · RSS 11 月 12 日 22:00 UTC</p><h3>02 · Cognito 令牌交换：下游只拿到当前动作所需的权限</h3>
+<p><strong>事件简介：</strong>Amazon Cognito 支持 OAuth 2.0 令牌交换标准 RFC 8693。这个登录与访问控制服务，现在允许代用户调用接口的服务或 AI 代理，把用户令牌换成专供某个下游服务使用的新令牌；此前需转发原令牌或自行维护签发逻辑。</p>
+<p><strong>技术机制：</strong>新令牌可缩小 scope 权限范围、绑定单一 audience 接收方，并且不附刷新令牌。请求若包含 actor token，Cognito 会写入 act 声明标识中间调用者；可通过令牌端点或新增 GetDerivedToken API 交换。</p>
+<p><strong>实际影响：</strong>编辑判断：MCP（模型上下文协议）服务器代用户查业务数据时，可先换取只面向该后台的凭证，让后台区分用户直访与代理代办，减少将原始广泛权限沿调用链传递的需要。这是具体授权接口，区别于本周跨机构代理身份倡议。</p>
+<p><strong>限制与来源：</strong>功能限 Essentials 与 Plus 方案，在 Cognito 已提供的区域可用。更窄权限仍需调用方正确设置，公告没有给出任意后端自动识别 act 的保证，也未提供独立部署效果数据。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/cognito-token-exchange/">AWS 令牌范围、调用方式与方案限制</a></p></article>
+<article data-kind="official"><p class="meta">窗口内公告 · RSS 11 月 12 日 18:00 UTC；多团队底层特性仍为预览</p><h3>03 · MWAA 细粒度权限：共用 Airflow 环境，按团队区分工作流</h3>
+<p><strong>事件简介：</strong>AWS 托管 Apache Airflow 工作流服务 MWAA 新增 IAM Identity Center 集成与多团队环境。管理员可让用户通过企业身份系统登录，再决定其能操作哪些 DAG（有向无环任务图）、连接、变量或资源池，避免所有协作者都获得同一环境视野。</p>
+<p><strong>技术机制：</strong>每个请求按 Permission Set 所附 IAM 策略授权，以条件键限定资源类型、动作及具体资源标识。多团队模式为各组分配独立 S3 DAG 文件夹，并按身份中心群组成员关系展示本组与共享工作流。</p>
+<p><strong>实际影响：</strong>编辑判断：财务与运营团队若共用一个调度环境，可分别维护任务目录，由平台团队配置一次环境参数，减少各建环境后的重复维护；具体连接、变量等资源仍需逐项配置策略，不能只靠文件夹分组代替授权。</p>
+<p><strong>限制与来源：</strong>公告称覆盖 MWAA 已提供的全部区域，但多团队环境所依赖的 Airflow 特性仍在预览。共享基础设施能否节费取决于实际规模；公告未给节费测量或跨团队隔离测试，不能推断每个资源都已默认隔离。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/mwaa-fine-grained-access-control/">AWS 新能力、资源授权与预览状态</a></p></article>
+<article data-kind="official"><p class="meta">截止后补充 · RSS 11 月 13 日 00:20:16 UTC；正文日期为 11 月 12 日，回顾十月事故</p><h3>04 · GitHub 十月复盘：重连风暴会把依赖故障扩散到其他服务</h3>
+<p><strong>事件简介：</strong>GitHub 公布十月可用性报告，回顾八起影响服务的事故及修复。虽然云端容量扩张，局部网络和缓存连接故障仍曾拖慢 Actions、网页及审计记录；这是新披露的复盘，不是本观察窗口内发生八次事故。</p>
+<p><strong>技术机制：</strong>十月十九日，一个保存工作流日志和状态的服务失去部分缓存连接，各实例同时重试，把共享网络链路挤满。二十一日的事件流平台则因立即重连增加内存用量，流量转移后进一步压垮其他服务器；后续加入连接速率限制与随机重连延迟。</p>
+<p><strong>实际影响：</strong>编辑判断：设计任务平台时，应同时限制重连频率和恢复后的积压消费速率，并对连接数、内存和共享链路告警，避免仅增加健康区容量，却让相同重试行为继续放大故障。</p>
+<p><strong>限制与来源：</strong>原因和改进均来自平台自述，未独立复现。报告部分标题时长与正文客户影响时长不同，本期不合并计算停机总量；限速、抖动也不是任意负载的可用性保证。此项不同于此前 Git 对象存储架构披露。</p>
+<p class="source"><a href="https://github.blog/news-insights/company-news/github-availability-report-october-2026/">GitHub 官方月度复盘：具体事故与整改</a></p></article>
+<article data-kind="project_trending"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，非新发布</p><h3>05 · nvm：让不同项目在各自终端使用指定 Node.js 版本</h3>
+<p><strong>简介：</strong>nvm-sh/nvm 是按用户安装、按 shell 会话生效的 Node.js 版本管理工具，面向同时维护多个 JavaScript 项目的开发者。它通过命令行安装、选择运行时，支持 Unix、macOS 及 Windows WSL 的 POSIX shell，不要求全机共用一个版本。</p>
+<p><strong>技术特点：</strong>nvm 以加载进 shell 的函数运行；项目根目录或父目录可放 .nvmrc，nvm use 和 nvm install 会向上查找并读取版本。前者切换已有版本，后者可安装缺失版本再切换；nvm exec 也可指定版本运行子 shell 命令。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：开发者在旧服务与新前端之间切换时，可将准确版本写进各自仓库，再在对应终端执行 nvm use，减少反复卸载系统 Node.js 或记忆每个项目版本的操作。只写 node 或 lts/* 这类别名仍会随上游变化。</p>
+<p><strong>限制与来源：</strong>不直接支持 Fish；Windows 原生替代项目并非本仓库维护。非交互 Bash 不会自动加载普通配置，容器任务需显式安排加载；用户级安装也不会改变其他账户的版本，.npmrc 中 prefix 与它不兼容。</p>
+<p class="source"><a href="https://github.com/nvm-sh/nvm#intro">当前 README：定位、安装与用法</a> · <a href="https://github.com/nvm-sh/nvm#nvmrc">版本文件及查找规则</a></p></article>
+<article data-kind="project_trending"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，非新发布</p><h3>06 · Node.js：等待网络时让出执行机会，重计算仍需另作安排</h3>
+<p><strong>简介：</strong>nodejs/node 是开源、跨平台的 JavaScript 运行环境，让开发者在浏览器外编写网络服务和命令行程序。安装运行时后，可用 node server.js 启动代码；内置 node:http 能接收请求、读取请求信息并写回响应，不必先引入网页框架。</p>
+<p><strong>技术特点：</strong>V8 执行 JavaScript，事件循环协调连接与回调；网络等异步输入输出等待返回时，不必为每个请求独占一个线程。libuv 工作线程池承担部分文件操作、压缩和加密任务，完成后再通知事件循环处理结果。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：编写需等待多个后台接口的聚合服务时，可复用 JavaScript 技能，把等待时间留给其他连接，减少自行管理逐连接线程的工作。这是程序执行与调度机制，与上一项 nvm 选择运行时版本各有职责。</p>
+<p><strong>限制与来源：</strong>长时间 JavaScript 回调、同步文件接口或大型 JSON 处理仍会阻塞其他请求，异步语法不自动消除计算开销。README 明示 Alpha 和 Current 面向库作者与 CI，LTS 侧重稳定安全；本期不将当前上榜写成新版本发布。</p>
+<p class="source"><a href="https://github.com/nodejs/node#readme">当前 README：身份、下载与维护分支</a> · <a href="https://nodejs.org/en/learn/getting-started/introduction-to-nodejs">官方入门：V8、异步 I/O 与 HTTP 示例</a> · <a href="https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop">事件循环与工作线程池的边界</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察</h2>
+<article data-kind="project_trending"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，采用范围待观察</p><h3>07 · TensorFold：用原生二进制提供本地模型接口，按硬件核对可用路径</h3>
+<p><strong>简介：</strong>ashhart/TensorFold 是本地语言模型推理引擎，当前主路径用 Zig 二进制在 Apple Silicon 和 NVIDIA GPU 上提供服务。它自行读取权重、分词并执行 Metal 或 CUDA 内核，运行服务不需安装 Python 或 MLX；桌面工作区另有 Beta 应用。</p>
+<p><strong>技术特点：</strong>pull 将权重下载到 Hugging Face 缓存，大文件按 SHA-256 校验并支持断点续传；serve 按名称加载模型，提供 Chat Completions、Responses 与 Anthropic Messages 接口。--parallel 按内存及引擎能力限制活跃请求，额外连接排队，启动时报告实际接受容量。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：已有模型客户端的团队可先用文档固定版本的小模型接通本机接口，再换任务验证效果，减少搭建 Python 推理依赖的准备；这不意味着所有接口行为与云服务完全相同。</p>
+<p><strong>限制与来源：</strong>Linux 发布包要求 glibc 2.28+ 与 R580／CUDA 13 驱动；有编译内核不等于该 GPU 已完成模型运行验证，权重之外还需上下文和并发内存。后续看固定权重的跨设备复跑、并发排队及显存失败记录，作者基准不能外推所有模型。</p>
+<p class="source"><a href="https://github.com/ashhart/TensorFold#quick-start">当前 README：原生服务、模型表与限制</a> · <a href="https://github.com/ashhart/TensorFold#exact-decoding">并发、精确解码与构建边界</a></p></article>
+<article data-kind="project_trending"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，兼容与恢复待观察</p><h3>08 · HermesEnabler：表盘激活研究要区分静态布局与真机恢复</h3>
+<p><strong>简介：</strong>pookjw/HermesEnabler 当前为 HermesEnabler 2，是尝试在 Apple Watch 激活 Hermès 等表盘的侧载应用，面向设备爱好者及研究者。README 仅支持 watchOS 27.0 至 27.3 beta 1，需与 iPhone 配对并启用开发者模式，可经 Xcode 构建安装。</p>
+<p><strong>技术特点：</strong>它修改设备 MobileGestalt 属性缓存：表盘相关数值写入 CacheData 二进制字段，而非只改 CacheExtra 字典。写前核对系统构建、布局 UUID、长度和边界，写后回读；初次备份与每次写前自动快照分开保存，不能把后建快照当出厂原值。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：研究某个系统版本为何显示不同表盘时，可沿 OTA 静态分析、字段修改和进程重载逐层核对，减少把模拟器结果直接当真机结论。它不能通过软件开关补出设备缺少的物理硬件。</p>
+<p><strong>限制与来源：</strong>部分构建的原生恢复回调尚未真机验证，恢复不是通用出厂重置；免费签名七天到期，App Groups 权限还可能要求付费团队。继续观察按设备与构建记录的激活、恢复测试及布局异常，截图不证明全部表盘可用。</p>
+<p class="source"><a href="https://github.com/pookjw/HermesEnabler#readme">当前 README：平台、侧载与签名限制</a> · <a href="https://github.com/pookjw/HermesEnabler/blob/main/Research/MobileGestalt/README.md">缓存布局及写入机制</a> · <a href="https://github.com/pookjw/HermesEnabler/blob/main/Research/Recovery/README.md">备份与恢复证据边界</a> · <a href="https://github.com/pookjw/HermesEnabler/blob/main/Research/WatchFaces/README.md">表盘兼容尚未解决的问题</a></p></article>
+<article data-kind="official"><p class="meta">窗口内设计披露 · RSS 11 月 12 日 17:01:40 UTC · 功能已在公共预览</p><h3>09 · Grafana 界面刷新预览：先统一视觉层级，再验证真实任务表现</h3>
+<p><strong>事件简介：</strong>Grafana 介绍仍在公共预览的界面视觉刷新，调整监控平台的浅色、深色主题和组件表达。文章解释其如何整理长期增加的面板、抽屉与卡片样式；这是新的设计过程披露，所链预览说明日期为十月二十六日，不是首次发布预览。</p>
+<p><strong>技术机制：</strong>团队减少组件及其变体，用新的色板、字体、边框与阴影建立比例一致的视觉层级。自托管实例通过 grafana.visualDesignRefresh 特性开关试用，也可切回旧样式；文章称保留现有导航，插件不发生破坏性变更。</p>
+<p><strong>实际影响：</strong>编辑判断：维护大量看板的团队可先选常用排障页面做试点，让值班者完成同一组查询与定位任务，检查视觉层级是否帮助找到重点，减少仅凭截图审美就全面切换的判断偏差。本项不同于近期查询上下文与变量作用域。</p>
+<p><strong>限制与后续观察：</strong>无障碍改善和效率目标是厂商设计主张，未附独立任务耗时或读屏测试结果。后续应看第三方插件、不同主题下的对比度与键盘操作复验，以及正式推出后的反馈；保留导航不代表所有用户均无适应成本。</p>
+<p class="source"><a href="https://grafana.com/blog/an-early-look-at-the-grafana-ui-refresh-building-a-clearer-more-consistent-user-experience/">Grafana 官方机制、开关与公共预览边界</a></p></article>
+<article data-kind="project"><p class="meta">截止后 HN 当前列表补充 · 提交 11 月 13 日 00:09:53 UTC，项目发现，非发布公告</p><h3>10 · üxzView：图片浏览与离线识别分离，跨平台运行仍待验证</h3>
+<p><strong>简介：</strong>micha42-dot/uxzView 当前名为 üxzView，是 C++20 与 Qt 6 编写的图片浏览和轻量编辑工具。它提供文件夹浏览、裁剪、调色、批量转换与 PDF 页面查看，面向整理本地图片的用户；现有预编译包只面向 Windows x64，Linux 和 macOS 须自行构建。</p>
+<p><strong>技术特点：</strong>图片服务 ixcore 与界面 ixui 分开，解码及重处理放到工作线程；显示缓存不作为保存导出的像素来源。二维码工具 ZXing-C++ 与文字识别工具 Tesseract 作为独立进程按需启动，作用于整图或选区，不常驻在查看器主进程内，也不改写图片像素。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：整理票据截图时，可先在同一窗口筛选、裁剪，再对选区运行离线文字识别，减少在查看器和识别程序之间导出临时图片的操作；工具与语言包可独立删除，不需始终加载所有识别引擎。</p>
+<p><strong>限制与来源：</strong>项目仍在开发，README 明示 Linux、macOS 原生运行尚待验证，不能按 HN 标题推断已是成熟 Linux 替代品。Windows 所附 OCR 列出英、德、法、日、韩语，未列中文；后续看原生跨平台构建、格式往返及大图内存实测，本期未运行验证。</p>
+<p class="source"><a href="https://github.com/micha42-dot/uxzView#readme">当前 README：使用、构建与工具</a> · <a href="https://github.com/micha42-dot/uxzView/blob/main/docs/ARCHITECTURE.md">架构：图像、界面和识别进程边界</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-11-06 至 2026-11-12 七份现存报告，按去除片段、跟踪参数和多余尾斜线的主 URL、GitHub owner/repository 与底层议题核对。排除 Astryx、Sure、Modern Web Guidance、Hello 算法、Bili23、Umi-OCR、沉浸式翻译及 Shadowrocket 规则等旧项；通用代理技能、聊天机器人和安全审计流程未以重新上榜重复填充。入选项目无重复仓库，相近技术主题的不同对象已在正文说明。</p>
+<p>核验与来源限制：入选主来源均通过受信任 orz_fetch MCP 读取；仓库核对当前 README 的定位、机制、用法及限制，补读 Node.js 官方机制文档、HermesEnabler 三篇研究说明与 üxzView 架构文档。原始正文、URL、支持摘录与筛选记录保存在 work/tech-trends-2026-11-13/。采集器未报告来源组失败，本次主来源核验无请求失败。中文榜单达到读取上限，前十范围依据采集器结果；nvm 长页末尾截断，本文涉及的安装、用法、版本文件与兼容限制段落均已完整读取。未独立运行项目或复测作者结果；总条数、Trending 配额与观察栏无短缺。</p>
+<p>原始预览与候选 JSON 仅作证据，没有作为最终报告发布。轻量入口与索引已刷新，生成页面留在工作树供后续工作流提交和发布；本次未执行提交、推送或线上发布验证。</p></footer></main></body></html>
