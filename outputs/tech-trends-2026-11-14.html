@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>body{margin:0;background:#f4f6f9;color:#1c2b3a;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:36px 22px 70px}header{border-bottom:3px solid #245d79;padding-bottom:18px}h1{font-size:2.3rem;margin:5px 0}h2{margin-top:36px;border-bottom:1px solid #cdd9e2;padding-bottom:8px}h3{font-size:1.3rem;margin:5px 0 12px}article{background:#fff;border:1px solid #dce4eb;border-radius:12px;padding:20px 24px;margin:18px 0}p{margin:10px 0}a{color:#155c91}.meta,.source,footer{font-size:.85rem;color:#566c7e}.source{overflow-wrap:anywhere}.overview{background:#e7f0f7;border-left:4px solid #28789e;padding:16px 20px;margin-top:24px}nav a{margin-right:18px}@media(max-width:600px){main{padding:22px 14px}article{padding:16px}h1{font-size:1.8rem}}</style></head><body><main>
+<header><p class="meta">TECH MORNING BRIEF · 2026-11-14</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-13 07:00 至 2026-11-14 07:00，即截止前 24 小时。工作流截止值：2026-11-14T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；生成时当前列表另行标注。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<aside class="overview"><h2>中文编辑概览</h2><p>今天关注自动化的真实执行条件：数据库维护把准备移到停机前，性能分析把资源曲线追到代码，预算控制则必须解释异步传播的边界。项目侧选择能说明输入、机制与部署条件的工具；观察栏保留自托管代理协作和新开源浏览器，等待功能完整性与兼容性证据。</p><p>共 10 项：今日重点 8 项、值得继续观察 2 项，包含 4 个不同的 project_trending 仓库；每个组织或发布方不超过两项。六篇官方材料的 RSS 时间位于主窗口内，正文仅给日期的公告不以 RSS 时分冒充精确发表时间。</p><p>已筛选候选 JSON 的 GitHub Trending Daily 全语言和中文语种各前十，去重共 20 个仓库，并补读两张当前榜单。榜单仅是生成时补充信号，不代表截止七点的历史排名；项目采集锚点和 HN 提交时间都不是发布日期。</p></aside>
+<section id="main"><h2>今日重点</h2><p class="meta">8 项</p>
+<article data-kind="official" data-publisher="Meta"><p class="meta">窗口内工程披露 · RSS 11 月 13 日 17:00:39 UTC</p><h3>01 · Cuttlefish 移植到 Mac：让本地与 CI 使用同一种 Android 虚拟设备</h3>
+<p><strong>事件简介：</strong>Meta 公布将 Android 虚拟设备框架 Cuttlefish 移植到 Apple Silicon Mac 的工程，并提供 QEMU 分支和 AOSP 补丁。此前开发者在 Mac 使用 Goldfish、持续集成使用 Linux Cuttlefish，两套环境的行为差异可能使问题延后暴露。</p>
+<p><strong>技术机制：</strong>团队恢复 QEMU 后端，解除 vhost-user 设备进程的 Linux 构建限制，并增加苹果 Hypervisor.framework 后端跟踪内存区域的槽位。原生 Cocoa 显示支持 BGRA 像素和鼠标转触摸，构建还补齐即时编译权限、签名及公证路径。</p>
+<p><strong>实际影响：</strong>编辑判断：开发可穿戴 Android 软件时，可在本机与 CI 运行相同虚拟设备，再用快照反复测试，减少维护两套模拟器和等待共享真机的工作。相同镜像有助比较软件行为，但不等于复现所有物理特性。</p>
+<p><strong>限制与来源：</strong>目前通过 Meta 维护的分支及补丁使用，上游合并仍在探索；不能写成 AOSP 已正式支持全部 Mac 主机。维护负担下降是团队自述，文章没有独立兼容率或性能对照。</p>
+<p class="source"><a href="https://engineering.fb.com/2026/11/13/android/cuttlefish-on-mac/">官方原文：变化、机制与边界</a></p></article>
+<article data-kind="official" data-publisher="Grafana Labs"><p class="meta">窗口内更新汇总 · RSS 11 月 13 日 17:14:29 UTC</p><h3>02 · Pyroscope 扩展内存剖析：从资源曲线追到具体代码路径</h3>
+<p><strong>事件简介：</strong>Grafana 汇总连续性能剖析数据库 Pyroscope 的近期更新：Python、Rust 内存分析和 Windows .NET 支持，并让 gcx 命令行查询剖析数据。这次重点是代码资源消耗的可检查证据，区别于本周已报道的看板上下文交接与界面刷新。</p>
+<p><strong>技术机制：</strong>Python 配置 mem_enabled=True 后记录分配和仍占用的内存；Rust 路径依赖 jemalloc 分配器。gcx 可先按 CPU 等指标找服务，再用 exemplars 找到开销最大的单次剖析，以 profile ID 查询函数，或导出 pprof 格式交给现有分析工具。</p>
+<p><strong>实际影响：</strong>编辑判断：服务内存持续上涨时，工程师或代理可从曲线定位到分配内存的调用路径，减少只把截图交给模型猜原因。保留具体剖析和变更前后文件，也便于人工检查优化是否命中同一瓶颈。</p>
+<p><strong>限制与来源：</strong>Windows .NET 仍为公共预览且只支持 x64；.NET Framework 4.7+ 仅有 CPU 与墙钟时间类型。exemplars 依赖 v2 存储层，厂商内部存储缩减数据不能外推；取到剖析不保证自动找对根因。</p>
+<p class="source"><a href="https://grafana.com/blog/whats-new-in-pyroscope-profile-more-of-your-workflows-troubleshoot-with-ai-agents-and-more/">官方原文：变化、机制与边界</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内公告 · RSS 11 月 13 日 16:00 UTC</p><h3>03 · Aurora 快速配置进入 CloudFormation：模板同时建立集群与主实例</h3>
+<p><strong>事件简介：</strong>Aurora PostgreSQL 的 express configuration 现可由 CloudFormation 模板部署。前者是快速建立可查询 serverless 数据库的配置方式，后者用声明式文件管理云资源；新增支持让团队把这一创建路径纳入基础设施代码。</p>
+<p><strong>技术机制：</strong>AWS::RDS::DBCluster 新增 withExpressConfiguration 属性，一次声明创建集群及其主数据库实例，不必在模板里另建并维护实例资源。公告将它标为 createOnly，即创建阶段属性，不能据此推断已有集群可原地切换。</p>
+<p><strong>实际影响：</strong>编辑判断：团队为多个测试环境建立同类数据库时，可将快速配置保存进模板，再重复部署，减少控制台操作后还需人工补齐实例声明的步骤。变化在资源建模与创建流程，不是数据库查询引擎提速。</p>
+<p><strong>限制与来源：</strong>覆盖提供 Aurora PostgreSQL express configuration 的区域，而非任意 AWS 区域。数秒创建是厂商描述，公告没有提供负载测试、成本下降或既有集群迁移承诺，生产参数仍需按业务核对。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/aurora-postgresql-cloudformation/">官方原文：变化、机制与边界</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内公告 · RSS 11 月 13 日 08:00 UTC</p><h3>04 · RDS for Oracle 提前准备维护资源：缩短停机阶段的准备工作</h3>
+<p><strong>事件简介：</strong>Amazon RDS for Oracle 调整自动小版本升级、维护窗口内的小版本升级与操作系统更新流程。过去需要在维护开始后准备新资源，现在可提前最多三十分钟准备，数据库在这段准备期间继续服务。</p>
+<p><strong>技术机制：</strong>维护窗口开启后复用已经备好的资源；若用户操作与准备冲突，服务回滚暂存资源并优先执行用户变更。准备未完成也不会推迟原定维护，而是按未预备的路径继续，新增事件分别报告开始、完成和无法完成。</p>
+<p><strong>实际影响：</strong>编辑判断：需要安排夜间维护的业务，可订阅准备事件并记录实际连接中断时间，将资源准备与真正停机分开验收，减少把整个维护流程都算作不可用的判断偏差。已启用自动小版本升级的实例自动受益。</p>
+<p><strong>限制与来源：</strong>适用 Enterprise Edition 与 Standard Edition 2，覆盖支持该服务的商业及 GovCloud 区域，不另收费。公告没有承诺零停机或固定缩短比例，准备失败仍可能回到原路径，不能据此取消维护安排。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/rds-oracle-reduces-maintenance-downtime-for-amvu-scheduled-upgrades/">官方原文：变化、机制与边界</a></p></article>
+<article data-kind="project_trending" data-publisher="tailscale"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，非新发布</p><h3>05 · Tailcat：交换一个地址，临时连接两台机器的端口</h3>
+<p><strong>简介：</strong>tailscale/tailcat 是类似 netcat 的命令行网络工具与 Go 库，面向临时传文件、转发端口或远程连接的开发者。两端交换监听地址即可使用，不需 Tailscale 账户或管理员权限，也不修改系统路由和 DNS。</p>
+<p><strong>技术特点：</strong>复用 Tailscale 的 magicsock 数据通道，以 WireGuard 端到端加密；先经 DERP 中继引导，再尝试穿过网络地址转换建立直接 UDP 连接。serve 指定服务端端口，forward 将它映射为客户端本地端口，普通浏览器和数据库客户端即可接入。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：同事临时查看开发机的测试网页时，可只开放对应服务端口并私下分享地址，减少先加入整套组网控制平台的准备。默认临时密钥在退出后丢弃，连接地址也随之失效。</p>
+<p><strong>限制与来源：</strong>默认公共 DERP 有速率限制，浏览器实验版目前仅走中继。地址通常就是接入凭证，no-auth-ssh 泄露地址会开放当前用户的 shell；长期保存密钥时应另配客户端允许列表或 SSH 公钥认证。</p>
+<p class="source"><a href="https://github.com/tailscale/tailcat">当前 README：定位、机制、用法与限制</a></p></article>
+<article data-kind="project_trending" data-publisher="tw93"><p class="meta">GitHub Trending Daily 中文语种当前前十 · project_trending · 生成时补充，非新发布</p><h3>06 · Pake：用系统 WebView 把网页和本地静态页面包装为桌面应用</h3>
+<p><strong>简介：</strong>tw93/Pake 当前仓库提供免费开源的 Pake CLI，把网址、单个 HTML 或含 index.html 的静态目录打包为 macOS、Windows、Linux 应用。它适合希望给已有网页提供独立窗口和启动入口的开发者；另有单独下载的桌面产品。</p>
+<p><strong>技术特点：</strong>Rust Tauri 调用操作系统 WebView 渲染页面，不随每个安装包携带 Chromium。pake 接收输入与应用名，再配置图标、窗口尺寸和导航规则；也能从 JSON 文件读取选项。针对本地网页，文档支持哈希路由，即用网址片段切换页面。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：已有静态内部工具时，可直接包装构建目录，减少为了桌面入口重写一套界面的工作。系统渲染引擎减少安装包携带的内容，但页面本身仍决定大量运行期开销。</p>
+<p><strong>限制与来源：</strong>本地 history 模式路由尚不支持；打包需 Node.js 20.9+ 与 Rust 1.85+。FAQ 明示部分 OAuth 登录和反机器人挑战会失败，macOS 不支持通行密钥登录；小安装包不能理解成低内存保证。</p>
+<p class="source"><a href="https://github.com/tw93/Pake">当前 README：定位、机制、用法与限制</a> · <a href="https://github.com/tw93/Pake/blob/main/docs/cli-usage.md">CLI 输入、打包与路由限制</a> · <a href="https://github.com/tw93/Pake/blob/main/docs/faq.md">登录与内存边界</a></p></article>
+<article data-kind="project_trending" data-publisher="louislam"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充，非新发布</p><h3>07 · Uptime Kuma：把接口检查、通知和公开状态页放进自托管服务</h3>
+<p><strong>简介：</strong>louislam/uptime-kuma 是自托管可用性监控工具，供维护网站、接口和家庭服务的人使用。它检查 HTTP、TCP、DNS、WebSocket 及 Docker 容器等目标，通过网页看状态，并可向邮件、Telegram 等渠道通知，另提供多个状态页。</p>
+<p><strong>技术特点：</strong>HTTP 检查不只判断连通，还支持关键词和 JSON 查询；文档列出二十秒检查间隔。Vue 单页界面通过 WebSocket 交互，状态页可映射各自域名；Docker 启动时将 /app/data 挂入持久卷，让服务进程与保存数据分开。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：小团队维护一个返回 JSON 的健康接口时，可检查响应中的预期内容，异常后发通知，同时为用户提供状态页，减少手写轮询脚本再另接通知及展示页面。它关注可用性检查，区别于本周 Prometheus 的指标采集查询底座。</p>
+<p><strong>限制与来源：</strong>数据卷必须使用本地目录或卷，不支持 NFS；默认端口绑定全部网络接口，可显式改为仅本机。非 Docker 路径要求 Node.js 20.4+，不支持所列 BSD 平台；演示数据十分钟后删除，不能作持久部署。</p>
+<p class="source"><a href="https://github.com/louislam/uptime-kuma">当前 README：定位、机制、用法与限制</a></p></article>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内 Beta 公告 · RSS 11 月 13 日 14:00 UTC</p><h3>08 · Spend Management Beta：预算触发停用，执行仍有异步延迟</h3>
+<p><strong>事件简介：</strong>Cloudflare 为按量付费客户推出 Spend Management Beta，先支持 Workers 和 Durable Objects。用户除设置邮件阈值，也能让累计费用达到上限后暂停收费活动，将“提醒超支”扩展为服务端执行控制。</p>
+<p><strong>技术机制：</strong>用量先按约一分钟、五分钟两级聚合，再按账户分区结合订阅额度计价；缺少订阅信息的用量保留待处理。策略经 Quicksilver 分发到各节点，由运行时本地拒绝后续调用，计价引擎不进入每个请求的处理路径。</p>
+<p><strong>实际影响：</strong>编辑判断：测试自动化任务出现失控循环时，可给对应产品设预算，减少只等人工读邮件后才停任务的暴露时间。但这可能同时暂停该账户其他应用使用的同一产品，不能当成单任务预算。</p>
+<p><strong>限制与来源：</strong>当前费用视图接近实时、目标在十分钟内，封禁异步传播，不能保证金额绝不越线；静态资源仍可服务。按应用和代理跨产品归集预算仍是路线图，账期从付费订阅开始而非自然月。</p>
+<p class="source"><a href="https://blog.cloudflare.com/spend-management/">官方原文：变化、机制与边界</a></p></article>
+</section><section id="watch"><h2>值得继续观察</h2><p class="meta">2 项</p>
+<article data-kind="project_trending" data-publisher="Block"><p class="meta">GitHub Trending Daily 全语言当前前十 · project_trending · 生成时补充 · 早期采用观察</p><h3>09 · Buzz：让人、代理与代码事件共用一份可检索日志</h3>
+<p><strong>简介：</strong>block/buzz 是可自托管的人与 AI 代理协作工作区，当前仓库包含中继服务及开发中的移动客户端，桌面应用另在 buzz-app。团队通过工作区网址进入社区，围绕频道消息、代码补丁与工作流保留协作记录。</p>
+<p><strong>技术特点：</strong>它以 Nostr 签名事件记录消息、反应、Git 补丁和执行步骤；Postgres 保存事件并做全文检索，Redis 负责发布订阅，S3 或 MinIO 放媒体。代理用自己的密钥和频道成员身份，通过 JSON 输入输出的 buzz-cli 或 ACP 适配层参与。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：围绕一个功能分支讨论时，可把补丁、CI 结果和评审记录留在同一事件体系，减少在聊天和代码平台间寻找决策依据。这与本周 Evergreen 云端执行会话不同，关注自托管协作记录及身份。</p>
+<p><strong>限制与来源：</strong>README 明示尚未完成：工作流审批门仍在接线，移动端在开发，推送通知尚待实现；开发 Compose 不能直接当生产方案。后续应看审批真正阻止未授权执行的测试、备份恢复及独立团队使用记录，再判断能否承接关键流程。</p>
+<p class="source"><a href="https://github.com/block/buzz">当前 README：定位、机制、用法与限制</a></p></article>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内开源公告 · RSS 11 月 13 日 20:20:21 UTC · 实验性引擎</p><h3>10 · Kitesurf 开源：在 Workers 内组合浏览器引擎，兼容性仍待验证</h3>
+<p><strong>事件简介：</strong>Cloudflare 将八月介绍的 Kitesurf 以 Apache 2.0 开源，开发者现可阅读修改源码并部署到自己的 Workers 账户。它为 AI 代理解析网页、执行脚本与截图，无需启动 Chrome 容器；本次新事件是源码开放，不是首次推出浏览器。</p>
+<p><strong>技术机制：</strong>Engine 管会话与连接，PageScript 执行页面脚本，PageRenderer 绘图。Blitz 处理文档结构和布局，Stylo 计算 CSS 样式，Rust 组件编译为 WebAssembly；Chrome DevTools Protocol 调试协议让 Puppeteer 等客户端接入，页面由 Dynamic Workers 隔离。</p>
+<p><strong>实际影响：</strong>编辑判断：维护浏览器代理的人可沿现有 CDP 客户端尝试加载实际任务页面，遇到渲染缺陷时给出最小复现，减少只能等待封闭托管服务修复的限制。能连接客户端不代表完整支持 Chrome 行为。</p>
+<p><strong>限制与来源：</strong>README 标为实验性，部分 DevTools 功能不可用；云端要求 Workers 付费方案，引擎本身没有认证，须另加 Access 等保护。后续看网页平台测试覆盖、真实登录流程兼容及同任务资源实测，不能直接采用厂商效率目标。</p>
+<p class="source"><a href="https://blog.cloudflare.com/kitesurf-open-source/">官方原文：变化、机制与边界</a> · <a href="https://github.com/cloudflare/kitesurf#cloudflare-deployment">README：实验范围、构建与认证要求</a></p></article>
+</section><footer><p>七日去重：逐篇读取 2026-11-07 至 2026-11-13 七份现存报告，按去掉片段、跟踪参数和多余尾斜线的主 URL、GitHub owner/repository 及底层议题核对。排除 Modern Web Guidance、Sure、Daily Stock Analysis、Hello 算法、Bili23、Umi-OCR 等重复仓库；通用代码审查与交易技能未优先于具体工程机制，资讯目录和直播名单未作为实质项目填充。Pyroscope、Uptime Kuma、Buzz 与相邻旧题的不同对象已在正文说明；Kitesurf 是新的开源事件并链接新证据。</p><p>核验与来源限制：入选主来源均经受信任 orz_fetch MCP 读取，仓库核对当前 README 的介绍、动机、架构或功能、用法与相关限制；Pake 补读 CLI 及 FAQ，Kitesurf 补读完整 README。正文、URL、支持摘录与筛选说明保存在 work/tech-trends-2026-11-14/。采集器未报告来源组失败，本次正文请求无失败；两张榜单长页达到读取上限，前十范围依据采集器结果。未运行项目或独立复测作者数据；总条数、Trending 配额与观察栏均无短缺。</p><p>原始预览与候选 JSON 仅作证据，没有发布为最终报告。轻量入口及索引已刷新，生成页面留在工作树供后续工作流提交与发布；本次未执行提交、推送或线上发布验证。</p></footer></main></body></html>
