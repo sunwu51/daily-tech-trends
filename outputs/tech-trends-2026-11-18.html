@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#1d2b37;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:950px;margin:auto;padding:40px 22px 72px}header{border-bottom:3px solid #286678;padding-bottom:18px}h1{margin:6px 0;font-size:36px}h2{margin:32px 0 16px}h3{font-size:22px;line-height:1.5;margin:8px 0 16px}article{background:white;border:1px solid #d9e1e7;border-radius:10px;padding:24px 28px;margin:20px 0}p{margin:12px 0}.meta,.source,footer{font-size:13px;color:#596d7b}a{color:#126286;overflow-wrap:anywhere}nav a{margin-right:20px}.overview{padding:8px 22px;background:#e7f0f3;border-left:4px solid #286678}footer{margin-top:34px;border-top:1px solid #ccd7df;padding-top:18px}@media(max-width:600px){main{padding:24px 14px}article{padding:18px}h1{font-size:29px}h3{font-size:20px}}</style></head><body><main>
+<header><p class="meta">TECH MORNING BRIEF · 2026-11-18</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-17 07:00 至 2026-11-18 07:00，即截止前 24 小时。工作流截止值：2026-11-18T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；当前列表和窗口前补充资料分别标注。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<aside class="overview"><h2>中文编辑概览</h2><p>今天关注自动化如何留下可检查的依据：数据湖减少全量重算，作业优化要拿出配置和遥测证据，日志查询先缩小实际读取范围。代理领域则需要区分协议状态、插件分发和开发方法；安全试点显示，人工验证及修复交付仍是关键成本。</p><p>共 10 项：今日重点 7 项、值得继续观察 3 项，包含 4 个不同的 project_trending 仓库；各组织或发布方最多两项，GitHub 与 Microsoft 合并计算。六篇官方材料的 RSS 时间位于主窗口，正文仅标日期时不将 RSS 时分冒充精确发表时间。</p><p>已筛选候选 JSON 中 GitHub Trending Daily 全语言与中文语种各前十，去重共 20 个仓库。榜单只代表生成时关注，不能还原截止七点的历史排名，也不表示项目今天发布；JSON 的项目时间锚点和 HN 提交时间不是项目发布日期。HN 当前列表仅用于发现，本期未以互动数支撑技术结论。</p></aside>
+<section id="main"><h2>今日重点</h2><p class="meta">7 项</p>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内发布 · RSS 2026-11-17 22:25 UTC</p><h3>01 · EMR 8.2：数据湖的并发写入与增量刷新进入长期支持版</h3>
+<p><strong>事件简介：</strong>AWS 发布长期支持版 Amazon EMR 8.2，升级 Spark 4.1.3、Iceberg 1.11.0 与 Delta Lake 4.2.0。这些组件分别负责分布式计算和数据湖表管理；本次改变覆盖 EC2、EKS 与 Serverless 三种运行方式。</p>
+<p><strong>技术机制：</strong>多个集群可借 S3 条件写入并发更新同一 Delta 表，无需 DynamoDB 日志存储。Iceberg 物化视图把查询结果预先保存，刷新时只处理变化，覆盖投影、内连接、过滤及 SUM、COUNT 聚合；最终用户身份还能传到 Lake Formation 与 S3。</p>
+<p><strong>实际影响：</strong>编辑判断：分阶段汇总订单的数据团队，可把中间结果声明为 SQL 物化视图，减少每轮重算整张来源表；多集群写入则少维护一套日志存储组件。仍须用自己的增量与并发任务验收。</p>
+<p><strong>限制与来源：</strong>不同部署方式新增能力不同，例如三种执行器伸缩配置仅列于 Serverless。最高 97% 的用户配置延迟降幅是 EC2 特定场景的厂商数据，不是整个作业提速承诺；公告未给 LTS 的具体维护期限。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-emr-8.2/">官方版本与部署差异</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内公告 · RSS 2026-11-17 22:25 UTC</p><h3>02 · Spark 优化代理：用作业证据解释配置建议</h3>
+<p><strong>事件简介：</strong>EMR Serverless 新增 Apache Spark Optimization Agent，分析已经结束的计算任务，给出费用或性能优化建议。数据工程师可在控制台使用，也可经 SageMaker Unified Studio 的 MCP（模型上下文协议）服务接入助手。</p>
+<p><strong>技术机制：</strong>它将配置、日志和 Spark 遥测一起交给确定性的推荐引擎，检查并行度不足、连接键倾斜、内存不足导致落盘及闲置执行器等原因。可对照一次正常运行定位变化，并把建议标成基础设施、Spark 配置、代码或数据布局四类，附证据和解释。</p>
+<p><strong>实际影响：</strong>编辑判断：同一报表任务突然变慢时，工程师可先比较基线，再区分该调整资源、连接方式还是文件布局，减少只凭运行总时长反复试参数。建议仍需实际重跑验证，不等于代理已经修改并证明收益。</p>
+<p><strong>限制与来源：</strong>要求 EMR 7.6+，不覆盖中国与美国 GovCloud 区域；功能不额外收费。选择一种目标时，引擎只在设定边界内控制另一指标退化，公告未公开这些阈值，也没有独立准确率评测。访问使用 IAM 认证并由 CloudTrail 记录。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/apache-spark-optimization-agent/">官方输入、推荐机制与范围</a></p></article>
+<article data-kind="official" data-publisher="Grafana"><p class="meta">窗口内正式可用公告 · RSS 2026-11-17 16:53:32 UTC</p><h3>03 · Grafana Cloud Logs 全文搜索：先定位可能含目标字符串的数据</h3>
+<p><strong>事件简介：</strong>Grafana Cloud Logs 宣布全文搜索正式可用，在 Loki 原有标签索引之外加入 Logline 二级索引。它解决只知道交易编号、却不知道服务或日期时，需要扫描大量压缩日志的问题；本次是日志检索更新。</p>
+<p><strong>技术机制：</strong>新索引告诉 Loki 哪些数据可能包含目标字面字符串，让查询跳过其他数据。现有 LogQL 的 |= 精确字符串、部分 |~ 正则，以及结构化元数据和 JSON 解析后的字面过滤可走加速路径，无需把每个用户编号都做成标签。</p>
+<p><strong>实际影响：</strong>编辑判断：客服交来一个两周前的交易号时，值班者可保留较宽时间范围查询，减少反复猜服务与时间、或另建全文系统的操作。避免高基数标签，也就是大量不同标签值造成的流数量膨胀。</p>
+<p><strong>限制与来源：</strong>部分高级正则不支持；这次公告针对托管 Cloud Logs，不能直接推定自托管 Loki 已具备相同能力。约一成计算和存储开销及客户提速案例均由厂商给出，非本期复测；公告称当前不额外收费。</p>
+<p class="source"><a href="https://grafana.com/blog/find-the-log-line-that-matters-faster-with-full-text-search-in-grafana-cloud-logs/">官方索引机制与支持查询</a></p></article>
+<article data-kind="official" data-publisher="GitHub/Microsoft"><p class="meta">窗口内工程披露 · RSS 2026-11-17 18:20:40 UTC</p><h3>04 · AHP 工程披露：跨设备会话以服务器状态和动作回放对齐</h3>
+<p><strong>事件简介：</strong>GitHub 披露 Agent Host Protocol（AHP，代理宿主协议）的跨设备实现，展示 VS Code 与 GitHub 两套独立宿主怎样共用会话。本次新增证据是协议状态设计及互通经验，延伸本周 Qwen Code 的单产品重连主题。</p>
+<p><strong>技术机制：</strong>协议按 URI 标识通道，根、会话与聊天通道必选，终端等可扩展。服务器裁定状态，客户端发送动作，归约函数依序计算新状态；断网期间的动作在重连后提交，等服务器确认再确定结果，避免各端自行认定成功。</p>
+<p><strong>实际影响：</strong>编辑判断：团队做移动审批入口时，可让手机与编辑器读取同一会话，而不是另存聊天副本；协议库覆盖多种语言，减少每种客户端各写一套状态接线。宿主独立于编辑器窗口，也使关闭窗口不必结束任务。</p>
+<p><strong>限制与来源：</strong>TypeScript 与 Rust 宿主互通曾暴露终端输出表达不足、客户端猜测 URI 结构等问题。协议保留自定义方法与元数据，不能由采用名称推断所有扩展互通；Copilot 应用直连入口仍在 Experimental 设置中。</p>
+<p class="source"><a href="https://github.blog/engineering/engineering-principles/building-the-agent-host-protocol-for-sessions-that-continue-across-devices/">新原始证据：状态模型与两套宿主</a></p></article>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内技术评论 · RSS 2026-11-17 20:24:27 UTC；退出决定为窗口前资料</p><h3>05 · Quad9 法国退出计划：先盘点解析器依赖，区分旧决定与新分析</h3>
+<p><strong>事件简介：</strong>Cloudflare 分析 Quad9 退出法国的影响；Quad9 自己在十月二十二日已公告，计划十一月二十四日起停止向法国用户提供服务。今天的新内容是依赖与 DNS 阻断分析，不是退出决定刚刚发生，也不能写成服务已停止。</p>
+<p><strong>技术机制：</strong>DNS 递归解析器把域名查成连接地址，拒绝解析只能作用于域名，不能删除网站中的某个文件。Quad9 说明其威胁拦截库是全球共用的，且没有按司法辖区登记的用户清单；全球阻断与按地理位置识别用户各有边界。</p>
+<p><strong>实际影响：</strong>编辑判断：在法国运营的团队应盘点路由器、服务器及固定写入解析器地址的设备，提前测试替代解析路径，减少应用仍有网络却无法解析域名的故障。不能期待公共解析器逐一通知匿名使用者。</p>
+<p><strong>限制与来源：</strong>退出时间采用 Quad9 原始公告，政策评价分别属于两家运营者立场。本文没有独立验证地区阻断方法或实际停服范围；Cloudflare 对误伤和可绕过性的论述也不是法院裁判全文。</p>
+<p class="source"><a href="https://blog.cloudflare.com/quad9-withdrawal-from-france/">窗口内分析</a> · <a href="https://quad9.net/news/blog/au-revoir-france/">Quad9 十月原公告：计划时间与技术理由</a></p></article>
+<article data-kind="project_trending" data-publisher="ccfos"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 中文语种</p><h3>06 · Nightingale：保留原数据存储，把告警评估到通知串起来</h3>
+<p><strong>简介：</strong>ccfos/nightingale 是自托管开源告警平台，供已有 Prometheus、Loki、ClickHouse 等监控数据源的团队使用。它查询现有存储，集中管理规则、事件处理和通知路由，不要求迁走采集器、数据或 Grafana 看板。</p>
+<p><strong>技术特点：</strong>规则可使用 PromQL、日志查询或 SQL，并按业务组分配权限；条件流水线可静默、改写标签再路由通知。评估查询、历史事件与投递结果均有记录，n9e-edge 可在远端数据源附近评估，内置助手则能按工具读取这条链路。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：某条告警没有送达时，值班者可沿规则结果、静默设置和通知记录逐段核查，减少在多个系统中猜测故障位置。内置助手需自配模型端点，核心告警不依赖模型，调查数据会发给所配置的服务。</p>
+<p><strong>限制与来源：</strong>Prometheus YAML 导入不等于完整转换 alertmanager.yml，通知路由需重建并并行验证。内嵌时序库仅供小型单实例，多实例应使用外部存储；当前没有内置规则版本历史或回滚。Compose 示例凭证仅适合本地评估。</p>
+<p class="source"><a href="https://github.com/ccfos/nightingale#quick-start">当前 README：使用、链路与 FAQ</a></p></article>
+<article data-kind="project_trending" data-publisher="YunaiV"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 中文语种</p><h3>07 · 芋道多租户：把组织身份传进 SQL、缓存和异步任务</h3>
+<p><strong>简介：</strong>YunaiV/ruoyi-vue-pro 是 Java 与 Vue 企业应用开发平台，后端采用 Spring Boot 多模块结构，默认依赖 MySQL 与 Redis。本项聚焦一套系统服务多个组织时的数据隔离，与本周 JeecgBoot 的表单配置和源码生成不同。</p>
+<p><strong>技术特点：</strong>字段隔离模式在共享表中使用 tenant_id。Web 请求传 tenant-id，安全层检查用户所属租户，MyBatis Plus 为适用查询添加过滤；Spring Cache 的 Redis 键带租户标识，消息头与异步上下文继续传递身份，避免离开请求线程就丢失组织范围。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：给多个公司提供相同管理后台时，可沿文档复用数据库、缓存及消息链路的隔离封装，减少每个业务模块各写一遍租户传递。创建租户可同时建立管理员与角色，再用套餐控制菜单和按钮权限。</p>
+<p><strong>限制与来源：</strong>字段模式不是独立数据库隔离；手写 XML SQL 不能一概依赖自动过滤，文档要求按案例核查并手动补条件。直接用 RedisTemplate 也需自行拼租户键。JDK 与 Spring Boot 按分支选择，默认仅启动 system、infra，其他模块须另启用。</p>
+<p class="source"><a href="https://github.com/YunaiV/ruoyi-vue-pro#readme">README：当前类别与分支</a> · <a href="https://doc.iocoder.cn/saas-tenant/">字段隔离机制与例外</a> · <a href="https://doc.iocoder.cn/quick-start/">启动与模块范围</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察</h2><p class="meta">3 项</p>
+<article data-kind="project_trending" data-publisher="obra"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 全语言 · 采用效果观察</p><h3>08 · Superpowers：让编码代理沿设计、测试与评审步骤工作</h3>
+<p><strong>简介：</strong>obra/superpowers 是编码代理的技能和开发方法集合，面向希望代理按约定流程实施软件的开发者。它依宿主分别安装，通过技能描述和初始指令触发工作流，不是自己编译运行项目的独立执行平台。</p>
+<p><strong>技术特点：</strong>流程先形成设计，再把计划拆成带文件路径、代码与验证步骤的小任务；测试技能要求先见失败，再写最小实现并重构。实施可以逐任务使用独立代理与评审，也可以同会话完成后统一复核，工作树用于隔离分支。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：维护有既定测试入口的仓库时，可用同一任务计划和先失败后通过的证据检查代理改动，减少只读最终摘要却不知道行为是否被验证的情况。它约束实施顺序，区别于 LoopForge 的服务端节点调度与产物依赖。</p>
+<p><strong>限制与来源：</strong>README 说明各宿主须独立安装，部分宿主长会话压缩后可能失去启动指令；可选视觉伴随页默认请求带版本号的标志，可设环境变量关闭。持续按计划工作是作者描述。后续应看同任务对照的返工率、耗时及流程漏执行记录，再判断收益。</p>
+<p class="source"><a href="https://github.com/obra/superpowers#the-basic-workflow">README：流程、安装差异与遥测</a></p></article>
+<article data-kind="project_trending" data-publisher="Cursor"><p class="meta">GitHub Trending Daily 前十 · project_trending · 生成时当前列表补充，非新发布 · 全语言 · 扩展采用观察</p><h3>09 · Cursor plugins：用清单区分插件目录与可加载组件</h3>
+<p><strong>简介：</strong>cursor/plugins 当前是官方插件集合及规范仓库，面向要给 Cursor 接入工具、规则与工作技能的开发者。每个插件有独立目录和 plugin.json 清单，根 marketplace.json 列出集合；不是所有条目共享一份工具配置。</p>
+<p><strong>技术特点：</strong>目录可携带 SKILL.md 技能、.mdc 规则及 mcp.json 工具服务定义。create-plugin 子项目先按用途与组件类型搭建目录，再生成清单和配套内容，最后用 review-plugin-submission 检查提交要求；质量规则核对元数据、路径与清单的一致性。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：团队把内部工具接入助手时，可从 /create-plugin 给出用途和组件类型，再检查生成结构，减少把散落的规则与服务配置手工拼成可安装包的工作。它处理分发结构，与 Stitch 的具体设计迁移技能各有对象。</p>
+<p><strong>限制与来源：</strong>根 README 主要说明集合与目录结构，安装和使用据子项目 /add-plugin create-plugin 及三步流程，不外推其他插件权限或兼容性。清单检查不能证明工具调用正确。后续看实际安装、升级后的路径兼容及提交检查漏报案例；本期未安装执行。</p>
+<p class="source"><a href="https://github.com/cursor/plugins#repository-structure">README：当前集合与目录</a> · <a href="https://github.com/cursor/plugins/blob/main/create-plugin/README.md">子项目：安装、组件与使用流程</a></p></article>
+<article data-kind="official" data-publisher="GitHub/Microsoft"><p class="meta">窗口内初步结果披露 · RSS 2026-11-17 18:29:29 UTC</p><h3>10 · MDASH 试点：把数千条 AI 线索缩成带修复建议的私密报告</h3>
+<p><strong>事件简介：</strong>GitHub 与微软披露 Codename MDASH 对六个开源项目的安全试点。AI 原始发现经筛选后形成 99 份私密报告；截至十一月十五日，维护者已修复 55 项，其中 14 项修复进入发布版。这是新试点结果，不是自动扫描器检出率。</p>
+<p><strong>技术机制：</strong>MDASH 用 MAI Cyber 模型找问题并建议补丁，GitHub Security Lab 的代理去重与初筛，再由七名 FORGE Lab 研究员手工验证。最终报告附复现概念验证和建议修复，经私密漏洞报告送达，维护者决定如何修改与发布。</p>
+<p><strong>实际影响：</strong>编辑判断：希望帮助开源依赖修复缺陷的团队，可把验证与补丁准备放在提交之前，减少将噪声判断全部转给维护者。本项是已有试点的处理与修复数据，区别于本周外部安全测试技能包的流程说明。</p>
+<p><strong>限制与后续观察：</strong>六个项目样本很小，每项目约花两天人工核查，作者也承认尚不能规模化。原始线索到报告的缩减比例不是误报率或漏洞召回率。后续应看剩余报告的修复发布、研究员投入和扩大样本后的维护者工时，才能评估净收益。</p>
+<p class="source"><a href="https://github.blog/open-source/maintainers/maintainers-dont-need-more-ai-bug-reports-they-need-fixes/">新原始证据：试点步骤、修复数与人工成本</a></p></article>
+</section>
+<footer><p>七日去重：读取 2026-11-11 至 2026-11-17 七份现存报告，按规范化主 URL、GitHub owner/repository 与底层议题核对。排除 Univer、Open Code Review、LoopForge、Claude-BugHunter、Stitch Skills、AG-UI、Arcane、last30days、LangBot、Umi-OCR 等已报道项目；未以再次上榜充作新事件。HelloGitHub、书源、电视图标与菜谱等未优先于具体工程机制，RapidOCR 与近期离线 OCR 主题重合，AutoNovel README 不足以支持完整技术解释。</p><p>相邻议题说明：AHP 采用十一月十七日新披露的服务器状态模型与双宿主互通证据；MDASH 采用同日新披露的人工验证和修复结果，均链接新原文。芋道聚焦跨 SQL、缓存和异步任务的租户身份，Superpowers 聚焦先失败后通过的测试顺序，Cursor 聚焦清单与目录检查，未重复表单生成、服务端任务调度或具体设计迁移流程。</p><p>来源核验与失败：所选主来源均通过受信任 orz_fetch MCP 读取，仓库核读当前 README 的定位、机制、用法及相关限制，补读芋道启动与租户文档、Cursor 子项目 README；Quad9 时间回到原公告核对。完整返回正文、URL、支持摘录及筛选说明保存在 work/tech-trends-2026-11-18/。OpenAI 新模型公告返回 HTTP 403，已跳过且未反复重试；采集器未报告来源组失败。未运行项目或独立复测厂商性能及作者效果；总条数、Trending 配额与观察栏均无短缺。</p><p>原始预览与候选 JSON 仅作证据，未作为最终报告发布。轻量入口与索引已刷新，生成页面留在工作树供后续工作流提交和发布；本次未提交、推送或验证线上发布。</p></footer></main></body></html>
