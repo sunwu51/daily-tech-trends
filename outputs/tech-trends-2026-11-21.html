@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tech Morning Brief</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#20313d;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:38px 22px 70px}header{border-bottom:3px solid #226278;padding-bottom:20px}h1{margin:6px 0;font-size:36px}h2{margin-top:36px}h3{margin:8px 0 16px;font-size:22px;line-height:1.5}article{background:white;border:1px solid #d8e2e9;border-radius:12px;padding:24px 28px;margin:20px 0}p{margin:12px 0}a{color:#176383;overflow-wrap:anywhere}.meta,.source,footer{font-size:13px;color:#576e7d}.overview{background:#e4eff4;border-left:4px solid #226278;padding:10px 22px;margin-top:24px}nav a{margin-right:20px}footer{border-top:1px solid #cedbe3;margin-top:34px;padding-top:18px}@media(max-width:600px){main{padding:24px 14px}article{padding:18px}h1{font-size:29px}h3{font-size:20px}}</style></head><body><main>
+<header><p class="meta">TECH MORNING BRIEF · 2026-11-21</p><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-20 07:00 至 2026-11-21 07:00，即截止前 24 小时。工作流截止值：2026-11-21T07:00:00+08:00。这是编辑聚焦窗口，并非严格排除边界；当前榜单、窗口前材料与截止后补充分别标注。</p><nav><a href="#focus">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<div class="overview"><h2>中文编辑概览</h2><p>今天关注那些容易被表面成功掩盖的边界：文件锁不保证写入中断后状态完整，稳定域名不保留数据库连接，模型总分也不能替代实验决策。项目侧选择能落到运行步骤的教材与数据流水线，区分基础学习、自动筛选和已经证明的效果。</p><p>共 10 项：今日重点 8 项、值得继续观察 2 项。各组织或发布方最多两项。五项官方材料的 RSS 时间位于主窗口内，LLVM 为窗口前补充，Azure 遥测公告为截止后补充；正文只有日期时，不以 RSS 时分冒充精确发表时间。</p><p>已筛选候选 JSON 中 GitHub Trending Daily 全语言与中文语种各前十，去重共 20 个仓库。本期仅 3 个不同的 project_trending 仓库，较四项目标缺 1 项：13 个仓库或底层议题已在七日内报道，其余 4 个是资讯目录、周刊、书源或直播列表，未提供足以独立解释的工程机制。保留 3 个可核验的实质项目，不重复上榜旧项。榜单仅代表生成时关注，不能还原七点截止时的历史排名；采集时间与 HN 提交时间也不是项目发布日期。</p></div>
+<section id="focus"><h2>今日重点</h2>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内安全分析 · RSS 2026-11-20 20:24:38 UTC；Ruby 修复为此前公告</p><h3>01 · ruby2shell 防护更新：字符串扩容错误为何会出现在登录之前</h3>
+<p><strong>事件简介：</strong>Cloudflare 说明 ruby2shell 的触发路径，并为免费及付费托管规则集加入默认阻断规则。Ruby 官方已发布 3.3.14、3.4.13、4.0.10，修复字符串大小写转换及正则表达式中的七个漏洞；本次关注新增防护说明，不将修复日期写成今天。</p>
+<p><strong>技术机制：</strong>部分旧单字节编码中的 ß 转大写会成为两个字符 SS，缓冲区却只按一个字节检查容量。Rack 的 MethodOverride 中间件会在路由阶段把表单的 _method 参数转大写，默认 Rails 和经典 Sinatra 因而可能在认证前触达问题。UTF-8 使用不同路径。</p>
+<p><strong>实际影响：</strong>编辑判断：维护自托管 Ruby 产品时，应同时核对内置运行时、镜像和后台工作进程，升级后重启；只改业务登录逻辑无法挡住更早的中间件处理。付费用户还应确认规则集确已部署。</p>
+<p><strong>限制与来源：</strong>WAF 即网页应用防火墙，只能检查经过它的 HTTP 流量，不能覆盖邮件、队列或源站直连。规则效果是厂商自述；Ruby 官方确认修复版本及部分场景可执行代码，本期未复现攻击。</p>
+<p class="source"><a href="https://blog.cloudflare.com/ruby2shell-waf-protection/">Cloudflare：路径与防护边界</a> · <a href="https://www.ruby-lang.org/en/news/2026/11/18/multiple-vulnerabilities-in-regexp-and-string/">Ruby 官方修复公告</a></p></article>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内安全分析 · RSS 2026-11-20 20:00:45 UTC；漏洞公告为 11 月 19 日</p><h3>02 · phpAfterShell：文件锁无法撤销一次写到一半的会话更新</h3>
+<p><strong>事件简介：</strong>Cloudflare 更新 PHP 会话攻击的防护说明；PHP 官方确认默认 files 会话处理器存在中断写入缺陷，修复版为 8.2.36、8.3.37、8.4.28、8.5.13。会话用来保存连续请求间的用户状态，这次问题出在保存过程，而非密码检查。</p>
+<p><strong>技术机制：</strong>原实现直接覆盖原文件，进程中途终止可能留下新数据前缀与旧数据尾部。文件锁只阻止并发访问，不会回滚已写字节；下次 session_start() 重新解析时，原本字符串里的内容可能被当成对象。修复先清空文件，并在清空失败时停止写入。</p>
+<p><strong>实际影响：</strong>编辑判断：运维应升级并重启全部 PHP worker，同时盘点上传进度功能及写入会话的大段用户输入。临时关闭上传进度只能移除一条入口，不能解决业务自行保存不可信会话内容的路径。</p>
+<p><strong>限制与来源：</strong>官方称远程执行还需适当写入中断与对象利用链；研究者另称可串联尚未完全披露的原生类缺陷，不能混成所有站点均可直接执行。WAF 已知模式阻断不等于修复，另三条新规则默认仅记录。</p>
+<p class="source"><a href="https://blog.cloudflare.com/phpaftershell-waf-protection/">Cloudflare 防护说明</a> · <a href="https://github.com/php/php-src/security/advisories/GHSA-fm2m-fjf5-v3cp">PHP 官方机制、补丁与条件</a> · <a href="https://depthfirst.com/research/phpaftershell">研究者原始分析</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内公告 · RSS 2026-11-20 22:54 UTC；正文标 11 月 20 日</p><h3>03 · RDS Oracle 主入口：切换主库时保留地址，连接仍须重建</h3>
+<p><strong>事件简介：</strong>Amazon RDS for Oracle 新增 Primary Endpoint，为企业版数据库提供跟随当前主库的 DNS 名称。过去向同区或跨区副本执行计划切换后，团队要修改应用连接串或自管 DNS；现在可预先让应用使用这个自动提供的入口。</p>
+<p><strong>技术机制：</strong>主库与副本共享入口，切换时服务更新其指向，并在证书中加入该域名以支持主机名校验。连接池创建新连接时重新解析 DNS，就能连接新主库；文档建议客户端缓存有效期设低，例如六十秒。</p>
+<p><strong>实际影响：</strong>编辑判断：灾备演练可减少逐个应用改配置、走审批及协调发布的步骤，将验收集中到连接中断检测、重新解析和重连。这里处理主角色迁移，区别于本周 Oracle 维护前预备资源。</p>
+<p><strong>限制与来源：</strong>不保留已有会话或进行中的工作；非计划故障若采用 promote 将副本提升为独立实例，会得到新入口，仍须改连接串。SE2 不支持；跨区后原区域应用增加网络延迟。功能不另收费，覆盖商业区域。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/rds-oracle-primary-endpoint-v2/">AWS 新公告</a> · <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-primary-endpoint.html">官方文档：切换、提升与连接限制</a></p></article>
+<article data-kind="official" data-publisher="OpenAI"><p class="meta">窗口内官方披露 · RSS 2026-11-20 10:00 UTC</p><h3>04 · OpenAI 披露反蒸馏防护：把工具参数也纳入推理泄漏检查</h3>
+<p><strong>事件简介：</strong>OpenAI 介绍针对未经授权模型蒸馏的防护更新。蒸馏是用一个模型的输出训练另一个模型；本次重点是保护模型内部推理记录，并联合调查跨账户的协调提取行为，而不是禁止普通用户获得解释。</p>
+<p><strong>技术机制：</strong>输入分类器识别提取企图，输出分类器同时检查回答和工具调用参数，覆盖流式与非流式响应。加密推理与产生它的会话历史绑定；改写较早消息后，API 丢弃其后的推理，旧模型家族也不能读取新家族的受保护内容。</p>
+<p><strong>实际影响：</strong>编辑判断：维护长期代理会话的应用应检查自己是否重写历史前缀，并观察续接行为，避免假定加密推理可任意跨会话复用。平台防护也应检查工具通道，不能只在最终回答做过滤。</p>
+<p><strong>限制与来源：</strong>自适应黑盒内部评测中，提取先前请求推理的成功率由 54.0% 降至 0.2%，当前请求由 22.9% 降至 0.9%；比较同时更换模型与防护，不能单独归因为某个分类器。结果及能力迁移实验均属官方自报。</p>
+<p class="source"><a href="https://openai.com/index/combatting-adversarial-distillation">官方原文：防护层、会话绑定与评测口径</a></p></article>
+<article data-kind="project_trending" data-publisher="krahets"><p class="meta">GitHub Trending Daily 当前前十 · project_trending · 当前项目发现，非新发布</p><h3>05 · Hello 算法：把动态图解与可运行实现放在同一学习路径</h3>
+<p><strong>简介：</strong>krahets/hello-algo 是免费开放的数据结构与算法入门教程，面向已有基础编程知识、希望理解算法过程的学习者。内容可以在线阅读，也提供 PDF、EPUB 下载入口；同一知识点配有多种编程语言实现。</p>
+<p><strong>技术特点：</strong>教程把动画图解与可一键运行的代码并置：先看数据结构怎样变化，再执行对应实现观察结果。代码覆盖 Python、Java、C++、Go 等语言，读者可沿熟悉的语言理解底层实现，不必先迁到另一套语言语法。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：学习链表或排序时，可先通过动画确认节点或元素的移动，再对照代码运行，减少在抽象示意图与另找示例程序之间来回拼接的工作。它教授基础算法，区别于模型训练教程。</p>
+<p><strong>限制与来源：</strong>README 定位为入门书，不能把推荐语或星数当学习成效证据；文本、代码和图像等采用 CC BY-NC-SA 4.0，包含非商业与相同方式共享条件。补充安装页返回 429，未据该页宣称本地环境兼容性。</p>
+<p class="source"><a href="https://github.com/krahets/hello-algo">当前 README：定位、阅读方式与许可</a></p></article>
+<article data-kind="project_trending" data-publisher="D2L"><p class="meta">GitHub Trending Daily 中文语种当前前十 · project_trending · 当前项目发现，非新发布</p><h3>06 · 动手学深度学习：用 Notebook 对照数学推导与训练结果</h3>
+<p><strong>简介：</strong>d2l-ai/d2l-zh 是《动手学深度学习》中文开源教材，将概念、数学与可修改的代码连在一起，面向希望从理解原理走到实现模型的学习者。在线正文可免费阅读，下载的 Jupyter Notebook 能在本地浏览器逐段执行。</p>
+<p><strong>技术特点：</strong>安装文档用独立 conda 环境管理 Python，安装所选深度学习框架和 d2l 辅助包，再进入对应框架目录启动 Notebook。辅助包复用书中常见函数，让读者改动训练代码后直接观察结果；文档分别提供多种框架路径。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：学习优化器或网络结构时，可先运行教材基线，再只改一个参数或模块比较曲线，减少把公式自行转成可执行实验的准备。与此前 MiniMind 的小语言模型训练链路不同，它覆盖一般深度学习原理和练习。</p>
+<p><strong>限制与来源：</strong>安装页仍固定 Python 3.9、PyTorch 1.12.0 等旧版本，不代表最新环境已验证。前几章 CPU 足够，完整学习建议 GPU；新版内容先用英文编写再搬回中文，存在同步时差。本期未安装复测。</p>
+<p class="source"><a href="https://github.com/d2l-ai/d2l-zh">当前 README：目标与中英文更新关系</a> · <a href="https://zh.d2l.ai/chapter_installation/index.html">安装、框架版本及硬件要求</a></p></article>
+<article data-kind="official" data-publisher="LLVM"><p class="meta">窗口前版本补充 · GitHub 发布页 11 月 17 日；RSS 2026-11-17 19:48:11 UTC</p><h3>07 · LLVM 23.1.6：按用途选择工具链包，并核对下载证明</h3>
+<p><strong>事件简介：</strong>LLVM 发布 23.1.6 工具链分发包，提供 Linux x86_64、Arm64 与 Windows 等下载入口。LLVM 是编译器基础设施；对准备升级构建环境的工程师，这份公告最明确的信息是包内容和核验方法，未提供足够细节解释具体编译优化变化。</p>
+<p><strong>技术机制：</strong>tar.xz 与 tar.zst 只是同一包内容的不同压缩方式。Windows 的 LLVM 安装器适合使用工具链；clang+llvm 归档还包含通常不用于普通编译的库和工具，适合开发依赖 LLVM 本身的软件。另有完整源码和测试套件归档。</p>
+<p><strong>实际影响：</strong>编辑判断：固定 CI 构建环境时，可先按目标架构及是否链接 LLVM 库选包，再用 GPG 签名或 gh attestation verify 检查来源证明，减少误选精简安装器后才发现缺库，以及直接信任下载文件的步骤。</p>
+<p><strong>限制与来源：</strong>公告提醒部分平台包须等待构建，非默认平台可能依赖社区或自行构建。证明核验确认文件来源与完整性，不能证明应用兼容或构建结果一致；本期未把补丁版本号推断成性能或安全收益。</p>
+<p class="source"><a href="https://github.com/llvm/llvm-project/releases/tag/llvmorg-23.1.6">官方发布页：包类型、平台与核验命令</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">截止后补充 · RSS 2026-11-21 01:10 UTC，即北京时间 09:10</p><h3>08 · CloudWatch Omni 接入 Azure：按资源范围汇集跨云遥测</h3>
+<p><strong>事件简介：</strong>Amazon CloudWatch Omni 新增 Azure 平台日志、指标、虚拟网络流日志和 Application Insights 链路追踪接入。它服务于同时运行 AWS 与 Azure 的运维团队，将 Azure 遥测送入 CloudWatch，与现有 AWS 数据一起查看。</p>
+<p><strong>技术机制：</strong>配置时将 Microsoft Entra ID 租户连接到一个 AWS 账户与区域，再选择遥测类型、订阅、Azure 区域、资源类型和标签。连接器可从控制台或 AWS CLI 配置；Omni spaces 用汇入的数据观察跨云应用和基础设施。</p>
+<p><strong>实际影响：</strong>编辑判断：Azure 服务调用 AWS 下游时，值班者可在同一观察入口追查慢请求，减少为汇集平台遥测自写搬运流水线和切换控制台的操作。仍需确认实际服务的追踪关联是否完整，不能由接入支持推断自动找到根因。</p>
+<p><strong>限制与来源：</strong>范围为 Azure 公共区域，目的地须为 CloudWatch Omni 已开放区域；公告未提供采集延迟或独立效果对照。正文价格链接错误指向 Cognito，本期不据其推算费用，也不将集中查看理解为免费。</p>
+<p class="source"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-cloudwatch-omni-microsoft-azure">AWS 公告：采集对象与配置范围</a></p></article>
+</section>
+<section id="watch"><h2>值得继续观察</h2>
+<article data-kind="project_trending" data-publisher="sngyai"><p class="meta">GitHub Trending Daily 中文语种当前前十 · project_trending · 采用效果观察，非新发布</p><h3>09 · Sequoia-X：把日线增量入库、策略扫描和通知串成收盘作业</h3>
+<p><strong>简介：</strong>sngyai/Sequoia-X 当前是面向 A 股的 Python 选股系统，收盘后读取日 K 线，按技术形态筛选并推送飞书。它适合研究行情数据流水线与规则扫描的人；当前 README 描述 V2 工程重构，并不是模型驱动的交易代理。</p>
+<p><strong>技术特点：</strong>先用 --backfill 回填历史后复权数据到本地 SQLite，日常再以八进程增量同步并运行策略。抽象策略基类对应六种实现，例如 TurtleTrade 检查二十日新高、成交额和阳线；数据引擎与飞书 Webhook 通知分离。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：每天重复检查固定形态的研究者，可让定时任务先更新同一份数据库、再计算筛选并发摘要，减少手工下载全量数据及逐股查图的操作。数据库可拷到另一台机器继续分析。</p>
+<p><strong>限制与来源：</strong>要求 Python 3.10+，数据依赖在线 baostock，不能称全程离线。两三分钟更新是作者描述，README 未给回测、交易执行或收益验证。后续看数据缺失处理、除权样本核对与独立运行耗时；规则命中不能证明投资价值。</p>
+<p class="source"><a href="https://github.com/sngyai/Sequoia-X">当前 README：模式、策略、数据及运行条件</a></p></article>
+<article data-kind="official" data-publisher="OpenAI"><p class="meta">窗口内初步研究 · RSS 2026-11-20 00:00 UTC；正文标 11 月 20 日</p><h3>10 · MedChemBench：分子图读对之后，候选选择仍需实验检验</h3>
+<p><strong>事件简介：</strong>OpenAI 推出药物化学基准 MedChemBench，用九十九道来自论文和专利的问题，测试模型连接分子结构与实验数据的能力。药物研究常须同时权衡活性、吸收与代谢；某一指标改善，并不代表更适合继续开发。</p>
+<p><strong>技术机制：</strong>题目源自一百一十七篇论文和专利，包含七百六十一个不同分子结构，分别评结构重建、证据推理、排序选择和性质预测。模型看到研究某阶段已有信息，对后续实验值作预测，并按与实测值接近程度获得部分分数。</p>
+<p><strong>实际影响：</strong>编辑判断：研究团队可用分项结果区分读错化学图、解释证据错误与数值预测失败，减少只看总分就安排昂贵实验。GPT-6.2 Astra 在 xhigh 推理设置下获 84.5% 可用分数，是该历史题集成绩。</p>
+<p><strong>限制与后续观察：</strong>来源公开，无法排除训练时接触；评测为单次作答、无工具和实验反馈。官方明确不能证明发现新药或改善实验决策。后续看未公开化合物上的前瞻预测、实验复验及候选选择净收益，不能把得分写成药物成功率。</p>
+<p class="source"><a href="https://openai.com/index/introducing-medchembench">官方研究说明：题目、分项与局限</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-11-14 至 2026-11-20 七份报告，按去除片段、跟踪参数和尾斜线的主 URL、GitHub owner/repository 与底层议题核对。排除 Claude-BugHunter、Firecrawl、Superpowers、CLI-Anything、Diagram Design、last30days、nginx、OpenVINO、MiniMind、Cursor plugins、Higress、CloudflareSpeedTest、mind-map；HelloGitHub、weekly、legado、live 未作为工程项目填充。三项入选仓库未在七日内出现。</p><p>相邻议题说明：Oracle 本次为跟随主角色的连接入口，区别于维护预备资源；PHP 与 Ruby 是不同运行时的新漏洞及防护材料，未重复 nginx 漏洞。Sequoia-X 为行情入库与确定性筛选，区别于此前交易假设记录；两本教材分别解释基础算法与一般深度学习实验，未重复小语言模型训练项目。LLVM 采用本周版本分发与证明核验的新证据，未推断未披露的优化。</p><p>来源核验及失败：入选主来源均经受信任 orz_fetch MCP 阅读；仓库核读当前 README 的定位、机制、使用及相关边界，另读 D2L 安装、RDS 连接文档、Ruby 与 PHP 官方公告以及 PHP 原始研究。支持正文、URL 与筛选笔记留在 work/tech-trends-2026-11-21/。Hello 算法补充安装页返回 HTTP 429，已跳过且未反复重试；该项仅采用可读 README。AWS Azure 公告的价格链接指向 Cognito，未采用。采集器未报告来源组失败。本期未运行项目、复现漏洞或独立复测作者数据；总条数与观察栏无短缺，Trending 缺额已说明。</p><p>原始预览及候选 JSON 仅为证据，没有作为最终报告发布。轻量入口和索引已刷新；页面留在工作树供后续工作流提交与发布。本次未提交、推送或验证线上发布。</p></footer></main></body></html>
