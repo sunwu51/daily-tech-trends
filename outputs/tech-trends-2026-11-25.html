@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="2026-11-25 中文 AI 策展科技早报：技术机制、工程价值与待验证信号">
+<title>Tech Morning Brief</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#192b38;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}
+main{max-width:960px;margin:auto;padding:38px 22px 70px}header{border-bottom:3px solid #246579;padding-bottom:20px}
+h1{font-size:36px;margin:6px 0}h2{margin-top:36px}h3{font-size:22px;line-height:1.5}
+article{background:#fff;border:1px solid #d7e2e8;border-radius:10px;padding:22px 28px;margin:20px 0}
+a{color:#126888;overflow-wrap:anywhere}.meta,.sources,footer{font-size:13px;color:#596e7d}
+.overview{background:#e4eff3;padding:10px 22px;border-left:4px solid #246579}nav a{margin-right:20px}
+footer{margin-top:34px;border-top:1px solid #ccd7df;padding-top:16px}code{overflow-wrap:anywhere}
+@media(max-width:600px){main{padding:24px 14px}article{padding:18px}h1{font-size:29px}}
+</style>
+</head>
+<body><main>
+<header>
+<p class="meta">TECH MORNING BRIEF · 2026-11-25</p>
+<h1>科技趋势晨报</h1>
+<p>主观察窗口：北京时间 2026-11-24 07:00 至 2026-11-25 07:00，即截止前 24 小时。工作流截止值：2026-11-25T07:00:00+08:00。这是编辑聚焦窗口，并非严格排除边界；当前列表与近期补充另行标注。</p>
+<nav aria-label="报告导航"><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav>
+</header>
+<aside class="overview" aria-label="中文编辑概览">
+<h2>中文编辑概览</h2>
+<p>今天关注“流程里的每一步能否被检查”：云资源要分清可管理与只读，检索结果要留下页码，低比特模型要匹配运行时，代理调用要符合用户原意。实验与科学案例则提醒我们，产生候选、复现信号和确认有效，是三个不同阶段。</p>
+<p>共 10 项：今日重点 7 项、值得继续观察 3 项；各组织或发布方最多两项。CloudFormation 与两篇 OpenAI 文章的 RSS 时间落在主窗口；Google 检索说明与 Bonsai 发布仅标十一月二十四日，不推定精确时刻。其他补充明确标出原文日期，HN 提交时间不代表首次发布。</p>
+<p>已筛选当前 GitHub Trending Daily 全语言及中文语种各前十，去重 20 个仓库。本期保留 1 项 project_trending，较四项目标缺 3：16 个仓库或底层议题已在近七日正式报道，余下 HelloGitHub、weekly、aoaostar/legado 的当前 README 是项目目录、周刊及书源配置集合，缺少足以独立展开的工程机制。last30days 的正式报道在七日范围之外，近七日筛选说明中的提及不计重复报道。榜单只代表生成时当前关注，不能还原截止七点的历史排名，也不意味着今天发布。</p>
+</aside>
+<section id="main" aria-labelledby="main-title"><h2 id="main-title">今日重点 · 7 项</h2>
+<article data-kind="official" data-publisher="AWS">
+<p class="meta">窗口内公告 · RSS 2026-11-24 20:00 UTC；正文仅标日期</p>
+<h3>01 · CloudFormation 扩充资源覆盖：把手工创建的对象纳入模板</h3>
+<p><strong>事件简介：</strong>AWS 为 CloudFormation 增加覆盖八十八项服务的二百零六种资源类型，包括 SageMaker Hub、AgentCore PolicyEngine 和 EC2 Snapshot。CloudFormation 用模板描述并创建云资源；本次变化让更多原来需要另行操作的对象进入同一部署流程。</p>
+<p><strong>技术机制：</strong>模板记录资源属性，服务据此处理创建与依赖关系，同一模板可重复部署。Cloud Control API 同步支持这些新增类型，另增覆盖九十九项服务的二百二十四种只读资源类型，供发现、检查既有对象；只读支持不能当作完整创建和更新能力。</p>
+<p><strong>实际影响：</strong>编辑判断：平台团队将模型策略与计算资源一同交付时，可先核对新增类型，再把原来部署后手工补建的对象写进模板，让评审能看到它们的配置变化，减少遗漏和环境差异。</p>
+<p><strong>限制与来源：</strong>可用性仍取决于底层服务所在区域。AWS 称采用内部 AI 框架加快接入，但没有披露足以复现的算法或准确率，不能把覆盖数量理解为所有资源属性均已支持；具体对象仍需查类型参考。</p>
+<p class="sources"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/cloudformation-coverage-expansion/">新增资源与只读范围</a> · <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html">模板、依赖与变更管理</a></p>
+</article>
+<article data-kind="official" data-publisher="Google">
+<p class="meta">11 月 24 日官方技术说明 · 正文无时分，不据此断言精确落在窗口内</p>
+<h3>02 · Agent Retrieval 公共预览：返回可定位到页码与视频片段的检索结果</h3>
+<p><strong>事件简介：</strong>Google 介绍 Agent Retrieval 新增的托管导入与 SearchDocuments，现为公共预览。开发者将 Cloud Storage 中的文档或视频交给数据存储，服务处理解析、切分和向量编码，查询返回带来源位置的片段，供代理引用。</p>
+<p><strong>技术机制：</strong>文档可按页或文本块切分，SearchDocuments 合并语义与全文检索结果，并可再排序。视频使用独立 VIDEO 存储、按固定时间窗切分；显式启用音频编码后，还能按讲话内容查到时间段，不只匹配画面。</p>
+<p><strong>实际影响：</strong>编辑判断：为年报和培训录像做问答时，团队可少维护两套解析与索引流水线，将人工核对直接落到文件页码或录像时间。返回的是证据片段，最终答案仍需应用组织和验收。</p>
+<p><strong>限制与来源：</strong>目前仅 us-east4、europe-west4，接口为 REST v1beta；视频不支持结果再排序，默认不编码音频。预览期导入免单独收费，底层 Collection 仍计费；示例九分钟导入文档、亚秒检索均为官方小样本自测。</p>
+<p class="sources"><a href="https://developers.googleblog.com/from-files-to-cited-answers-in-one-api-call-managed-ingestion-and-searchdocuments-in-agent-retrieval/">导入、查询、生产限制与预览范围</a></p>
+</article>
+<article data-kind="release" data-publisher="PrismML">
+<p class="meta">11 月 24 日官方发布 · 当前 HN 补充发现；未核实公告时分</p>
+<h3>03 · Bonsai 2.5 27B：三值模型加强长工具链任务，运行时版本也要匹配</h3>
+<p><strong>事件简介：</strong>PrismML 发布基于 Qwen3.8 27B 的 Ternary Bonsai 2.5 27B，面向本机编码与私有文件代理。新版重点改善连续工具调用、失败后的调整及重复思考，权重采用 Apache 2.0；不是仅将旧模型换一个下载格式。</p>
+<p><strong>技术机制：</strong>语言模型权重只取负一、零、正一。最紧密的 PTQ1_0 打包约为 5.93 GB；运行时还须对中间数值执行匹配的 Hadamard 变换，不能只识别 GGUF 文件格式。这个文件当前使用 PrismML 构建，普通 llama.cpp 的兼容文件是更大的 Q2_0，要求 b11556 或更新。</p>
+<p><strong>实际影响：</strong>编辑判断：本地仓库助手可在较小权重占用下尝试多轮查文件、改代码和运行测试，减少为容纳全精度权重而换高显存设备的需求；仍需用真实仓库验证完整任务。</p>
+<p><strong>限制与来源：</strong>5.93 GB 仅指语言权重，不是整套应用总内存。27B 的 MLX 包当前仅文本。SWE-bench Verified 从 60.8 到 75.6 是厂商评测，仍低于其全精度基线 80.6，不能概括为无损压缩；旧运行时可能加载成功却输出乱码。</p>
+<p class="sources"><a href="https://prismml.com/news/bonsai-2-5-27b">发布与评测口径</a> · <a href="https://docs.prismml.com/">当前模型与权重范围</a> · <a href="https://docs.prismml.com/download/formats">打包、变换与兼容版本</a></p>
+</article>
+<article data-kind="research" data-publisher="Google">
+<p class="meta">窗口附近补充 · 官方文章 11 月 23 日，无可用发表时分；功能仍为 Preview</p>
+<h3>04 · 语义策略评测：工具能调用，还要判断是否符合用户原意</h3>
+<p><strong>事件简介：</strong>Google 披露 Semantic governance policies 的代理防注入评测。间接提示注入指网页、账单等外部材料夹带指令，诱导代理做用户没要求的事；本项新增证据是动作意图检查与测试结果，区别于本周已报的异步异常检测。</p>
+<p><strong>技术机制：</strong>Agent Gateway 在工具调用执行前交给模型裁判，按用户请求与系统指令判断是否允许，把工具返回视作数据。拒绝时替换响应并结束该轮。团队对 Gemini 2.5 Flash 运行六轮 AgentDojo 固定攻击，攻击成功率从 48.7% 降至 0.9%。</p>
+<p><strong>实际影响：</strong>编辑判断：付款或外发资料的代理，可先以 dry run 记录判定，再检查哪些动作因外部文字而偏离任务。它在已有身份权限之上核对具体目的，不是给所有获准工具一概放行。</p>
+<p><strong>限制与来源：</strong>正常任务完成率平均损失 2.6 个百分点；纯文字诱导不经工具，仍可能通过。裁判也会读攻击材料，信任区分靠模型指令而非硬隔离；固定攻击未针对防护自适应优化。数据由 Google 自测，不代表真实业务保证。</p>
+<p class="sources"><a href="https://developers.googleblog.com/did-the-user-ask-for-this-securing-ai-agents-against-intent-hijacking-with-semantic-governance-policies/">动作机制、六轮评测与自适应攻击局限</a></p>
+</article>
+<article data-kind="security" data-publisher="GreyNoise">
+<p class="meta">当前 HN 补充 · 原始披露 11 月 23 日；所述入侵发生在十月至十一月初</p>
+<h3>05 · Check Point 入侵披露：管理服务器失守后，风险延伸到内部证书</h3>
+<p><strong>事件简介：</strong>GreyNoise 披露针对 Check Point Security Management Server 的 GT13 活动，称涉及至少二十二家机构。管理服务器集中保存防火墙配置及内部认证材料，失守后可能成为深入网络的入口；这不是今天才发生的二十二起新入侵。</p>
+<p><strong>技术机制：</strong>报告追踪到攻击者把已攻陷的 HFS 服务器作为中转，搭建 Chisel 反向隧道，再对受害环境执行管理任务，复制防火墙数据库、凭证和内部证书颁发机构资料。研究者还观察到尝试签发新证书及卸载安全策略。</p>
+<p><strong>实际影响：</strong>编辑判断：调查不能止于外围地址封禁，应沿管理任务、隧道进程和证书操作核查。若认证材料已被取走，关闭中转连接并不能证明身份信任已经恢复，需要据实际失窃对象决定后续处置。</p>
+<p><strong>限制与来源：</strong>研究者不知道攻击者最初如何进入这些 Check Point 设备，观察在十一月二日结束；活动仍持续及使用 AI 均是其判断。二十二机构与二十四服务器是不同计数，不能混用。本文采用其传感器与工件分析，未独立复现或归属攻击组织。</p>
+<p class="sources"><a href="https://www.greynoise.io/blog/check-point-security-management-servers-intrusion-campaign">原始时间线、证书操作与可见性边界</a></p>
+</article>
+<article data-kind="engineering" data-publisher="Rida Fkih">
+<p class="meta">截止后当前 HN 补充 · 11 月 25 日 03:04 UTC 提交；原文发表于 11 月 20 日</p>
+<h3>06 · Safari 高刷新率实验：把输入采样与画布呈现分开处理</h3>
+<p><strong>事件简介：</strong>开发者 Rida F’kih 展示在支持 ProMotion 的 iPhone 上实现接近 120 Hz 网页交互的实验。普通页面的 requestAnimationFrame 与触摸事件可能受六十赫兹限制；只提高 JavaScript 循环频率，未必能让用户看到更多帧。</p>
+<p><strong>技术机制：</strong>输入端借原生滚动区域取得合成线程处理的位移，并组合定时读取、空动画循环等手段提升采样。输出端用 transferControlToOffscreen 将 canvas 交给 OffscreenCanvas，利用当前 WebKit 占位画布提交路径，绕开等待普通页面绘制的节奏。</p>
+<p><strong>实际影响：</strong>编辑判断：需要跟手拖动或着色器效果的局部组件，可分别验证输入与呈现瓶颈，而不是只统计回调次数。作者用高速摄影记录三秒拖动，报告控制器方案平均 118 帧，普通指针方案六十帧。</p>
+<p><strong>限制与来源：</strong>这是作者特定设备上的实验，并非浏览器正式承诺。实现依赖当前内部行为，Apple 可以改变提交时机；部分技巧需额外滚动与动画。作者明确不建议据此重建整个应用，本期未复测耗电、设备覆盖和低电量表现。</p>
+<p class="sources"><a href="https://rida.dev/blog/bypassing-ios-safari-60-fps-limit">采样、离屏画布、摄影测试与作者警告</a></p>
+</article>
+<article data-kind="project_trending" data-publisher="mvanhorn">
+<p class="meta">GitHub Trending Daily 全语言前十 · project_trending · 生成时当前发现，非今日新发布</p>
+<h3>07 · last30days：按时间与互动线索合并跨平台研究材料</h3>
+<p><strong>简介：</strong>mvanhorn/last30days-skill 是面向研究者与代理用户的跨平台研究技能，输入人物、公司或技术主题，输出带来源的简报与结构化数据。它在本机运行 Python 3.12+ 流程，再访问各搜索服务，不是无需联网的知识库。</p>
+<p><strong>技术特点：</strong>流程先解析账号、仓库和社区，再并行扩展查询，按相关性、时效及互动量评分，把同一事件聚成一组后综合。YouTube 转录和 Reddit 评论可提供正文依据；可用 --emit=json 导出，启用 --store 则将发现保存到本地 SQLite，供后续追踪。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：评估新开发工具时，可把发行说明、问题讨论和使用者反馈连在同一研究结果中，减少逐站搜索、重复计数同一新闻的工作；互动量适合发现线索，不能代替核验技术结论。</p>
+<p><strong>限制与来源：</strong>不同平台仍受凭证、已安装工具及显式启用条件限制。配置外部推理服务后，研究主题和内容摘录会发送给它评分；未配密钥才回退本地评分。README 描述当前源码，安装版可能不同，本期没有运行并验证检索覆盖率。</p>
+<p class="sources"><a href="https://github.com/mvanhorn/last30days-skill#why-this-exists">README：定位与动机</a> · <a href="https://github.com/mvanhorn/last30days-skill#how-it-works">查询、评分与事件聚合</a> · <a href="https://github.com/mvanhorn/last30days-skill#configuration">输出与存储用法</a> · <a href="https://github.com/mvanhorn/last30days-skill#data-handling">数据外发与本地存储边界</a></p>
+</article>
+</section>
+<section id="watch" aria-labelledby="watch-title"><h2 id="watch-title">值得继续观察 · 3 项</h2>
+<article data-kind="research" data-publisher="OpenAI">
+<p class="meta">窗口内初步研究 · RSS 11 月 24 日 13:00 UTC · 值得继续观察</p>
+<h3>08 · 蛋白设计初步结果：结构生成走向实验，筛选仍依赖专门模型</h3>
+<p><strong>事件简介：</strong>OpenAI 与 Onava 披露 GPT-6 系列蛋白设计研究。蛋白质由氨基酸链折叠而成，形状影响其与目标结合的能力；新实验让 GPT-6.2 根据目标三维结构设计小型结合蛋白，区别于本周药物化学历史题集评测。</p>
+<p><strong>技术机制：</strong>模型用推理和通用代码生成三维骨架，再由 SolubleMPNN 提议氨基酸序列，专门结构模型筛选候选，最后合成并检测结合。三百二十二个候选中三十五个呈结合阳性，覆盖五个目标；生成阶段与整个实验流程的工具依赖必须分开理解。</p>
+<p><strong>实际影响：</strong>编辑判断：研究人员可尝试用自然语言加入结合位置、螺旋数量等约束，再进入现有筛选与实验链路，减少为每种新约束重写专用输入的工作；这是可测候选，尚非可用药物。</p>
+<p><strong>限制与后续观察：</strong>结合不证明特异性、稳定性或治疗效果，不能宣称端到端零专门模型。完整结构预测仍明显落后专用模型，部分公开基准可能受记忆影响。后续看独立实验、困难目标命中及功能与选择性验证，再判断能否减少真实设计轮次。</p>
+<p class="sources"><a href="https://openai.com/index/gpt-6-models-demonstrate-intrinsic-protein-design-capabilities">新实验：候选流水线、结合结果与局限</a></p>
+</article>
+<article data-kind="research" data-publisher="OpenAI">
+<p class="meta">窗口内案例披露 · RSS 11 月 24 日 11:00 UTC · 值得继续观察</p>
+<h3>09 · 系外行星搜索：代理筛出光变线索，确认仍要天文观测</h3>
+<p><strong>事件简介：</strong>OpenAI 介绍两位业余天文参与者用 Codex、Astra 分析公共望远镜数据的案例。他们寻找恒星亮度规律变暗的信号：行星经过恒星前方会遮住少量光，但双星或仪器变化也能产生相似现象，因此目前仍是候选。</p>
+<p><strong>技术机制：</strong>Kevin Bond 将已发表方法组合成程序，由一个代理扫描光变曲线，另一个细查候选；约十万颗恒星的数据中筛出两百多个信号，含十个已确认行星。SETI 天文学家独立搜索找到其中两条相同信号。Ethan Byrd 的另一条搜索线首轮得到四十九个候选。</p>
+<p><strong>实际影响：</strong>编辑判断：已有公共数据的参与者，可让代理协助写检索与检查程序，再将可定位的周期信号交给专业团队跟进，减少从零搭建分析代码的门槛；找回已知对象也为流程提供检查点。</p>
+<p><strong>限制与后续观察：</strong>同一数据中复现信号不等于确认行星，更不证明宜居。文章是供应商案例，未给完整精确率或投入对照。后续应看独立观测是否按预测周期重现、排除双星等解释，以及同行评审结果，确认可能需数月到数年。</p>
+<p class="sources"><a href="https://openai.com/index/searching-for-distant-planets-with-astra">分析分工、独立查找与确认条件</a></p>
+</article>
+<article data-kind="project" data-publisher="vcarl">
+<p class="meta">截止后当前 HN 补充 · 11 月 25 日 03:10 UTC 提交；非已核实发布日期 · 值得继续观察</p>
+<h3>10 · Sashay：把多面板尺寸与遮盖状态编码成可分享布局</h3>
+<p><strong>简介：</strong>vcarl/sashay 是网页滑动面板布局库，供列表、详情及逐层导航界面使用。它提供 React 19+ 组件及不依赖 React 的 DOM 控制器；用户可拖面板边界，在窄区域改用标签切换，而不必给每个屏幕单独设计导航。</p>
+<p><strong>技术特点：</strong>边界吸附到简单分数位置，空间不足时旧面板滑到邻居下方或折成侧边标签。onLayoutChange 在操作完成后输出短编码，可存入 URL；keepInView 按指定内容坐标平移被遮面板，让选中的图表点仍留在可见部分。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：分析图表后打开对象详情时，可保留原选中点并分享面板排列，减少来回关闭详情、重新找定位点的操作。业务选择和路由需另存，布局编码只处理几何与栏状态。</p>
+<p><strong>限制与后续观察：</strong>仅 ESM；增删底栏可能使旧布局码失效并回退默认。服务端组件不能直接接收回调，需要客户端包装。千面板拖动低于两毫秒是作者自报；后续看复杂业务布局升级、键盘及触屏实测，验证可访问性与状态恢复是否可靠。</p>
+<p class="sources"><a href="https://vcarl.com/sashay/">官网：交互机制与演示</a> · <a href="https://github.com/vcarl/sashay#readme">当前 README：类别、核心与使用</a> · <a href="https://vcarl.com/sashay/guide/#layout-in-the-url">布局编码与兼容边界</a> · <a href="https://vcarl.com/sashay/guide/#server-rendering">服务端限制</a></p>
+</article>
+</section>
+<footer>
+<p>七日去重：逐篇读取 2026-11-18 至 2026-11-24 七份现存报告，对照正式条目的规范化主 URL、GitHub owner/repository 与底层议题；规范化去掉片段、跟踪参数及尾斜线。排除 Claude-BugHunter、Superpowers、CLI-Anything、Firecrawl、Diagram Design、Cursor plugins、OpenVINO、nginx、MiniMind、Hello 算法、Higress、CloudflareSpeedTest、D2L、Sequoia-X、live、思绪十六项，其中 nginx 按已经报道的底层对象排除，不以再次上榜充当新事件。</p>
+<p>相邻议题：语义策略采用十一月二十三日新的执行前意图裁判与 AgentDojo 评测，区别于 Docker 的授权规则和 Google 的事后异常检测；蛋白设计采用十一月二十四日的新骨架设计及实验结合证据，区别于 MedChemBench 的历史药物化学题集。CloudFormation 的资源覆盖与上周 OpenSearch 的代理记忆也是不同更新。本期没有重复主 URL。</p>
+<p>来源核验与失败：入选主 URL 均通过受信任 orz_fetch MCP 阅读。两个项目核读当前 README 的定位、动机或用途、机制、用法与相关限制；Sashay 补读操作指南，Bonsai 补读打包和运行时兼容文档，CloudFormation 补读模板机制文档。新增 Google 资料从其公开 RSS 发现；该 RSS 条目缺少发布时间，正文日期作为较弱时间依据。完整正文、URL 与支持摘录留在 work/tech-trends-2026-11-25/。采集器未报告来源组失败，本次核验未出现来源请求失败；未使用 shell 网络回退，未安装运行项目或独立复测厂商数据。十项总数与观察栏无短缺，Trending 缺额及原因已说明。</p>
+<p>原始预览与候选 JSON 仅作证据，未作为最终报告发布。入口与索引已刷新，生成文件留在工作树供工作流随后提交；本次未执行提交、推送或线上发布验证。</p>
+</footer>
+</main></body></html>
