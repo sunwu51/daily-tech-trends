@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="2026 年 11 月 26 日中文技术趋势晨报：站点检索、代理边界、工程迁移与早期项目。"><title>Tech Morning Brief</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#20313d;font:16px/1.85 system-ui,-apple-system,"Noto Sans SC",sans-serif}main{max-width:960px;margin:auto;padding:38px 22px 70px}header{border-bottom:3px solid #226278;padding-bottom:20px}h1{margin:6px 0;font-size:36px}h2{margin-top:36px}h3{margin:8px 0 16px;font-size:22px;line-height:1.5}article{background:white;border:1px solid #d8e2e9;border-radius:12px;padding:24px 28px;margin:20px 0}p{margin:12px 0}a{color:#176383;overflow-wrap:anywhere}.meta,.sources,footer{font-size:13px;color:#576e7d}.overview{background:#e4eff4;border-left:4px solid #226278;padding:10px 22px;margin-top:24px}nav a{margin-right:20px}footer{border-top:1px solid #cedbe3;margin-top:34px;padding-top:18px}code{overflow-wrap:anywhere}@media(max-width:600px){main{padding:24px 14px}article{padding:18px}h1{font-size:29px}h3{font-size:20px}}</style></head>
+<body><main>
+<header><div class="meta">TECH MORNING BRIEF · 2026-11-26</div><h1>科技趋势晨报</h1><p>主观察窗口：北京时间 2026-11-25 07:00 至 2026-11-26 07:00，即截止前 24 小时。工作流截止值：2026-11-26T07:00:00+08:00。窗口用于编辑聚焦，并非严格排除边界；生成时当前列表与截止后发现明确另标。</p><nav><a href="#main">今日重点</a><a href="#watch">值得继续观察</a><a href="../index.html">历史归档</a></nav></header>
+<aside class="overview"><h2>中文编辑概览</h2><p>今天的主线是把自动化的边界说清楚：网站给代理提供可检索原文，告警把状态变化接入值班流程，旧系统升级先保存可比较的行为，网络策略细化到具体请求。早期项目则把数据库服务、模型运行与学习调度重新包装成更容易开始的流程，但部署便利、性能与可靠性仍要分开验收。</p><p>本期共 10 项：今日重点 6 项，值得继续观察 4 项；各组织或发布方最多两项。五篇官方技术材料的 RSS 时间落在主窗口，正文仅标日期时不据此断言精确发布时间。HN 提交时间只用于标注发现线索，不是项目发布日期，也不把当前排名还原为七点的历史排名。</p><p>已筛选 GitHub Trending Daily 全语言与中文语种各前十，去重共 20 个仓库。可入选的 <code>project_trending</code> 仅 1 个，较四项目标缺 3：16 个仓库或底层主题在近七日已正式报道；HelloGitHub、weekly、aoaostar/legado 的当前 README 分别为项目目录、周刊和书源配置集合，缺少足以独立解释的工程机制。预留后仅芋道通过筛选，未用重复上榜补足配额。</p></aside>
+<section id="main" aria-labelledby="main-title"><h2 id="main-title">今日重点 · 6 项</h2>
+<article data-kind="official" data-publisher="Cloudflare"><p class="meta">窗口内官方公告 · RSS 11 月 25 日 14:00 UTC</p><h3>01 · Search for Agents：让代理从站点自己的域名检索原文</h3>
+<p><strong>事件简介：</strong>Cloudflare 推出 Search for Agents，让站长通过控制台开关建立 AI Search 实例，自动抓取并索引站点内容，再从自有域名提供搜索入口。此前站长需要自行建实例、配置接口，并告诉代理到哪里查询。</p>
+<p><strong>技术机制：</strong>网络层在 HTML 元数据或 Markdown 页首的 YAML 中公布接口位置与用法。代理可向 <code>/.well-known/search</code> 发 GET，或用 QUERY 方法把查询放进请求正文；结果是带相关度的 Markdown 原文片段，答案由调用方模型组织。</p>
+<p><strong>实际影响：</strong>编辑判断：维护大型产品文档时，站长可减少另建检索网关和发现协议的接线工作；代理先定位相关段落，再读必要页面，减少逐页遍历。相关度分数仍需结合内容核查。</p>
+<p><strong>限制与来源：</strong>免费方案也有额度，导入、索引存储与查询沿用 AI Search 计费及限制；可访问性仍受站点机器人管理和网页防火墙配置影响。官方演示不证明所有代理都会识别元数据，也不保证检索完整性。</p>
+<p class="sources"><a href="https://blog.cloudflare.com/search-for-agents/">官方原文：发现协议、查询格式与计费边界</a></p></article>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内官方公告 · RSS 11 月 25 日 20:00 UTC</p><h3>02 · Omni 接入 PagerDuty：同一告警持续更新一个值班事件</h3>
+<p><strong>事件简介：</strong>Amazon CloudWatch Omni 新增 PagerDuty 集成，把监控告警接入团队现有排班与升级策略。通知带严重程度、受影响服务和返回监控数据的链接；本次改变的是告警处置链路，区别于此前 Azure 遥测导入。</p>
+<p><strong>技术机制：</strong>接入后还须选择可通知的 PagerDuty 服务，并给告警访问配置授予调用权限。每次投递都会重查权限；默认以告警 ARN 这个资源标识去重，Critical、Warning 等状态触发事件，OK 状态发出恢复通知。</p>
+<p><strong>实际影响：</strong>编辑判断：同一支付服务反复越过阈值时，可让后续状态更新同一事件，值班者从链接回到原始数据，减少人工转发告警和重新拼接上下文。要自动关闭事件，规则必须包含 OK 状态。</p>
+<p><strong>限制与来源：</strong>连接账号不会自动加入所有服务；每个 AWS 账户在一个区域只能有一个 PagerDuty 连接。撤销权限会停止已有通知，断开集成也不会停止告警计算。缩短处理时间是厂商预期，公告未给独立对照数据。</p>
+<p class="sources"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-cloudwatch-omni-pagerduty/">发布公告</a> · <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/omni-connect-pagerduty.html#omni-connect-pagerduty-events">权限、去重键与恢复事件</a></p></article>
+<article data-kind="engineering" data-publisher="GitHub"><p class="meta">窗口内官方工程实践 · RSS 11 月 25 日 15:00 UTC</p><h3>03 · 旧应用现代化：先找能运行的行为，再决定替换哪一层</h3>
+<p><strong>事件简介：</strong>GitHub 工程师公开四个应用的现代化实践，并将流程整理为 doc-and-modernize 代理技能。核心变化是把升级建议建立在仓库证据和小实验上：先核对依赖、实际运行版本、启动命令及外部接口，再选择保留、升级或替换。</p>
+<p><strong>技术机制：</strong>限时探测决定两条路径：旧系统能运行，就记录输入输出再升级；无法运行，则先迁移最小可用流程。PiggyMetrics 的十四项旧测试中，九项因嵌入式 MongoDB 下载失败而报错，因此先换测试依赖、建立旧栈基线，再升级 Java 和 Spring。</p>
+<p><strong>实际影响：</strong>编辑判断：接手多年未维护的后台时，团队可先分清业务失败和测试环境失败，减少因一次依赖下载错误就重写架构。保存 API、数据库写入或文件输出，能为跨框架改动提供比较对象。</p>
+<p><strong>限制与来源：</strong>这是作者案例，不是普遍效率评测。DOOM 的检查冻结了现代化引擎输出，只能防后续回归，未独立证明与旧二进制完全一致；文中版本是实验记录，不能直接当作今天的升级目标。</p>
+<p class="sources"><a href="https://github.blog/ai-and-ml/github-copilot/how-to-choose-the-next-safe-step-in-application-modernization/">证据清单、案例、技能流程与验证局限</a></p></article>
+<article data-kind="official" data-publisher="Docker"><p class="meta">窗口内新增技术说明 · RSS 11 月 25 日 16:57 UTC · 同主题实质更新</p><h3>04 · Docker 网络治理细化到请求：同一主机也能区分不同动作</h3>
+<p><strong>事件简介：</strong>Docker 新说明明确 AI Governance 已支持按 HTTP 方法、路径和查询参数控制代理网络访问，并给出网络与挂载阻断的验证流程。新增证据区别于十一月十九日已报的域名、端口及 MCP 授权规则，不把文中七月事故当作新事故。</p>
+<p><strong>技术机制：</strong>仅允许一个主机名，无法区分该主机上的模型调用和存储上传；HTTP 规则把动作和路径也纳入匹配。组织允许规则决定访问范围，拒绝优先；策略同步后逐次检查新请求，开发者本地允许规则不能扩大组织授权。</p>
+<p><strong>实际影响：</strong>编辑判断：让编码代理创建 GitHub 拉取请求时，可允许相关接口，同时阻断合并路径，减少为了一个必要动作而开放整站 API 的范围。上线前可用策略检查、实际失败请求与审计记录分别核对效果。</p>
+<p><strong>限制与来源：</strong>文件策略在创建沙箱时检查挂载，已有可写挂载中的文件仍能被删除；变更后需重建相关沙箱。审计记录是策略决定，不是全部文件操作。网络边界也不能证明获准供应商收到数据后如何处理。</p>
+<p class="sources"><a href="https://www.docker.com/blog/prove-your-ai-agent-guardrails-work/">新原始证据：细粒度规则与验证演示</a> · <a href="https://docs.docker.com/ai/sandboxes/governance/access-controls/network/#http-rules">方法、路径与参数规则</a></p></article>
+<article data-kind="project_trending" data-publisher="YunaiV"><p class="meta">GitHub Trending Daily 中文语种前十 · project_trending · 当前项目发现，非今日新发布</p><h3>05 · 芋道快速开发平台：从表结构生成前后端，再按需接入业务模块</h3>
+<p><strong>简介：</strong>YunaiV/ruoyi-vue-pro 是面向 Java 业务系统开发者的开源快速开发平台，提供后台权限、基础设施及可选业务模块。它采用 Spring Boot 多模块后端，配套 Vue 管理界面，也有移动端方案；不是名称相近的 Spring Cloud 微服务仓库。</p>
+<p><strong>技术特点：</strong>后端组合 MyBatis Plus 数据访问与 Redis、Redisson，代码生成器可输出 Java、Vue、SQL 脚本和接口文档，支持单表、树表和主子表。工作流由 Flowable 承接，角色、菜单、按钮权限和租户套餐则用于管理操作范围。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：开发内部设备台账和审批页面时，可先生成增删改查代码，再接权限与流程，减少重复搭建登录、菜单和表单接口。启动指南要求先初始化数据库和 Redis，默认只启用 system、infra，其余模块另开。</p>
+<p><strong>限制与来源：</strong>不同分支对应 JDK 8、17/21 或 25，须匹配构建环境。文档提醒非 MySQL 的 SQL 文件可能滞后；数据库转换后仍需调整测试。作者的开发速度和质量描述未由本期独立验证。</p>
+<p class="sources"><a href="https://github.com/YunaiV/ruoyi-vue-pro#readme">当前 README：架构、模块与生成器</a> · <a href="https://doc.iocoder.cn/quick-start/">启动步骤、分支与数据库限制</a></p></article>
+<article data-kind="project" data-publisher="xoxorwr"><p class="meta">当前 HN 补充发现 · 11 月 25 日 11:34 UTC 提交，非已核实发布日期</p><h3>06 · pw-loudness-eq：先按应用平衡音量，再在设备输出端防止削波</h3>
+<p><strong>简介：</strong>xoxorwr/pw-loudness-eq 将 Windows 响度均衡处理移植到 Linux 的 PipeWire 音频系统，帮助用户缩小应用内安静与响亮片段的音量差。它提供音频模块和可选 GTK3 控制窗口，可全局或按应用开关。</p>
+<p><strong>技术特点：</strong>插件在每个播放流混音前运行，把频谱功率汇成二十五个频带来估算响度，再调节整体增益，并非逐频段改变音色的均衡器。设备端另有向前预读的限幅器，在放大后的峰值到来前降低增益，防止输出削波失真。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：看对白很轻、音效很响的视频时，可减少反复手调音量；语音通话等应用可加入排除名单。设置保存在 PipeWire 元数据对象中，可用命令脚本修改并在重启后保留。</p>
+<p><strong>限制与来源：</strong>要求 PipeWire 1.4 以上；JACK 客户端、超过八声道的流及直接使用 PipeWire 的 Flatpak 应用不处理。设备限幅器独立常开并增加预读延迟。逆向移植与算法描述来自作者，本期未做听感或数值一致性复测。</p>
+<p class="sources"><a href="https://github.com/xoxorwr/pw-loudness-eq#how-it-works">当前 README：安装、处理位置、算法和排除范围</a></p></article>
+</section>
+<section id="watch" aria-labelledby="watch-title"><h2 id="watch-title">值得继续观察 · 4 项</h2>
+<article data-kind="official" data-publisher="AWS"><p class="meta">窗口内开发者预览 · RSS 11 月 25 日 20:00 UTC · 值得继续观察</p><h3>07 · Lambda 编排 MicroVM：把沙箱任务纳入可恢复的多步流程</h3>
+<p><strong>事件简介：</strong>AWS 为 Lambda durable functions 推出 MicroVM 编排扩展的开发者预览。前者为长流程保存进度并重试，后者提供虚拟机级隔离；扩展把两者连接，用于执行用户或代理生成代码的构建、扫描及持续集成任务。</p>
+<p><strong>技术机制：</strong>任务可以独立执行，也可在共享文件与内存的 MicroVM 会话内连续运行。持久函数管理生命周期，把每步作为可恢复操作，保存检查点、重试失败并刷新令牌；可选 worker 库在镜像中接收任务、发送心跳及返回结果。</p>
+<p><strong>实际影响：</strong>编辑判断：让代理修改代码后再编译测试时，可复用同一会话中的文件，再由编排层跟踪各步，减少团队自行维护沙箱启动、凭证续期和任务状态的工作。重试是否能安全重复仍要按具体任务设计。</p>
+<p><strong>限制与后续观察：</strong>目前面向 TypeScript、Python SDK，区域须同时支持两项底层服务；官方明确不用于生产负载。后续看正式版兼容承诺、长会话故障恢复记录及并发成本，再判断能否稳定承接真实构建流水线。</p>
+<p class="sources"><a href="https://aws.amazon.com/about-aws/whats-new/2026/11/lambda-durable-microvm/">预览公告：会话、worker 与生产限制</a></p></article>
+<article data-kind="project" data-publisher="progrium"><p class="meta">截止后当前 HN 补充 · 11 月 26 日 03:00 UTC 提交 · 早期项目观察</p><h3>08 · minipg：把 PostgreSQL 数据与配置收进一个目录</h3>
+<p><strong>简介：</strong>progrium/minipg 为本地开发和测试提供单个可执行文件形式的 PostgreSQL。用户打开 .pgdb 目录即可进入 SQL 命令行；目录保存数据、配置、密码与版本信息，服务按需启动，空闲后自动停止，不必先配置 Docker。</p>
+<p><strong>技术特点：</strong>程序嵌入 postgres:18-alpine 镜像，通过 h9 的 Linux 兼容层运行原有二进制，由 Plan 9 内核回应系统调用。目录锁保证只有一个服务进程；<code>minipg run</code> 将连接地址写入 DATABASE_URL 后运行应用，后续命令复用服务。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：为集成测试准备临时数据库时，可把创建、运行测试和导出写成几条命令，减少独立安装服务及清理共享实例的步骤。停止后的目录可复制；运行中备份应走数据库导出。</p>
+<p><strong>限制与后续观察：</strong>底层 h9 仍是研究原型；作者测得无 KVM 的 Linux 后端单客户端约慢一倍，负载下慢六至十二倍，KVM、macOS 后端性能未测。不宜保存不可重建数据；后续看崩溃恢复、平台实测与持久性验证。</p>
+<p class="sources"><a href="https://github.com/progrium/minipg#readme">当前 README：目录、运行、平台和已知限制</a> · <a href="https://progrium.github.io/minipg/">机制说明与早期警告</a></p></article>
+<article data-kind="project" data-publisher="alesha-pro"><p class="meta">当前 HN 补充发现 · 11 月 25 日 22:15 UTC 提交 · 机制与复现观察</p><h3>09 · llm.asm 裸机阶段：从引导程序直接进入小模型对话</h3>
+<p><strong>简介：</strong>alesha-pro/llm.asm 包含三个纯 x86-64 汇编工程，本项关注其中可启动的 Qwen3-0.6B 操作系统。它面向研究推理运行时和系统引导的人，可在 QEMU/KVM 等环境运行，不依赖 Linux、Windows 或 C 运行库。</p>
+<p><strong>技术特点：</strong>Multiboot 引导后切换到六十四位模式，把 .asmbin 权重模块直接绑定到物理内存，以二兆字节页映射；APIC 机制唤起多核，复用汇编矩阵计算与分词组件。对话保存键值缓存，后续轮次只处理新增输入。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：研究 CPU 推理中的内存访问和线程同步时，可沿共享计算代码比较 Linux 与裸机执行路径，减少操作系统库层带来的观察干扰。它更适合作为可读实验实现，尚不能由启动演示推断通用部署价值。</p>
+<p><strong>限制与后续观察：</strong>约二十四 KB 仅指内核，不含约 614 MiB 权重与缓存；要求 AVX2、FMA、F16C。默认上下文为 2048，满后重置。性能和逐词一致性均为作者自测；后续看独立复现、更多硬件与长对话正确性。</p>
+<p class="sources"><a href="https://github.com/alesha-pro/llm.asm#readme">当前根 README：类别与要求</a> · <a href="https://github.com/alesha-pro/llm.asm/tree/main/02-baremetal-os#architecture-overview">裸机 README：架构、用法及缓存边界</a></p></article>
+<article data-kind="project" data-publisher="Olumino"><p class="meta">截止后当前 HN 补充 · 11 月 26 日 03:33 UTC 提交 · 采用效果观察</p><h3>10 · Olumino：由笔记生成复习卡，再按记忆反馈安排间隔</h3>
+<p><strong>简介：</strong>Olumino 是运行在电脑和手机浏览器中的笔记与复习卡应用。学习者写笔记、手工建卡或采纳建议，再用“忘了、记起、立即答出”反馈复习；可导入带历史记录的 Anki 卡组，并导出为 Anki、表格或 Markdown 等格式。</p>
+<p><strong>技术特点：</strong>官网称使用开放的 FSRS-7 间隔重复方法，根据每张卡的回答估计记忆状态并安排下次出现。一轮里忘记三次的卡进入 Revisit 专练，连续答对两次才返回常规复习；状态图标反映间隔后的记忆表现。</p>
+<p><strong>适用场景与价值：</strong>编辑判断：学习外语或技术概念时，可从现有笔记直接建立待复习对象，减少在笔记软件与另一个卡片工具间手动搬运。导入复习历史有助于延续既有进度，但调度效果仍需实际验证。</p>
+<p><strong>限制与后续观察：</strong>数据优先保存在设备；启用卡片建议会发送正在写的段落，可在设置关闭。跨设备同步属每月八美元的 Plus；本期未核实开源实现。后续看长期记忆效果、Anki 历史迁移准确性与离线使用实测。</p>
+<p class="sources"><a href="https://olumino.app">官网：调度流程、导入导出、存储与费用问答</a></p></article>
+</section>
+<footer><p>七日去重：逐篇读取 2026-11-19 至 2026-11-25 七份现存报告，按正式条目的规范化主 URL、GitHub owner/repository 及底层议题核对；规范化去掉片段、尾斜线及跟踪参数。排除 Claude-BugHunter、CLI-Anything、Firecrawl、Diagram Design、last30days、Superpowers、Cursor plugins、OpenVINO、nginx、MiniMind、Hello 算法、Higress、CloudflareSpeedTest、Sequoia-X、思绪、D2L 十六个重复项目。芋道最近正式条目在十一月十八日，已在本期去重范围之外。Docker 保留同主题更新，因十一月二十五日新原文明确披露 HTTP 方法、路径、查询参数控制与验证步骤；正文已链接新证据。Omni 新增值班事件投递，区别于此前遥测导入；Lambda 新增沙箱任务编排，区别于此前函数版本状态事件。</p>
+<p>来源核验与失败：入选主 URL 均通过受信任 orz_fetch MCP 阅读；仓库核读当前 README 的定位、架构、用法与限制，芋道补读启动文档，裸机项目同时核读根目录与子项目 README。支持正文、URL 和逐项摘录留在 work/tech-trends-2026-11-26/。采集器未报告来源组失败；NFS 漏洞分析原文返回 HTTP 403，已跳过且未反复重试。未使用 shell 网络回退，未运行项目或独立复测作者性能数字；本期没有将作者陈述写成独立结论。总条数和观察栏无短缺，Trending 缺额及原因见概览。</p>
+<p>原始预览和候选 JSON 仅作证据，未作为最终报告发布。轻量入口与索引已刷新，生成文件留在工作树供后续工作流提交；本次未执行暂存、提交、推送或线上发布验证。</p></footer>
+</main></body></html>
